@@ -48,6 +48,9 @@ namespace Core
 
     void Logger::Log(const std::string &catName, LoggingLevel level, const char *message, ...)
     {
+        if (!Initialized)
+            return;
+
         LogCategory *category = categories[catName];
         std::string logDescriptionString = levelToString[level];
         if (!category)

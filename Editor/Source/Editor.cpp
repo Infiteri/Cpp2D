@@ -1,26 +1,17 @@
 #include "Core.h"
+#include "Core/EntryPoint.h"
 
-int main(int argc, char const *argv[])
+namespace Core
 {
-    Core::Logger::Init();
-
-    CE_INFO("A: %s", "b");
-    CE_WARN("A: %s", "b");
-    CE_WARN("A: %s", "b");
-    CE_TRACE("A: %s", "b");
-    CE_DEBUG("A: %s", "b");
-
-    CE_CORE_INFO("A: %s", "b");
-    CE_CORE_WARN("A: %s", "b");
-    CE_CORE_WARN("A: %s", "b");
-    CE_CORE_TRACE("A: %s", "b");
-    CE_CORE_DEBUG("A: %s", "b");
-
-    while (true)
+    class Editor : public Application
     {
-    }
+    public:
+        Editor(){};
+        ~Editor(){};
+    };
 
-    Core::Logger::Shutdown();
-
-    return 0;
+    Application *CreateApplication()
+    {
+        return new Editor();
+    };
 }
