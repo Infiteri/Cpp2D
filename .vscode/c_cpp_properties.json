@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/Engine/Source"
+                "${workspaceFolder}/Engine/Source",
+                "${workspaceFolder}/Engine/Vendor/glad/include"
             ],
             "defines": [
                 "_DEBUG",

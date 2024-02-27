@@ -1,5 +1,8 @@
 #include "Engine.h"
+#include "Renderer/Renderer.h"
 #include "Logger.h"
+#include "Input.h"
+#include "Renderer/Renderer.h"
 
 namespace Core
 {
@@ -7,9 +10,9 @@ namespace Core
 
     void Engine::PreInit()
     {
-        CE_CORE_INFO("Starting Engine...");
-
         Logger::Init();
+        CE_CORE_INFO("Starting Engine...");
+        Input::Init();
 
         Window::Configuration WindowConfig;
         WindowConfig.X = 10;
@@ -18,6 +21,8 @@ namespace Core
         WindowConfig.Height = 576;
         WindowConfig.Title = "Try me";
         state.window = new Window(WindowConfig);
+
+        Renderer::Init();
 
         CE_CORE_INFO("Started Engine with success");
     }
@@ -29,6 +34,12 @@ namespace Core
 
     void Engine::Render()
     {
+        Renderer::BeginFrame();
+        Renderer::Render();
+        // TODO: Add layer stack
+        Renderer::EndFrame();
+
+        Renderer::RenderScreenTexture(); // Will change if with editor in the future or if user doesn't want to render to screen.
     }
 
     void Engine::Update()

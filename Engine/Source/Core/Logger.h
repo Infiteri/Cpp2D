@@ -57,6 +57,7 @@ namespace Core
 #define CE_WARN(message, ...) Core::Logger::Log(CE_CLIENT_CATEGORY_NAME, Core::Logger::Warn, message, ##__VA_ARGS__)
 #define CE_TRACE(message, ...) Core::Logger::Log(CE_CLIENT_CATEGORY_NAME, Core::Logger::Trace, message, ##__VA_ARGS__)
 #define CE_DEBUG(message, ...) Core::Logger::Log(CE_CLIENT_CATEGORY_NAME, Core::Logger::Debug, message, ##__VA_ARGS__)
+#define CE_LOG(category, level, message, ...) Core::Logger::Log(category, Core::Logger::level, message, ##__VA_ARGS__)
 #else
 #define CE_CORE_INFO(message, ...)
 #define CE_CORE_WARN(message, ...)
@@ -66,6 +67,7 @@ namespace Core
 #define CE_WARN(message, ...)
 #define CE_TRACE(message, ...)
 #define CE_DEBUG(message, ...)
+#define CE_LOG(category, level, message, ...)
 #endif
 
 #define CE_DEFINE_LOG_CATEGORY(pending, name) Core::Logger::DefineLogCategory(pending, name)

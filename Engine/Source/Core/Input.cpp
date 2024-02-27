@@ -5,7 +5,7 @@ namespace Core
 {
     struct InputState
     {
-        bool initialized;
+        bool init;
         std::unordered_map<Keys, bool> keys;
         std::unordered_map<Buttons, bool> buttons;
     };
@@ -14,37 +14,49 @@ namespace Core
 
     void Input::Init()
     {
-        if (state.initialized)
+        if (state.init)
             return;
 
-        state.initialized = true;
+        state.init = true;
     }
 
     void Input::Shutdown()
     {
-        if (!state.initialized)
+        if (!state.init)
             return;
 
-        state.initialized = false;
+        state.init = false;
     }
 
     bool Input::GetKey(Keys key)
     {
+        if (!state.init)
+            return false;
+
         return state.keys[key] != false;
     }
 
     bool Input::GetButton(Buttons button)
     {
+        if (!state.init)
+            return false;
+
         return state.buttons[button] != false;
     }
 
     void InputUpdateKey(Keys key, bool pressed)
     {
+        if (!state.init)
+            return;
+
         state.keys[key] = pressed;
     }
 
     void InputUpdateButton(Buttons button, bool pressed)
     {
+        if (!state.init)
+            return;
+
         state.buttons[button] = pressed;
     }
 }
