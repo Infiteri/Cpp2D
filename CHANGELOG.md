@@ -16,3 +16,5 @@
 
 - Input feature, not complete, fully bare-bones
 - Added changelog along side the old changes that happened
+- Added license
+- Removed Bin / Bin-Obj
