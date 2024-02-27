@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Input.h"
 
 #include <GLFW/glfw3.h>
 
@@ -28,6 +29,15 @@ namespace Core
     {
         glfwPollEvents();
         glfwSwapBuffers(handle);
+
+        glfwGetWindowSize(handle, &state.Width, &state.Height);
+        glfwGetWindowPos(handle, &state.X, &state.Y);
+
+        for (int i = 0; i < (int)Keys::Menu; i++)
+            InputUpdateKey((Keys)i, glfwGetKey(handle, i) == GLFW_PRESS);
+
+        for (int i = 0; i < (int)Buttons::Middle; i++)
+            InputUpdateButton((Buttons)i, glfwGetMouseButton(handle, i) == GLFW_PRESS);
     }
 
     bool Window::ShouldRun() const

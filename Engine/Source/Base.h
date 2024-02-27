@@ -22,3 +22,6 @@ typedef unsigned long long CeU64;
 #define CE_API __declspec(dllimport)
 #endif
 #endif
+
+/// @brief MAJOR.MINOR.PATCH - DD.MM.YYYY
+#pragma CE_VERSION "0.0.1 - 27.02.2024"
