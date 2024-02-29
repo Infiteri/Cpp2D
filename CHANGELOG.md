@@ -32,3 +32,15 @@
 - Added CopyAssets and engine resources concept
 - Added Shader and Shader functions
 - Added Buffer
+
+### 0.0.2 - 29.02.2024
+
+- Added TODO.md (will be filled later on)
+- Added Buffer layouts
+- Removed Editor input checks
+- Added Vertex Array along side Buffer internal binding
+- Made renderer example to square
+- Added resize callback in window
+- Added VSync to window options
+- Added FrameBuffer screen texture
+- Fixed Buffer bugs

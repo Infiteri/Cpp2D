@@ -9,18 +9,7 @@ namespace Core
         Editor(){};
         ~Editor(){};
 
-        void OnUpdate()
-        {
-            if (Input::GetKey(Keys::A))
-            {
-                CE_INFO("AAA");
-            }
-
-            if (Input::GetButton(Buttons::Left))
-            {
-                CE_INFO("Bu");
-            }
-        };
+        void OnUpdate(){};
     };
 
     Application *CreateApplication()

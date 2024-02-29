@@ -1,10 +1,16 @@
 #include "Window.h"
+#include "Renderer/Renderer.h"
 #include "Input.h"
 
 #include <GLFW/glfw3.h>
 
 namespace Core
 {
+    static void WindowOnResize(GLFWwindow *w, int x, int y)
+    {
+        Renderer::Viewport(x, y);
+    };
+
     Window::Window(const Configuration &config)
     {
         state = config;
@@ -17,6 +23,11 @@ namespace Core
         handle = glfwCreateWindow(state.Width, state.Height, state.Title, NULL, NULL); // TODO: Sizes modes
         glfwMakeContextCurrent(handle);
         glfwShowWindow(handle);
+
+        if (state.VSync)
+            glfwSwapInterval(1);
+
+        glfwSetWindowSizeCallback(handle, WindowOnResize);
     }
 
     Window::~Window()

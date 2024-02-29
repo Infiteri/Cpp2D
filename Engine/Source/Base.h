@@ -23,5 +23,5 @@ typedef unsigned long long CeU64;
 #endif
 #endif
 
-/// @brief MAJOR.MINOR.PATCH - DD.MM.YYYY
-#pragma CE_VERSION "0.0.2 - 27.02.2024"
+/// @brief MAJOR.MINOR.ULTRA_MINOR - DD.MM.YYYY
+#pragma CE_VERSION "0.0.2 - 29.02.2024"

@@ -2,7 +2,8 @@
 
 #include "Base.h"
 #include "Shader/Shader.h"
-#include "buffer/buffer.h"
+#include "Buffer/VertexArray.h"
+#include "Buffer/FrameBuffer.h"
 
 namespace Core
 {
@@ -14,7 +15,10 @@ namespace Core
             bool init;
 
             Shader *objectShader;
-            Buffer *buffer;
+            Shader *screenShader;
+            VertexArray *array;
+            VertexArray *screenArray;
+            FrameBuffer *frameBuffer;
 
             CeU32 VBA;
         };
@@ -29,5 +33,7 @@ namespace Core
         static void Render();
         static void EndFrame();
         static void RenderScreenTexture();
+
+        static void Viewport(int width, int height);
     };
 }

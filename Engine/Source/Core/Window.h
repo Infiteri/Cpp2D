@@ -15,6 +15,7 @@ namespace Core
             int Width;
             int Height;
             const char *Title;
+            bool VSync = false;
         };
 
     private:

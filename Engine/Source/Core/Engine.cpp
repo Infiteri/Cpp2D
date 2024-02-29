@@ -14,12 +14,14 @@ namespace Core
         CE_CORE_INFO("Starting Engine...");
         Input::Init();
 
+        // TODO: Load from file (A Lot later)
         Window::Configuration WindowConfig;
         WindowConfig.X = 10;
         WindowConfig.Y = 10;
         WindowConfig.Width = 1024;
         WindowConfig.Height = 576;
-        WindowConfig.Title = "Try me";
+        WindowConfig.Title = "Core Engine";
+        WindowConfig.VSync = true;
         state.window = new Window(WindowConfig);
 
         Renderer::Init();
