@@ -44,3 +44,14 @@
 - Added VSync to window options
 - Added FrameBuffer screen texture
 - Fixed Buffer bugs
+
+### 0.0.2 - 02.03.2024
+
+- Added Color class
+- Added GPUScreen concept
+- Added Mesh object
+- Added Math library
+- Added Shader upload functions for math
+- Added Camera class
+- Orthographic camera works
+- Added CameraSystem class along side documentation for it

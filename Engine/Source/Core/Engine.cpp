@@ -25,6 +25,7 @@ namespace Core
         state.window = new Window(WindowConfig);
 
         Renderer::Init();
+        Renderer::Viewport(state.window->GetState()->Width, state.window->GetState()->Height);
 
         CE_CORE_INFO("Started Engine with success");
     }
@@ -53,6 +54,7 @@ namespace Core
     {
         CE_CORE_INFO("Stopping Engine...");
         Logger::Shutdown();
+        Renderer::Shutdown();
 
         delete state.window;
     }

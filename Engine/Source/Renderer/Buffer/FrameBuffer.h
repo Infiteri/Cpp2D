@@ -34,6 +34,7 @@ namespace Core
 
             Configuration(){};
             Configuration(const Configuration &other);
+            ~Configuration();
 
             void From(Configuration* other);
         };

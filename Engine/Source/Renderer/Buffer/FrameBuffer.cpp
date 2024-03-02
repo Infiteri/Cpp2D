@@ -14,6 +14,11 @@ namespace Core
         Height = other.Height;
     }
 
+    FrameBuffer::Configuration::~Configuration()
+    {
+        PassConfiguration.clear();
+    }
+
     void FrameBuffer::Configuration::From(Configuration *other)
     {
         for (int i = 0; i < other->PassConfiguration.size(); i++)

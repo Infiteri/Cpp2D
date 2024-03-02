@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Base.h"
+#include "GPUScreen.h"
 #include "Shader/Shader.h"
-#include "Buffer/VertexArray.h"
-#include "Buffer/FrameBuffer.h"
+#include "Object/Mesh.h"
 
 namespace Core
 {
@@ -15,12 +15,8 @@ namespace Core
             bool init;
 
             Shader *objectShader;
-            Shader *screenShader;
-            VertexArray *array;
-            VertexArray *screenArray;
-            FrameBuffer *frameBuffer;
-
-            CeU32 VBA;
+            Mesh* mesh;
+            GPUScreen screen;
         };
 
         Renderer(){};
