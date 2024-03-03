@@ -16,6 +16,8 @@ namespace Core
 
     Mesh::Mesh()
     {
+        material = MaterialSystem::GetDefaultMaterial();
+
         array = new VertexArray();
         array->Upload(Buffer::Vertex, vertices, sizeof(vertices) * sizeof(float));
         array->Upload(Buffer::Index, indices, sizeof(indices) * sizeof(CeU32));
@@ -24,16 +26,41 @@ namespace Core
 
     Mesh::~Mesh()
     {
+        ReleaseMaterial();
+
         delete array;
     }
 
     void Mesh::Render()
     {
-        auto shader = ShaderSystem::Get("EngineResources/Shaders/Object");
-        shader->Vec4(Color(0, 125, 255, 255), "uColor");
+        if (material != nullptr)
+            material->Use();
 
         array->Bind();
         array->GetVertexBuffer()->Bind();
         array->GetIndexBuffer()->Draw();
+    }
+
+    void Mesh::SetMaterial(const std::string &materialName)
+    {
+        ReleaseMaterial();
+        material = MaterialSystem::Get(materialName);
+    }
+
+    void Mesh::SetMaterialFromFile(const std::string &filename)
+    {
+        ReleaseMaterial();
+        material = MaterialSystem::GetFromFile(filename);
+    }
+
+    void Mesh::ReleaseMaterial()
+    {
+        if (material)
+            if (material->GetFileName().empty())
+                MaterialSystem::Release(material->GetName());
+            else
+                MaterialSystem::Release(material->GetFileName());
+
+        material = nullptr;
     }
 }

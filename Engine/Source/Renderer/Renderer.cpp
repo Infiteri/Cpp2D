@@ -3,6 +3,8 @@
 #include "Core/Logger.h"
 #include "Color.h"
 #include "Shader/ShaderSystem.h"
+#include "Material/MaterialSystem.h"
+#include "Resources/Loader/MaterialLoader.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -29,8 +31,11 @@ namespace Core
         CameraSystem::CreateOrtho("Main");
         CameraSystem::Activate("Main");
 
+        MaterialSystem::Init();
+
         state.screen.Init();
         state.mesh = new Mesh();
+        state.mesh->SetMaterialFromFile("EngineResources/Materials/Test.ce_mat");
     }
 
     void Renderer::Shutdown()
@@ -40,7 +45,9 @@ namespace Core
         state.init = false;
 
         delete state.objectShader;
+        delete state.mesh;
         CameraSystem::Shutdown();
+        MaterialSystem::Shutdown();
 
         CE_LOG("CE_RENDER", Info, "Shutdown.");
     }
@@ -59,7 +66,8 @@ namespace Core
         if (!state.init)
             return;
 
-        glClearColor(0.1, 0.1, 0.1, 1);
+        Color normalized = state.bgColor.Normalized();
+        glClearColor(normalized.R, normalized.G, normalized.B, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         CameraSystem::UpdateActive();
@@ -96,5 +104,15 @@ namespace Core
             state.screen.ScreenFrameBuffer->Resize(width, height);
 
         CameraSystem::Viewport(width, height);
+    }
+
+    void Renderer::SetClearColor(float r, float g, float b)
+    {
+        state.bgColor.Set(r, g, b, 255);
+    }
+
+    Color Renderer::GetClearColor()
+    {
+        return Color(state.bgColor);
     }
 }

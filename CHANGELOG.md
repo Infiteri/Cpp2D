@@ -55,3 +55,21 @@
 - Added Camera class
 - Orthographic camera works
 - Added CameraSystem class along side documentation for it
+
+### 0.0.3 - 03.03.2024
+
+- Added Layers
+- Added ImGui
+- Added EditorLayer class
+- Updated Core.h to include files
+- Removed Render function on class (didn't function properly / !API CHANGE)
+- Added Engine::Configuration concept along side it's usage, will have a "LoadFromFile" flag later on
+- Added Window size modes with Normal, Windowed and Fullscreen
+- Added better getters for Window class with Width and Height
+- Added Input class functions for mouse position and delta
+- Exported the Color class and Renderer class to the DLL
+- Added Renderer custom BG color support
+- Added temporary color background change with ImGui in editor layer
+- Added Material and MaterialSystem
+- Added YAML
+- Added Material from file

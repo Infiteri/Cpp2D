@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/Engine/Source",
-                "${workspaceFolder}/Engine/Vendor/glad/include"
+                "${workspaceFolder}/Engine/Vendor/glad/include",
+                "${workspaceFolder}/Engine/Vendor/YAML/include"
             ],
             "defines": [
                 "_DEBUG",

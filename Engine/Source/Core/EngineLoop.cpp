@@ -31,9 +31,6 @@ namespace Core
         while (Engine::ShouldRun())
         {
             Engine::Render();
-            if (app)
-                app->OnRender();
-
             Engine::Update();
             if (app)
                 app->OnUpdate();

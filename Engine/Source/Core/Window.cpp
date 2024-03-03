@@ -18,16 +18,31 @@ namespace Core
         // Setup glfw.
         glfwInit();
         glfwWindowHint(GLFW_VISIBLE, false);
-        // TODO: Size modes.
 
-        handle = glfwCreateWindow(state.Width, state.Height, state.Title, NULL, NULL); // TODO: Sizes modes
+        GLFWmonitor *monitor = NULL;
+        if (config.Mode == Fullscreen)
+        {
+            monitor = glfwGetPrimaryMonitor();
+            //! UPDATE SIZES
+            state.Width = glfwGetVideoMode(monitor)->width;
+            state.Height = glfwGetVideoMode(monitor)->height;
+        }
+
+        handle = glfwCreateWindow(state.Width, state.Height, state.Title, monitor, NULL);
         glfwMakeContextCurrent(handle);
         glfwShowWindow(handle);
+        glfwSetWindowPos(handle, state.X, state.Y);
+
+        if (config.Mode == Windowed)
+            glfwMaximizeWindow(handle);
 
         if (state.VSync)
             glfwSwapInterval(1);
 
         glfwSetWindowSizeCallback(handle, WindowOnResize);
+
+        glfwGetWindowSize(handle, &state.Width, &state.Height);
+        glfwGetWindowPos(handle, &state.X, &state.Y);
     }
 
     Window::~Window()
@@ -49,6 +64,12 @@ namespace Core
 
         for (int i = 0; i < (int)Buttons::Middle; i++)
             InputUpdateButton((Buttons)i, glfwGetMouseButton(handle, i) == GLFW_PRESS);
+
+        {
+            double MouseX, MouseY;
+            glfwGetCursorPos(handle, &MouseX, &MouseY);
+            InputUpdateMouse(MouseX, MouseY);
+        }
     }
 
     bool Window::ShouldRun() const

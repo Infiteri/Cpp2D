@@ -5,7 +5,7 @@
 namespace Core
 {
     /// @brief Represents a color using RGBA values in the range of 0 to 255.
-    class Color
+    class CE_API Color
     {
     public:
         /// Red component of the color, in the range 0 to 255.
@@ -33,6 +33,11 @@ namespace Core
         /// @brief Copy constructor.
         /// @param other The color to copy.
         Color(const Color &other);
+
+        /// @brief Will create a new color with a data array.
+        /// @param data the data, must be 4 components.
+        /// @param mul The multiplier as the data could be 0 - 1.
+        Color(float *data, float mul = 1);
 
         /// @brief Destructor.
         ~Color();

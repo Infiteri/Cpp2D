@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Math/Vectors.h"
 
 namespace Core
 {
@@ -161,9 +162,18 @@ namespace Core
         /// @param button The button.
         /// @return Boolean
         static bool GetButton(Buttons button);
+
+        /// @brief Will return the current mouse position in the window.
+        /// @return Vector2 class.
+        static Vector2 GetMousePosition();
+
+        /// @brief Will return the current mouse delta (current position - last position) in the window.
+        /// @return Vector2 class.
+        static Vector2 GetMouseDelta();
     };
 
     void InputUpdateKey(Keys key, bool pressed);
     void InputUpdateButton(Buttons button, bool pressed);
+    void InputUpdateMouse(int x, int y);
 
 }

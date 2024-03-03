@@ -15,10 +15,6 @@ namespace Core
     {
     }
 
-    void Application::OnRender()
-    {
-    }
-
     void Application::OnUpdate()
     {
     }

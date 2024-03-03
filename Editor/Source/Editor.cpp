@@ -1,6 +1,8 @@
 #include "Core.h"
 #include "Core/EntryPoint.h"
 
+#include "EditorLayer.h"
+
 namespace Core
 {
     class Editor : public Application
@@ -9,11 +11,16 @@ namespace Core
         Editor(){};
         ~Editor(){};
 
-        void OnUpdate(){};
+        void OnInit()
+        {
+            LayerStack::PushLayer(new EditorLayer());
+        };
     };
 
-    Application *CreateApplication()
+    Application *CreateApplication(Engine::Configuration *config)
     {
+        config->WindowConfig.Mode = Window::Windowed;
+
         return new Editor();
     };
 }

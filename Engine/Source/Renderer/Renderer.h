@@ -7,7 +7,7 @@
 
 namespace Core
 {
-    class Renderer
+    class CE_API Renderer
     {
     public:
         struct State
@@ -15,8 +15,11 @@ namespace Core
             bool init;
 
             Shader *objectShader;
-            Mesh* mesh;
+            Mesh *mesh;
             GPUScreen screen;
+
+            /// @brief TODO: Refactor
+            Color bgColor{16, 16, 16, 255};
         };
 
         Renderer(){};
@@ -29,7 +32,8 @@ namespace Core
         static void Render();
         static void EndFrame();
         static void RenderScreenTexture();
-
         static void Viewport(int width, int height);
+        static void SetClearColor(float r, float g, float b);
+        static Color GetClearColor();
     };
 }
