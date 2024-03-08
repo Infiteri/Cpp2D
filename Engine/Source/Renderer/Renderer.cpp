@@ -3,6 +3,7 @@
 #include "Core/Logger.h"
 #include "Color.h"
 #include "Shader/ShaderSystem.h"
+#include "Texture/TextureSystem.h"
 #include "Material/MaterialSystem.h"
 #include "Resources/Loader/MaterialLoader.h"
 
@@ -32,6 +33,7 @@ namespace Core
         CameraSystem::Activate("Main");
 
         MaterialSystem::Init();
+        TextureSystem::Init();
 
         state.screen.Init();
         state.mesh = new Mesh();
@@ -48,6 +50,7 @@ namespace Core
         delete state.mesh;
         CameraSystem::Shutdown();
         MaterialSystem::Shutdown();
+        TextureSystem::Shutdown();
 
         CE_LOG("CE_RENDER", Info, "Shutdown.");
     }

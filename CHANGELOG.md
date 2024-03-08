@@ -73,3 +73,10 @@
 - Added Material and MaterialSystem
 - Added YAML
 - Added Material from file
+
+### 0.0.3 - 08.03.2024
+
+- Added Texture support
+- Added TextureSystem
+- Added Texture material file support
+- Sorry for inactivity to all women out there happy women's day

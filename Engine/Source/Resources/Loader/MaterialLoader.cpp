@@ -20,6 +20,7 @@ namespace Core
         out << YAML::Value << name.c_str(); // TODO: Debatable. REVIEW-ME
         out << YAML::Key << "Name" << YAML::Value << c->Name.c_str();
         out << YAML::Key << "Color" << YAML::Value << &c->Color;
+        out << YAML::Key << "TexturePath" << YAML::Value << c->TexturePath.c_str();
         out << YAML::EndMap;
 
         std::ofstream fout(name);
@@ -45,7 +46,9 @@ namespace Core
             return cfg;
         }
 
+        cfg.FileName = filename;
         cfg.Name = node["Name"].as<std::string>();
+        cfg.TexturePath = node["TexturePath"].as<std::string>();
         cfg.FileName = filename;
         cfg.Color = {
             node["Color"][0].as<float>(),

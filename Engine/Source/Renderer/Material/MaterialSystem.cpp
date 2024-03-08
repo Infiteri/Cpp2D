@@ -84,7 +84,11 @@ namespace Core
         state.references[name] = new MaterialReference;
         state.references[name]->material = new Material();
         state.references[name]->material->Load(&cfg);
-        state.references[name]->material->SetLoadMode(Material::Config);
+        if (cfg.FileName.empty())
+            state.references[name]->material->SetLoadMode(Material::Config);
+        else
+            state.references[name]->material->SetLoadMode(Material::File);
+
         state.references[name]->reference++;
     }
 

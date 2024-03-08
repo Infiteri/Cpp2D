@@ -5,10 +5,10 @@
 namespace Core
 {
     static float vertices[] = {
-        100.0f, 100.0f, 0.0f,
-        100.0f, -100.0f, 0.0f,
-        -100.0f, -100.0f, 0.0f,
-        -100.0f, 100.0f, 0.0f};
+        100.0f, 100.0f, 0.0f, 1, 1,
+        100.0f, -100.0f, 0.0f, 1, 0,
+        -100.0f, -100.0f, 0.0f, 0, 0,
+        -100.0f, 100.0f, 0.0f, 0, 1};
 
     static CeU32 indices[] = {
         0, 1, 3,
@@ -22,6 +22,7 @@ namespace Core
         array->Upload(Buffer::Vertex, vertices, sizeof(vertices) * sizeof(float));
         array->Upload(Buffer::Index, indices, sizeof(indices) * sizeof(CeU32));
         array->GetVertexBuffer()->AddLayout(0, 0, 3);
+        array->GetVertexBuffer()->AddLayout(1, 3, 2);
     }
 
     Mesh::~Mesh()
@@ -55,7 +56,7 @@ namespace Core
 
     void Mesh::ReleaseMaterial()
     {
-        if (material)
+        if (material && material->GetLoadMode() != Material::Default)
             if (material->GetFileName().empty())
                 MaterialSystem::Release(material->GetName());
             else

@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Renderer/Color.h"
+#include "Renderer/Texture/Texture.h"
 #include <string>
 
 namespace Core
@@ -21,6 +22,8 @@ namespace Core
         {
             std::string Name;
             std::string FileName;
+            std::string TexturePath;
+            Texture::Configuration TextureConfiguration;
             Color Color;
         };
 
@@ -29,6 +32,9 @@ namespace Core
         std::string filename;
         Color color;
         LoadMode mode;
+        Texture *texture;
+
+        void ReleaseTexture();
 
     public:
         Material();
@@ -44,6 +50,9 @@ namespace Core
         inline std::string GetName() { return name; };
 
         inline std::string GetFileName() { return filename; };
+
+        void SetTexture(const std::string &path, Texture::Configuration *cfg = nullptr);
+        inline Texture *GetTexture() { return texture; };
 
         // Do not call
         inline void SetLoadMode(LoadMode _mode) { mode = _mode; }
