@@ -1,0 +1,8 @@
+Scene: New Scene
+Actors:
+  - Actor: Filed
+    Name: Mesh actor
+    MeshComponentCount: 1
+    MeshComponent 0:
+      Load Mode: 2
+      FileName: EngineResources/Materials/Test.ce_mat

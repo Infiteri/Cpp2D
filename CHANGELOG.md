@@ -80,3 +80,16 @@
 - Added TextureSystem
 - Added Texture material file support
 - Sorry for inactivity to all women out there happy women's day
+
+### 0.0.4 - 09.03.2024
+
+- Added Scene
+- Added Actor
+- Added World
+- Added Components
+- Added Scene Serializer
+- Updated Core.h
+- Fixed the Material and Texture system initialization bug
+- Removed default mesh
+- Added Transform
+- Other fixes

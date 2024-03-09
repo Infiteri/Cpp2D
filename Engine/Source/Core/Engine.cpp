@@ -5,6 +5,7 @@
 #include "Renderer/Renderer.h"
 #include "Layer/ImGuiLayer.h"
 #include "Layer/LayerStack.h"
+#include "Scene/World.h"
 
 namespace Core
 {
@@ -41,6 +42,7 @@ namespace Core
         Renderer::Viewport(state.window->GetState()->Width, state.window->GetState()->Height);
         ImGuiLayer::Init();
         LayerStack::Init();
+        World::Init();
 
         CE_CORE_INFO("Started Engine with success");
     }
@@ -54,7 +56,7 @@ namespace Core
     {
         Renderer::BeginFrame();
         Renderer::Render();
-        // TODO: Add layer stack
+        World::RenderActiveScene();
         Renderer::EndFrame();
         Renderer::RenderScreenTexture(); // Will change if with editor in the future or if user doesn't want to render to screen.
 
@@ -66,6 +68,7 @@ namespace Core
     void Engine::Update()
     {
         state.window->Update();
+        World::UpdateActiveScene();
         LayerStack::Update();
     }
 
@@ -75,6 +78,7 @@ namespace Core
         Renderer::Shutdown();
         ImGuiLayer::Shutdown();
         LayerStack::Destroy();
+        World::Shutdown();
 
         delete state.window;
         Logger::Shutdown();

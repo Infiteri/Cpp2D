@@ -16,5 +16,15 @@
 #include "Renderer/Object/Mesh.h"
 #include "Renderer/Renderer.h"
 #include "Renderer/Material/Material.h"
+#include "Renderer/Camera/CameraSystem.h"
+#include "Renderer/Material/MaterialSystem.h"
+#include "Renderer/Object/Mesh.h"
+#include "Renderer/Texture/TextureSystem.h"
 
 #include "Resources/Loader/MaterialLoader.h"
+
+#include "Scene/Actor.h"
+#include "Scene/Scene.h"
+#include "Scene/World.h"
+#include "Scene/SceneSerializer.h"
+#include "Scene/Components/Components.h"

@@ -15,7 +15,6 @@ namespace Core
             bool init;
 
             Shader *objectShader;
-            Mesh *mesh;
             GPUScreen screen;
 
             /// @brief TODO: Refactor

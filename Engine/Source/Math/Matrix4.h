@@ -22,6 +22,13 @@ namespace Core
             return data[index];
         };
 
+        Matrix4 operator*(const Matrix4 &other)
+        {
+            Matrix4 o;
+            o.From(other);
+            return Matrix4::Multiply(this, &o);
+        };
+
         static Matrix4 Identity();
         static Matrix4 Empty();
 

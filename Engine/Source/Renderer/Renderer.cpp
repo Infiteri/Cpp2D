@@ -32,12 +32,11 @@ namespace Core
         CameraSystem::CreateOrtho("Main");
         CameraSystem::Activate("Main");
 
-        MaterialSystem::Init();
+        // ! Texture system before material, otherwise material will not have a default texture reference.
         TextureSystem::Init();
+        MaterialSystem::Init();
 
         state.screen.Init();
-        state.mesh = new Mesh();
-        state.mesh->SetMaterialFromFile("EngineResources/Materials/Test.ce_mat");
     }
 
     void Renderer::Shutdown()
@@ -47,7 +46,6 @@ namespace Core
         state.init = false;
 
         delete state.objectShader;
-        delete state.mesh;
         CameraSystem::Shutdown();
         MaterialSystem::Shutdown();
         TextureSystem::Shutdown();
@@ -80,7 +78,6 @@ namespace Core
         auto camera = CameraSystem::GetActive();
         state.objectShader->Mat4(camera->GetProjection(), "uProjection");
         state.objectShader->Mat4(camera->GetInvertedView(), "uView");
-        state.mesh->Render();
     }
 
     void Renderer::EndFrame()

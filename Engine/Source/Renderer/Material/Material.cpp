@@ -26,6 +26,11 @@ namespace Core
             ReleaseTexture();
             texture = TextureSystem::Get(config->TexturePath);
         }
+        else // No specified texture path and no textures loaded earlier
+        {
+            if (!texture)
+                texture = TextureSystem::GetDefaultTexture();
+        }
     }
 
     void Material::Use()
