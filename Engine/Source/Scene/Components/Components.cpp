@@ -28,12 +28,12 @@ namespace Core
 
     void MeshComponent::SetMaterial(const std::string &filename)
     {
-        mesh->SetMaterialFromFile(filename);
+        mesh->SetMaterial(filename);
     }
 
-    void MeshComponent::SetMaterialFromName(const std::string &name)
+    void MeshComponent::SetMaterial(Material::Configuration *config)
     {
-        mesh->SetMaterial(name);
+        mesh->SetMaterial(config);
     }
 
     void MeshComponent::From(MeshComponent *other)
@@ -41,10 +41,18 @@ namespace Core
         auto mat = other->mesh->GetMaterial();
 
         if (mat->GetFileName().empty())
-            mesh->SetMaterial(mat->GetName());
+        {
+            Material::Configuration config;
+            config.Name = other->mesh->GetMaterial()->GetName();
+            config.Color = *other->mesh->GetMaterial()->GetColor();
+            config.TexturePath = other->mesh->GetMaterial()->GetTexture()->GetImagePath();
+            // config.TextureConfiguration = other->mesh->GetMaterial()->GetTexture()->GetC();
+            mesh->SetMaterial(&config);
+        }
         else
-            mesh->SetMaterialFromFile(mat->GetFileName());
-
+        {
+            mesh->SetMaterial(mat->GetFileName());
+        }
         mesh->GetMaterial()->SetColor(*mat->GetColor());
     }
 }

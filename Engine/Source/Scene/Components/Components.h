@@ -22,7 +22,7 @@ namespace Core
         Component();
         ~Component();
 
-        Actor *owner;
+        Actor *Owner;
 
         virtual void Start(){};
         virtual void Render(){};
@@ -44,7 +44,7 @@ namespace Core
         void Render();
 
         void SetMaterial(const std::string &filename);
-        void SetMaterialFromName(const std::string& name);
+        void SetMaterial(Material::Configuration* config);
 
         void From(MeshComponent *other);
     };

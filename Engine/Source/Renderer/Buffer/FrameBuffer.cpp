@@ -120,7 +120,7 @@ namespace Core
         glBindFramebuffer(GL_FRAMEBUFFER, id);
     }
 
-    void FrameBuffer::Unbind()
+    void FrameBuffer::Unbind()  
     {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

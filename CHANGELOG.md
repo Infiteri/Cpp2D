@@ -93,3 +93,15 @@
 - Removed default mesh
 - Added Transform
 - Other fixes
+
+### 0.0.5 - 12.03.2024
+
+- Started work on the editor
+- Made editor viewport and scene result gets rendered to the editor viewport
+- Added Scene Hierarchy
+- Added UUID along side its serialization and other needed stuff
+- Removed old material API
+- Fixed old material API
+- Added color tinting
+- Added Fonts to styling the editor
+- A lot of API changes

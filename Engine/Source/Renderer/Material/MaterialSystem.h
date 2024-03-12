@@ -23,10 +23,7 @@ namespace Core
         static void Shutdown();
 
         static Material *Get(const std::string &name);
-        static Material *LoadWithConfiguration(Material::Configuration *config);
-
-        static Material *GetFromFile(const std::string &name);
-        static void LoadFromFile(const std::string &name);
+        static void Load(const std::string &name);
 
         static void Release(const std::string &name);
         static Material *GetDefaultMaterial();

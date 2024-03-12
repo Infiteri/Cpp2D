@@ -42,25 +42,43 @@ namespace Core
         array->GetIndexBuffer()->Draw();
     }
 
+    void Mesh::SetMaterial(Material::Configuration *config)
+    {
+        ReleaseMaterial();
+
+        material = new Material();
+        material->Load(config);
+    }
+
     void Mesh::SetMaterial(const std::string &materialName)
     {
         ReleaseMaterial();
         material = MaterialSystem::Get(materialName);
     }
 
-    void Mesh::SetMaterialFromFile(const std::string &filename)
+    void Mesh::MakeMaterialUnique()
     {
         ReleaseMaterial();
-        material = MaterialSystem::GetFromFile(filename);
+        material = new Material();
+        material->SetLoadMode(Material::Config);
+    }
+
+    void Mesh::MakeMaterialDefault()
+    {
+        ReleaseMaterial();
+        material = MaterialSystem::GetDefaultMaterial();
     }
 
     void Mesh::ReleaseMaterial()
     {
-        if (material && material->GetLoadMode() != Material::Default)
-            if (material->GetFileName().empty())
-                MaterialSystem::Release(material->GetName());
-            else
-                MaterialSystem::Release(material->GetFileName());
+        if (material)
+        {
+            if (material->GetLoadMode() != Material::Default)
+                if (material->GetFileName().empty())
+                    delete material;
+                else
+                    MaterialSystem::Release(material->GetFileName());
+        }
 
         material = nullptr;
     }

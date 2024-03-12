@@ -35,45 +35,16 @@ namespace Core
         delete state.defaultMaterial.material;
     }
 
-    Material *MaterialSystem::LoadWithConfiguration(Material::Configuration *config)
-    {
-        if (state.references[config->Name] != nullptr)
-        {
-            state.references[config->Name]->reference++;
-            CE_LOG("CE_MAT_SYS", Warn, "Material %s exists already.", config->Name.c_str());
-            return state.references[config->Name]->material;
-        }
-
-        state.references[config->Name] = new MaterialReference;
-        state.references[config->Name]->material = new Material();
-        state.references[config->Name]->material->Load(config);
-        state.references[config->Name]->material->SetLoadMode(Material::Config);
-        state.references[config->Name]->reference++;
-        return state.references[config->Name]->material;
-    }
-
     Material *MaterialSystem::Get(const std::string &name)
     {
         if (!state.references[name])
-        {
-            CE_LOG("CE_MAT_SYS", Error, "Material %s non existent, couldn't get.", name.c_str());
-            return nullptr;
-        }
+            Load(name);
 
         state.references[name]->reference++;
         return state.references[name]->material;
     }
 
-    Material *MaterialSystem::GetFromFile(const std::string &name)
-    {
-        if (!state.references[name])
-            LoadFromFile(name);
-
-        state.references[name]->reference++;
-        return state.references[name]->material;
-    }
-
-    void MaterialSystem::LoadFromFile(const std::string &name)
+    void MaterialSystem::Load(const std::string &name)
     {
         if (state.references[name])
         {

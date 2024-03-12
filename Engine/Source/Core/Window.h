@@ -29,6 +29,7 @@ namespace Core
             const char *Title;
             bool VSync = false;
             SizeMode Mode = Normal;
+            bool BindDefaultWindowSizeCallback = true;
         };
 
     private:

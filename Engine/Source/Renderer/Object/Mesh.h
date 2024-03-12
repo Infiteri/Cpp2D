@@ -25,10 +25,14 @@ namespace Core
         /// @param materialName The material name.
         void SetMaterial(const std::string &materialName);
 
-        /// @brief Will load a material form file.
-        /// @param filename The filename.
-        void SetMaterialFromFile(const std::string& filename);
+        /// @brief Will set material to the config, along side releasing the last.
+        /// @param config The configuration.
+        void SetMaterial(Material::Configuration* config);
+
 
         inline Material *GetMaterial() { return material; };
+
+        void MakeMaterialUnique();
+        void MakeMaterialDefault();
     };
 }

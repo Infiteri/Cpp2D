@@ -17,6 +17,7 @@ namespace Core
 
     void Material::Load(Configuration *config)
     {
+        mode = Material::Config;
         color.Set(config->Color);
         name = config->Name;
         filename = config->FileName;

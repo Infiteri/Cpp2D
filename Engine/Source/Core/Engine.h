@@ -11,6 +11,7 @@ namespace Core
         struct Configuration
         {
             Window::Configuration WindowConfig;
+            bool RenderImageToScreen = true;
         };
 
         struct State
@@ -22,7 +23,7 @@ namespace Core
         Engine(){};
         ~Engine(){};
 
-        static void FeedConfiguration(Configuration* config);
+        static void FeedConfiguration(Configuration *config);
         static void PreInit();
         static void Init();
         static void Render();
@@ -32,6 +33,6 @@ namespace Core
         static bool ShouldRun();
 
         static Window *GetWindow();
-        static Configuration* CreateDefaultConfiguration();
+        static Configuration *CreateDefaultConfiguration();
     };
 }

@@ -11,7 +11,9 @@
 #include "Math/Matrix4.h"
 
 #include "Platform/FileSystem.h"
+#include "Platform/Platform.h"
 
+#include "Renderer/Renderer.h"
 #include "Renderer/Color.h"
 #include "Renderer/Object/Mesh.h"
 #include "Renderer/Renderer.h"

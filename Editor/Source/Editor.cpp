@@ -19,6 +19,8 @@ namespace Core
 
     Application *CreateApplication(Engine::Configuration *config)
     {
+        config->WindowConfig.BindDefaultWindowSizeCallback = false;
+        config->RenderImageToScreen = false;
         config->WindowConfig.Mode = Window::Windowed;
 
         return new Editor();

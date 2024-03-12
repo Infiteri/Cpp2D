@@ -82,6 +82,8 @@ namespace Core
         out << YAML::Key << "Actor";
         out << YAML::Value << "Filed";
 
+        CE_SERIALIZE_FIELD("UUID", a->GetUUID()->Get());
+
         out << YAML::Key << "Name";
         out << YAML::Value << a->GetName().c_str();
 
@@ -149,6 +151,15 @@ namespace Core
             for (auto actor : actors)
             {
                 Actor *a = new Actor();
+                if (actor["UUID"])
+                    a->SetUUID(actor["UUID"].as<CeU64>());
+                else
+                    a->SetUUID({});
+
+                if (actor["Name"])
+                    a->SetName(actor["Name"].as<std::string>());
+                else
+                    a->SetName("");
 
                 if (actor["Transform"])
                 {
@@ -175,8 +186,7 @@ namespace Core
                             config.Color = {mc["Color"][0].as<float>(), mc["Color"][1].as<float>(), mc["Color"][2].as<float>(), mc["Color"][3].as<float>()};
                             config.TexturePath = mc["TextureName"].as<std::string>();
 
-                            MaterialSystem::LoadWithConfiguration(&config);
-                            addedMc->SetMaterialFromName(config.Name);
+                            addedMc->mesh->SetMaterial(&config);
 
                             break;
                         }

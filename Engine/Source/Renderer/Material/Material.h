@@ -13,8 +13,11 @@ namespace Core
         /// @brief LoadMode is how the material is loaded.
         enum LoadMode
         {
+            /// @brief Default material, fully white with no specification.
             Default,
+            /// @brief Unique material, not from file.
             Config,
+            /// @brief File loaded, from path.
             File
         };
 
@@ -59,6 +62,7 @@ namespace Core
 
         // Do not call
         inline LoadMode GetLoadMode() { return mode; };
+
     };
 
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base.h"
+#include "Core/UUID.h"
 #include "Components/Components.h"
 #include "Math/Transform.h"
 #include <vector>
@@ -34,6 +35,7 @@ namespace Core
         std::vector<Component *> components;
         std::string name;
         Transform transform;
+        UUID uuid;
 
     public:
         Actor();
@@ -56,9 +58,13 @@ namespace Core
 
         inline StateType GetState() { return state; };
 
-        inline Transform* GetTransform() { return &transform; };
+        inline Transform *GetTransform() { return &transform; };
+
         inline std::string GetName() { return name; };
         void SetName(const std::string &name);
+
+        inline UUID *GetUUID() { return &uuid; };
+        inline void SetUUID(const UUID &newUUId) { uuid.Set(newUUId.Get()); };
 
         // -- Components --
 
@@ -66,7 +72,7 @@ namespace Core
         T *AddComponent(Args... args)
         {
             T *c = new T(args...);
-            c->owner = this;
+            c->Owner = this;
 
             if (state == Stopped)
                 c->Stop();
@@ -140,6 +146,27 @@ namespace Core
                     components.erase(it);
                     typedComponent->Destroy();
                     delete typedComponent;
+                }
+            }
+        };
+
+        template <typename T>
+        void RemoveComponents(int index)
+        {
+            int currentIndex = -1;
+            for (auto it = components.begin(); it != components.end(); ++it)
+            {
+                T *typedComponent = dynamic_cast<T *>(*it);
+                if (typedComponent)
+                {
+                    currentIndex++;
+                    if (index == currentIndex)
+                    {
+                        components.erase(it);
+                        typedComponent->Destroy();
+                        delete typedComponent;
+                        break;
+                    }
                 }
             }
         };

@@ -99,11 +99,10 @@ namespace Core
 
     void Renderer::Viewport(int width, int height)
     {
-        glViewport(0, 0, width, height);
+        CameraSystem::Viewport(width, height);
         if (state.screen.ScreenFrameBuffer)
             state.screen.ScreenFrameBuffer->Resize(width, height);
-
-        CameraSystem::Viewport(width, height);
+        glViewport(0, 0, width, height);
     }
 
     void Renderer::SetClearColor(float r, float g, float b)
@@ -114,5 +113,10 @@ namespace Core
     Color Renderer::GetClearColor()
     {
         return Color(state.bgColor);
+    }
+
+    FrameBuffer *Renderer::GetFrameBuffer()
+    {
+        return state.screen.ScreenFrameBuffer;
     }
 }

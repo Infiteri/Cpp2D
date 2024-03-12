@@ -35,7 +35,7 @@ namespace Core
         ScreenFrameBuffer = new FrameBuffer(&frameConfig);
 
         ScreenVertexArray = new VertexArray();
-        ScreenVertexArray->Upload(Buffer::Vertex, screenQuadVertices, sizeof(screenQuadVertices));
+        ScreenVertexArray->Upload(Buffer::Vertex, screenQuadVertices, sizeof(screenQuadVertices) * sizeof(float));
         ScreenVertexArray->GetVertexBuffer()->AddLayout(0, 0, 2);
         ScreenVertexArray->GetVertexBuffer()->AddLayout(1, 2, 2);
     }

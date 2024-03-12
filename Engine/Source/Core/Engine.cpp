@@ -30,15 +30,16 @@ namespace Core
             Config = state.config;
         else
             Config = Engine::CreateDefaultConfiguration();
+        state.config = Config;
 
         Logger::Init();
         CE_CORE_INFO("Starting Engine...");
 
         // TODO: Load from file (A Lot later)
         state.window = new Window(Config->WindowConfig);
-
         Input::Init();
         Renderer::Init();
+
         Renderer::Viewport(state.window->GetState()->Width, state.window->GetState()->Height);
         ImGuiLayer::Init();
         LayerStack::Init();
@@ -58,7 +59,9 @@ namespace Core
         Renderer::Render();
         World::RenderActiveScene();
         Renderer::EndFrame();
-        Renderer::RenderScreenTexture(); // Will change if with editor in the future or if user doesn't want to render to screen.
+
+        if (state.config->RenderImageToScreen)
+            Renderer::RenderScreenTexture(); // Will change if with editor in the future or if user doesn't want to render to screen.
 
         ImGuiLayer::BeginFrame();
         LayerStack::RenderImGui();

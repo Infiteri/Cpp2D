@@ -34,5 +34,7 @@ namespace Core
         static void Viewport(int width, int height);
         static void SetClearColor(float r, float g, float b);
         static Color GetClearColor();
+
+        static FrameBuffer *GetFrameBuffer();
     };
 }

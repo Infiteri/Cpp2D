@@ -34,12 +34,16 @@ namespace Core
         glfwSetWindowPos(handle, state.X, state.Y);
 
         if (config.Mode == Windowed)
+        {
             glfwMaximizeWindow(handle);
+            glfwGetWindowSize(handle, &state.Width, &state.Height);
+        }
 
         if (state.VSync)
             glfwSwapInterval(1);
 
-        glfwSetWindowSizeCallback(handle, WindowOnResize);
+        if (state.BindDefaultWindowSizeCallback)
+            glfwSetWindowSizeCallback(handle, WindowOnResize);
 
         glfwGetWindowSize(handle, &state.Width, &state.Height);
         glfwGetWindowPos(handle, &state.X, &state.Y);

@@ -5,7 +5,7 @@
 
 namespace Core
 {
-    class FrameBuffer
+    class CE_API FrameBuffer
     {
     public:
         enum ClearingMode
