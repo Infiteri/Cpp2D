@@ -4,10 +4,28 @@ namespace Core
 {
     void EditorLayer::OnAttach()
     {
+        std::vector<UUID> uuids;
+        uuids.push_back({});
+        uuids.push_back({});
+        uuids.push_back({});
+        uuids.push_back({});
+        uuids.push_back({});
+        for (size_t i = 0; i < uuids.size(); ++i)
+        {
+            for (size_t j = i + 1; j < uuids.size(); ++j)
+            {
+                if (uuids[i] == uuids[j])
+                {
+                    CE_TRACE("Opa: %i %i", i, j);
+                }
+            }
+        }
+
         World::Create("New Scene");
         World::Activate("New Scene");
         SceneSerializer serializer(World::GetActive());
         serializer.Deserialize("EngineResources/Scenes/Main.ce_scene");
+        state.sceneSaveFilePath = "EngineResources/Scenes/Main.ce_scene";
 
         World::StartActiveScene();
     }
@@ -18,13 +36,73 @@ namespace Core
 
         state.hierarchyPanel.OnImGuiRender();
 
+        UI_DrawTopBar();
+
         RenderSceneViewport();
         EndDockspace();
+    }
+
+    void EditorLayer::UI_DrawTopBar()
+    {
+        if (ImGui::BeginMainMenuBar())
+        {
+            if (ImGui::MenuItem("Scene"))
+                ImGui::OpenPopup("ScenePopup");
+
+            if (ImGui::BeginPopup("ScenePopup"))
+            {
+                if (ImGui::MenuItem("Save..."))
+                    Save();
+
+                if (ImGui::MenuItem("Open..."))
+                    Open();
+
+                if (ImGui::MenuItem("Save As..."))
+                    SaveAs();
+
+                ImGui::EndPopup();
+            }
+
+            ImGui::EndMainMenuBar();
+        }
     }
 
     void EditorLayer::ResizeViewport()
     {
         Renderer::Viewport(state.lastFrameViewportSize.x, state.lastFrameViewportSize.y);
+    }
+
+    void EditorLayer::Save()
+    {
+        if (state.sceneSaveFilePath.empty())
+            SaveAs();
+
+        SceneSerializer serializer(World::GetActive());
+        serializer.Serialize(state.sceneSaveFilePath);
+    }
+
+    void EditorLayer::SaveAs()
+    {
+        state.sceneSaveFilePath = Platform::SaveFileDialog("Scene (*.ce_scene) \0*.ce_scene\0");
+
+        if (!state.sceneSaveFilePath.empty())
+            Save();
+    }
+
+    void EditorLayer::Open()
+    {
+        state.sceneSaveFilePath = Platform::OpenFileDialog("Scene (*.ce_scene) \0*.ce_scene\0");
+        OpenScene(state.sceneSaveFilePath);
+    }
+
+    void EditorLayer::OpenScene(const std::string &name)
+    {
+        if (name.empty())
+            return;
+
+        if (!World::Get(name))
+            World::Load(name);
+        World::Activate(name);
     }
 
     void EditorLayer::BeginDockspace()

@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "Base.h"
@@ -37,6 +38,14 @@ namespace Core
         Transform transform;
         UUID uuid;
 
+        Matrix4 worldMatrix;
+        Matrix4 localMatrix;
+
+        std::vector<Actor *> children;
+        Actor *parent;
+
+        void CalculateTransforms();
+
     public:
         Actor();
         ~Actor();
@@ -65,6 +74,20 @@ namespace Core
 
         inline UUID *GetUUID() { return &uuid; };
         inline void SetUUID(const UUID &newUUId) { uuid.Set(newUUId.Get()); };
+
+        inline Actor *GetParent() { return parent; };
+        inline std::vector<Actor *> GetChildren() { return children; };
+        void AddChild(Actor *actor);
+
+        Actor* FindChildInHierarchyByUUID(const UUID &uuid);
+        Actor* GetChildByUUID(const UUID &uuid);
+
+        inline Matrix4 *GetWorldMatrix() { return &worldMatrix; };
+        inline Matrix4 *GetLocalMatrix() { return &localMatrix; };
+
+        void MoveActorInHierarchy(const UUID& uid, int newIndex);
+
+        void EraseChildByUUID(const UUID& uuid);
 
         // -- Components --
 

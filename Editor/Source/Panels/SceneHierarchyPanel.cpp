@@ -3,8 +3,12 @@
 
 namespace Core
 {
-    static ImGuiTreeNodeFlags TreeNodeFlags = 0;
+    struct ActorMoveDragInfo
+    {
+        UUID ActorUUID;
+    };
 
+    static int actorIndex = -1;
     SceneHierarchyPanel::SceneHierarchyPanel()
     {
         selectionContext = nullptr;
@@ -16,10 +20,26 @@ namespace Core
 
         ImGui::Begin("Scene Hierarchy");
 
+        if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Right))
+            ImGui::OpenPopup("RightClickHierarchy");
+
+        if (ImGui::BeginPopup("RightClickHierarchy"))
+        {
+            if (ImGui::MenuItem("Add Actor") && scene != nullptr)
+                scene->AddActor(new Actor());
+
+            ImGui::EndPopup();
+        }
+
         if (scene)
         {
-            for (auto actor : scene->GetActors())
-                RenderActorUI(actor);
+            actorIndex = 0;
+            for (int i = 0; i < scene->GetActors().size(); i++)
+            {
+                actorIndex = i;
+                Actor *ctx = scene->GetActors()[i];
+                RenderActorUI(ctx, false);
+            }
         }
         ImGui::End();
 
@@ -29,17 +49,103 @@ namespace Core
         ImGui::End();
     }
 
-    void SceneHierarchyPanel::RenderActorUI(Actor *a)
+    void SceneHierarchyPanel::RenderActorUI(Actor *a, bool parentNodeOpen)
     {
-        if (ImGui::TreeNodeEx((void *)a->GetUUID()->Get(), TreeNodeFlags, a->GetName().c_str()))
+        if (!a)
+            return;
+
+        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_AllowItemOverlap;
+        if (selectionContext != nullptr)
+            if (selectionContext->GetUUID()->Get() == a->GetUUID()->Get())
+                flags |= ImGuiTreeNodeFlags_Selected;
+
+        bool pop = false;
+        Actor *parent = a->GetParent();
+        if (!parent)
         {
-            if (ImGui::IsItemClicked())
-            {
+            pop = ImGui::TreeNodeEx((void *)(CeU64)(CeU32)a->GetUUID()->Get(), flags, a->GetName().c_str());
+            if (ImGui::IsItemHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
                 selectionContext = a;
+        }
+        else
+        {
+            if (parentNodeOpen)
+            {
+                pop = ImGui::TreeNodeEx((void *)(CeU64)(CeU32)a->GetUUID()->Get(), flags, a->GetName().c_str());
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                    selectionContext = a;
+            }
+        }
+
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+        {
+            ActorMoveDragInfo actorDG;
+            actorDG.ActorUUID = *a->GetUUID();
+            ImGui::SetDragDropPayload("CE_SCENE_HIERARCHY_ACTOR", &actorDG, sizeof(ActorMoveDragInfo));
+            ImGui::EndDragDropSource();
+        }
+
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CE_SCENE_HIERARCHY_ACTOR"))
+            {
+                UUID *uid = (UUID *)payload->Data;
+                CE_CORE_TRACE("%s to %ull", a->GetName().c_str(), uid->Get());
+
+                // NOTE: Actor is target, data is name of the actor to move
+                Actor *child = World::GetActive()->FindActorByUUIDInHierarchy(uid->Get());
+
+                if (child)
+                {
+                    //? Selection context will be set to nothing
+                    selectionContext = nullptr;
+                    bool success = World::GetActive()->ChildActor(*a->GetUUID(), *child->GetUUID());
+                    if (!success)
+                        CE_ERROR("Fuck");
+                }
             }
 
-            ImGui::TreePop();
+            ImGui::EndDragDropTarget();
         }
+
+        if (!parent)
+        {
+            ImGui::Dummy({ImGui::GetWindowWidth(), 5});
+        }
+        else
+        {
+            if (parentNodeOpen)
+                ImGui::Dummy({ImGui::GetWindowWidth(), 5});
+        }
+
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("CE_SCENE_HIERARCHY_ACTOR"))
+            {
+                ActorMoveDragInfo *data = (ActorMoveDragInfo *)payload->Data;
+                auto actorDrop = World::GetActive()->FindActorByUUIDInHierarchy(data->ActorUUID);
+                if (actorDrop)
+                {
+                    if (actorDrop->GetParent() == nullptr)
+                    {
+                        World::GetActive()->MoveActorInHierarchy(data->ActorUUID, actorIndex);
+                    }
+                    else
+                    {
+                        Actor *parent = actorDrop->GetParent();
+                        parent->MoveActorInHierarchy(data->ActorUUID, actorIndex);
+                    }
+                }
+            }
+
+            ImGui::EndDragDropTarget();
+        }
+
+        for (Actor *child : a->GetChildren())
+            RenderActorUI(child, pop);
+
+        if (pop)
+            ImGui::TreePop();
     }
 
     void DrawMeshComponentUI(MeshComponent *component, Actor *a);

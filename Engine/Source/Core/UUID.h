@@ -16,6 +16,7 @@ namespace Core
         ~UUID();
 
         operator CeU64() const { return id; };
+        bool operator==(const UUID &o) { return Get() == o.Get(); };
 
         inline void Set(CeU64 newID) { id = newID; };
 

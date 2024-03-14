@@ -15,7 +15,7 @@ namespace Core
 
         void OnImGuiRender();
 
-        void RenderActorUI(Actor *a);
+        void RenderActorUI(Actor *a, bool parentNodeOpen = false);
         void RenderActorProps(Actor *a);
     };
 }

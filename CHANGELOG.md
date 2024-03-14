@@ -105,3 +105,12 @@
 - Added color tinting
 - Added Fonts to styling the editor
 - A lot of API changes
+
+### 0.0.6 - 14.03.2024
+
+- Default Actor name
+- Added scene saving
+- Started actor parenting
+- Added scene hierarchy right click
+- Added actor parenting serialization / deserialization
+- Added actor parenting editor functionality

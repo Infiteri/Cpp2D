@@ -76,7 +76,17 @@ namespace Core
         void ClearActorSet();
 
         inline std::vector<Actor *> GetActors() { return actors; };
+        Actor *GetActorByUUID(const UUID &uuid);
+        Actor *FindActorByUUIDInHierarchy(const UUID &uuid);
 
         inline StateType GetState() { return state; };
+
+        bool ChildActor(const UUID &parentUUID, const UUID &childUUID);
+
+        /// @brief Will erase the child without deleting the actual address value.
+        /// @param id The actor UUID.
+        void EraseActorByUUID(const UUID &id);
+
+        void MoveActorInHierarchy(const UUID &uid, int index);
     };
 }

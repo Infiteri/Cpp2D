@@ -1,5 +1,6 @@
 #include "World.h"
 #include "Core/Logger.h"
+#include "SceneSerializer.h"
 #include <unordered_map>
 
 #define CE_IMPL_FUNC_ACTIVE_METHOD(name) \
@@ -31,6 +32,19 @@ namespace Core
             CE_LOG("WORLD", Warn, "Active Scene should not be alive.");
             activeScene = nullptr;
         }
+    }
+
+    void World::Load(const std::string &filename)
+    {
+        if (scenes[filename])
+        {
+            CE_LOG("WORLD", Warn, "Scene '%s' already exists when Loading.", filename.c_str());
+            return;
+        }
+
+        Scene *scene = new Scene();
+        SceneSerializer ser(scene);
+        ser.Deserialize(filename);
     }
 
     Scene *World::Create(const std::string &name)

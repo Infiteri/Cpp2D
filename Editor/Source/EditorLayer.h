@@ -17,6 +17,8 @@ namespace Core
         ImVec2 lastFrameViewportSize;
         ImVec2 viewportLeftTop;
         ImVec2 viewportRightBottom;
+
+        std::string sceneSaveFilePath;
     };
 
     class EditorLayer : public Layer
@@ -29,8 +31,17 @@ namespace Core
 
         void OnImGuiRender();
 
+        // -- UI --
+        void UI_DrawTopBar();
+        // --------
+
         // -- Editor functions --
         void ResizeViewport();
+
+        void Save();
+        void SaveAs();
+        void Open();
+        void OpenScene(const std::string& name);
         // ----------------------
 
         // -- Dock space --

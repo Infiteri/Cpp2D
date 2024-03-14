@@ -15,6 +15,8 @@ namespace Core
         static void Init();
         static void Shutdown();
 
+        static void Load(const std::string& filename);
+
         static Scene *Create(const std::string &name);
         static Scene *GetActive();
         static Scene *Get(const std::string &name);

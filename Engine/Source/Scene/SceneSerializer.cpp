@@ -1,3 +1,4 @@
+
 #include "SceneSerializer.h"
 #include "Core/Logger.h"
 #include "Math/Vectors.h"
@@ -87,6 +88,13 @@ namespace Core
         out << YAML::Key << "Name";
         out << YAML::Value << a->GetName().c_str();
 
+        out << YAML::Key << "ParentUUID";
+
+        if (a->GetParent() != nullptr)
+            out << YAML::Value << a->GetParent()->GetUUID()->Get();
+        else
+            out << YAML::Value << 0;
+
         out << YAML::Key << "Transform";
         out << YAML::Value << YAML::BeginMap;
         CE_SERIALIZE_FIELD("Position", &a->GetTransform()->Position);
@@ -125,6 +133,9 @@ namespace Core
         }
 
         out << YAML::EndMap;
+
+        for (auto c : a->GetChildren())
+            SerializeActor(c, out);
     }
 
     void SceneSerializer::Deserialize(const std::string &filename)
@@ -193,7 +204,14 @@ namespace Core
                     }
                 }
 
-                scene->AddActor(a);
+                if (actor["ParentUUID"].as<CeU64>() == 0)
+                    scene->AddActor(a);
+                else
+                {
+                    auto thing = scene->FindActorByUUIDInHierarchy(
+                        actor["ParentUUID"].as<CeU64>());
+                    thing->AddChild(a);
+                }
             }
         }
     }
