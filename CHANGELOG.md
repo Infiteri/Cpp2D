@@ -114,3 +114,14 @@
 - Added scene hierarchy right click
 - Added actor parenting serialization / deserialization
 - Added actor parenting editor functionality
+
+### 0.0.7 - 16.03.2024
+
+- Updated Core.h
+- Added right-click component adding
+- API Change -> components get properly removed now with no more memory leaks
+- API Change -> Actor API for actor parenting and stuff
+- Added Input API for changing mouse mode
+- Added camera movement with mouse
+- Added camera zoom with mouse plus left control
+- Other stuff

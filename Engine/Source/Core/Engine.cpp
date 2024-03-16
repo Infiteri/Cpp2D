@@ -73,6 +73,7 @@ namespace Core
         state.window->Update();
         World::UpdateActiveScene();
         LayerStack::Update();
+        Input::InternalUpdate();
     }
 
     void Engine::Shutdown()

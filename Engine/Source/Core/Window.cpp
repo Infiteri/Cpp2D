@@ -6,9 +6,19 @@
 
 namespace Core
 {
+    double accumulatedScrollX = 0.0;
+    double accumulatedScrollY = 0.0;
+
     static void WindowOnResize(GLFWwindow *w, int x, int y)
     {
         Renderer::Viewport(x, y);
+    };
+
+    static void WindowOnScroll(GLFWwindow *w, double x, double y)
+    {
+
+        accumulatedScrollX += x;
+        accumulatedScrollY += y;
     };
 
     Window::Window(const Configuration &config)
@@ -32,6 +42,7 @@ namespace Core
         glfwMakeContextCurrent(handle);
         glfwShowWindow(handle);
         glfwSetWindowPos(handle, state.X, state.Y);
+        glfwSetScrollCallback(handle, WindowOnScroll);
 
         if (config.Mode == Windowed)
         {
@@ -64,16 +75,19 @@ namespace Core
         glfwGetWindowPos(handle, &state.X, &state.Y);
 
         for (int i = 0; i < (int)Keys::Menu; i++)
-            InputUpdateKey((Keys)i, glfwGetKey(handle, i) == GLFW_PRESS);
+            InputUpdateKey((Keys)i, glfwGetKey(handle, i) != 0);
 
         for (int i = 0; i < (int)Buttons::Middle; i++)
-            InputUpdateButton((Buttons)i, glfwGetMouseButton(handle, i) == GLFW_PRESS);
+            InputUpdateButton((Buttons)i, glfwGetMouseButton(handle, i) != 0);
 
         {
             double MouseX, MouseY;
             glfwGetCursorPos(handle, &MouseX, &MouseY);
-            InputUpdateMouse(MouseX, MouseY);
+            InputUpdateMouse((int)MouseX, (int)MouseY);
         }
+
+        InputUpdateScroll(accumulatedScrollX, accumulatedScrollY);
+        accumulatedScrollX = accumulatedScrollY = 0;
     }
 
     bool Window::ShouldRun() const

@@ -7,8 +7,10 @@
 #include "Core/Layer/Layer.h"
 #include "Core/Layer/LayerStack.h"
 
+#include "Math/Math.h"
 #include "Math/Vectors.h"
 #include "Math/Matrix4.h"
+#include "Math/Transform.h"
 
 #include "Platform/FileSystem.h"
 #include "Platform/Platform.h"

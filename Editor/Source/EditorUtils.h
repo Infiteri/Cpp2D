@@ -8,6 +8,9 @@ namespace Core
 {
     namespace EditorUtils
     {
+        void ImGuiVector3StyledEdit(const char *label, Vector3 *vector, float defaultValue = 0.0f);
+        void TransformGUIRender(Transform* transform);
+
         template <typename T, typename UIFun>
         void DrawComponentBaseUI(const std::string &name, T *component, int index, Actor *a, UIFun fun)
         {
@@ -36,6 +39,6 @@ namespace Core
             }
         };
 
-        void ImGuiColorEdit4(Color *color, const std::string& name);
+        void ImGuiColorEdit4(Color *color, const std::string &name);
     };
 }

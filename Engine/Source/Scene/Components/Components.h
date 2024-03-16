@@ -20,7 +20,7 @@ namespace Core
 
     public:
         Component();
-        ~Component();
+        virtual ~Component() { Destroy(); };
 
         Actor *Owner;
 
@@ -41,11 +41,15 @@ namespace Core
         Mesh *mesh;
 
         MeshComponent();
+        ~MeshComponent();
+
         void Render();
 
         void SetMaterial(const std::string &filename);
-        void SetMaterial(Material::Configuration* config);
+        void SetMaterial(Material::Configuration *config);
 
         void From(MeshComponent *other);
+
+        void Destroy();
     };
 }

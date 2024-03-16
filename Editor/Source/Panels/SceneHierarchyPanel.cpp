@@ -1,6 +1,10 @@
 #include "SceneHierarchyPanel.h"
 #include "EditorUtils.h"
 
+#define CE_UTIL_ADD_COMPONENT(name, type) \
+    if (ImGui::MenuItem(name))            \
+    a->AddComponent<type>()
+
 namespace Core
 {
     struct ActorMoveDragInfo
@@ -42,6 +46,12 @@ namespace Core
             }
         }
         ImGui::End();
+
+        if (selectionContext && Input::GetKeyJustNow(Keys::Delete))
+        {
+            World::GetActive()->RemoveActorByUUID(*selectionContext->GetUUID());
+            selectionContext = nullptr;
+        }
 
         ImGui::Begin("Proprieties");
         if (selectionContext)
@@ -152,12 +162,30 @@ namespace Core
 
     void SceneHierarchyPanel::RenderActorProps(Actor *a)
     {
+        if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right))
+            ImGui::OpenPopup("RightClickProps");
+
+        if (ImGui::BeginPopup("RightClickProps"))
+        {
+            CE_UTIL_ADD_COMPONENT("Mesh Component", MeshComponent);
+
+            ImGui::EndPopup();
+        }
+
         {
             char Buffer[256];
             memset(Buffer, 0, 256);
             memccpy(Buffer, a->GetName().c_str(), a->GetName().size(), 256);
             if (ImGui::InputText("Name", Buffer, 256))
                 a->SetName(Buffer);
+        }
+
+        ImGui::NewLine();
+
+        if (ImGui::TreeNode("Transform"))
+        {
+            EditorUtils::TransformGUIRender(a->GetTransform());
+            ImGui::TreePop();
         }
 
         {

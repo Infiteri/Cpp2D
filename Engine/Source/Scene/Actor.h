@@ -88,6 +88,8 @@ namespace Core
         void MoveActorInHierarchy(const UUID& uid, int newIndex);
 
         void EraseChildByUUID(const UUID& uuid);
+        void RemoveChildByUUID(const UUID& uuid);
+        void RemoveChildByUUIDInHierarchy(const UUID& uuid);
 
         // -- Components --
 

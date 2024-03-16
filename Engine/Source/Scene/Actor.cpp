@@ -161,20 +161,20 @@ namespace Core
         return nullptr;
     }
 
-    Actor* Actor::GetChildByUUID(const UUID &uuid) {
+    Actor *Actor::GetChildByUUID(const UUID &uuid)
+    {
 
-        if(this->uuid == uuid)
+        if (this->uuid == uuid)
             return this;
 
-        for(auto child : children)
+        for (auto child : children)
         {
-            if(child->uuid == uuid)
+            if (child->uuid == uuid)
                 return child;
         }
 
         return nullptr;
     }
-
 
     void Actor::MoveActorInHierarchy(const UUID &uid, int newIndex)
     {
@@ -208,6 +208,44 @@ namespace Core
             index++;
             if (it->GetUUID()->Get() == uuid.Get())
                 children.erase(children.begin() + index);
+        }
+    }
+
+    void Actor::RemoveChildByUUID(const UUID &uuid)
+    {
+        int index = -1;
+        for (auto it : children)
+        {
+            index++;
+            if (it->GetUUID()->Get() == uuid.Get())
+            {
+                delete it;
+                children.erase(children.begin() + index);
+            }
+        }
+    }
+
+    void Actor::RemoveChildByUUIDInHierarchy(const UUID &uuid)
+    {
+        std::vector<int> indicesToDelete;
+        for (int index = 0; index < children.size(); ++index)
+        {
+            auto it = children[index];
+            if (it->GetUUID()->Get() == uuid.Get())
+            {
+                delete it;
+                indicesToDelete.push_back(index);
+            }
+        }
+
+        for (int i = indicesToDelete.size() - 1; i >= 0; --i)
+        {
+            children.erase(children.begin() + indicesToDelete[i]);
+        }
+
+        for (auto it : children)
+        {
+            it->RemoveChildByUUIDInHierarchy(uuid);
         }
     }
 

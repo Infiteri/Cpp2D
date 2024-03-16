@@ -4,6 +4,8 @@
 
 namespace Core
 {
+    static int SearchConductIndex = -1;
+
     Scene::Scene()
     {
         state = Uninitialized;
@@ -165,6 +167,47 @@ namespace Core
         return nullptr;
     }
 
+    Scene::DetailedActorSearch Scene::FindActorByUUIDInHierarchyDetailed(const UUID &uuid)
+    {
+        SearchConductIndex = -1;
+        DetailedActorSearch res;
+        res.UUIDSearchBy = uuid;
+        res.Index = 0;
+        res.Result = nullptr;
+
+        bool returned = false;
+
+        for (auto it : actors)
+        {
+            if (it->GetUUID()->Get() == uuid.Get())
+            {
+                SearchConductIndex++;
+                returned = true;
+                res.Result = it;
+                res.Index = SearchConductIndex;
+                return res;
+            }
+        }
+
+        if (!returned)
+        {
+            for (auto it : actors)
+            {
+                auto child = it->FindChildInHierarchyByUUID(uuid);
+                if (child != nullptr)
+                {
+                    SearchConductIndex++;
+                    returned = true;
+                    res.Result = it;
+                    res.Index = SearchConductIndex;
+                    return res;
+                }
+            }
+        }
+
+        return res;
+    }
+
     bool Scene::ChildActor(const UUID &parentUUID, const UUID &childUUID)
     {
         auto parent = FindActorByUUIDInHierarchy(parentUUID);
@@ -192,17 +235,34 @@ namespace Core
                 actors.erase(actors.begin() + index);
         }
     }
+    void Scene::RemoveActorByUUID(const UUID &id)
+    {
+        std::vector<int> indicesToDelete;
+        for (int index = 0; index < actors.size(); ++index)
+        {
+            auto it = actors[index];
+            if (*it->GetUUID() == id)
+            {
+                // Mark for deletion
+                delete it;
+                indicesToDelete.push_back(index);
+            }
+        }
+        for (int i = indicesToDelete.size() - 1; i >= 0; --i)
+            actors.erase(actors.begin() + indicesToDelete[i]);
+        for (auto it : actors)
+            it->RemoveChildByUUIDInHierarchy(id);
+    }
 
     void Scene::MoveActorInHierarchy(const UUID &uid, int newIndex)
     {
         if (newIndex < 0 || newIndex >= actors.size())
             return;
-        
+
         Actor *actorToMove = FindActorByUUIDInHierarchy(uid);
 
         if (!actorToMove)
             return;
-
 
         // Find the current index of the actor
         auto actorIterator = std::find(actors.begin(), actors.end(), actorToMove);

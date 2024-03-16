@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Panels/SceneHierarchyPanel.h"
+#include "EditorCamera.h"
 #include <imgui.h>
 
 namespace Core
@@ -9,6 +10,8 @@ namespace Core
     struct EditorState
     {
         SceneHierarchyPanel hierarchyPanel;
+        bool canUpdateCamera = false;
+        EditorCamera editorCamera;
 
         bool dockspaceOpen = true;
         bool opt_fullscreen = true;
@@ -41,7 +44,7 @@ namespace Core
         void Save();
         void SaveAs();
         void Open();
-        void OpenScene(const std::string& name);
+        void OpenScene(const std::string &name);
         // ----------------------
 
         // -- Dock space --

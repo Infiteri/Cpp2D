@@ -1,6 +1,7 @@
 #include "Matrix4.h"
 #include "Platform/Platform.h"
-#include "math.h"
+
+#include "cmath"
 
 namespace Core
 {

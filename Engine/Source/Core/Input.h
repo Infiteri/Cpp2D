@@ -144,6 +144,13 @@ namespace Core
         Middle = 2
     };
 
+    enum MouseMode
+    {
+        Visible,
+        Hidden,
+        Locked
+    };
+
     class CE_API Input
     {
     public:
@@ -163,6 +170,10 @@ namespace Core
         /// @return Boolean
         static bool GetButton(Buttons button);
 
+        /// @brief Will set the mouse mode.
+        /// @param mode The mouse mode to set.
+        static void SetMouseMode(MouseMode mode);
+
         /// @brief Will return the current mouse position in the window.
         /// @return Vector2 class.
         static Vector2 GetMousePosition();
@@ -170,10 +181,26 @@ namespace Core
         /// @brief Will return the current mouse delta (current position - last position) in the window.
         /// @return Vector2 class.
         static Vector2 GetMouseDelta();
+
+        /// @brief Will set the cursor position on screen. Keep in mind it is relative to the window.
+        /// @param vector A vector to represent its new position on screen.
+        static void SetMousePosition(const Vector2 &vector);
+
+        /// @brief Will return if the current key is just pressed now.
+        /// @param key The key to check for.
+        /// @return True if pressed, otherwise false.
+        static bool GetKeyJustNow(Keys key);
+
+        /// @brief Will return the mouse wheel delta.
+        /// @return Floating point number.
+        static float GetMouseWheelDelta();
+
+        static void InternalUpdate();
     };
 
     void InputUpdateKey(Keys key, bool pressed);
     void InputUpdateButton(Buttons button, bool pressed);
     void InputUpdateMouse(int x, int y);
+    void InputUpdateScroll(int x, int y);
 
 }

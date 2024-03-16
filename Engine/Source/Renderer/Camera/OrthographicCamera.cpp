@@ -5,6 +5,7 @@ namespace Core
     OrthographicCamera::OrthographicCamera(float _width, float _height, float _near, float _far)
     {
         originPoint = Middle;
+        zoom = 1.0f;
         near = _near;
         far = _far;
         type = Orthographic;
@@ -29,12 +30,16 @@ namespace Core
 
         {
         case Middle:
-            projection = Matrix4::Ortho(-(width / 2), width / 2, -(height / 2), height / 2, near, far);
-            break;
+        {
+            float calculatedWidth = (width / 2) * (zoom / 2);
+            float calculatedHeight = (height / 2) * (zoom / 2);
+            projection = Matrix4::Ortho(-calculatedWidth, calculatedWidth, -calculatedHeight, calculatedHeight, near, far);
+        }
+        break;
 
         case Left:
         default:
-            projection = Matrix4::Ortho(0, width, 0, height, near, far);
+            projection = Matrix4::Ortho(0, width * zoom, 0, height * zoom, near, far);
             break;
         }
     }

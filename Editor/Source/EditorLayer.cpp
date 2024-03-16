@@ -4,23 +4,6 @@ namespace Core
 {
     void EditorLayer::OnAttach()
     {
-        std::vector<UUID> uuids;
-        uuids.push_back({});
-        uuids.push_back({});
-        uuids.push_back({});
-        uuids.push_back({});
-        uuids.push_back({});
-        for (size_t i = 0; i < uuids.size(); ++i)
-        {
-            for (size_t j = i + 1; j < uuids.size(); ++j)
-            {
-                if (uuids[i] == uuids[j])
-                {
-                    CE_TRACE("Opa: %i %i", i, j);
-                }
-            }
-        }
-
         World::Create("New Scene");
         World::Activate("New Scene");
         SceneSerializer serializer(World::GetActive());
@@ -32,6 +15,10 @@ namespace Core
 
     void EditorLayer::OnImGuiRender()
     {
+        if (state.canUpdateCamera)
+            state.editorCamera.Update(); // TODO: change
+        state.editorCamera.UpdateExitRightButton();
+
         BeginDockspace();
 
         state.hierarchyPanel.OnImGuiRender();
@@ -154,7 +141,6 @@ namespace Core
         // Update renderer viewport
         ImVec2 viewportSize = ImGui::GetContentRegionAvail();
         // End update renderer viewport
-        ImGui::Image((void *)(CeU64)(CeU32)(Renderer::GetFrameBuffer()->GetRenderPass(0)->Id), viewportSize, ImVec2{0, 1}, ImVec2{1, 0});
         if (viewportSize.x != state.lastFrameViewportSize.x || viewportSize.y != state.lastFrameViewportSize.y)
         {
             state.lastFrameViewportSize = viewportSize;
@@ -163,6 +149,22 @@ namespace Core
 
         state.viewportLeftTop = ImGui::GetWindowPos();
         state.viewportRightBottom = ImGui::GetWindowSize();
+
+        ImGui::Image((void *)(CeU64)(CeU32)(Renderer::GetFrameBuffer()->GetRenderPass(0)->Id), viewportSize, ImVec2{0, 1}, ImVec2{1, 0});
+
+        {
+            if (!state.editorCamera.isRightClicking)
+            {
+                Vector2 position = Input::GetMousePosition();
+                if (position.x > state.viewportLeftTop.x &&
+                    position.y > state.viewportLeftTop.y &&
+                    position.x < state.viewportRightBottom.x + state.viewportLeftTop.x &&
+                    position.y < state.viewportRightBottom.y + state.viewportLeftTop.y)
+                    state.canUpdateCamera = true;
+                else
+                    state.canUpdateCamera = false;
+            }
+        }
 
         ImGui::End();
     }

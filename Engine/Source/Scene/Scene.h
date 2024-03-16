@@ -28,6 +28,13 @@ namespace Core
             Stopped,
         };
 
+        struct DetailedActorSearch
+        {
+            UUID UUIDSearchBy;
+            Actor *Result;
+            int Index;
+        };
+
     private:
         StateType state;
         std::vector<Actor *> actors;
@@ -78,6 +85,7 @@ namespace Core
         inline std::vector<Actor *> GetActors() { return actors; };
         Actor *GetActorByUUID(const UUID &uuid);
         Actor *FindActorByUUIDInHierarchy(const UUID &uuid);
+        DetailedActorSearch FindActorByUUIDInHierarchyDetailed(const UUID &uuid);
 
         inline StateType GetState() { return state; };
 
@@ -86,6 +94,10 @@ namespace Core
         /// @brief Will erase the child without deleting the actual address value.
         /// @param id The actor UUID.
         void EraseActorByUUID(const UUID &id);
+
+        /// @brief Will fully remove the actor along side the actual address value, different from "EraseActorByUUID".
+        /// @param id The actor UUID.
+        void RemoveActorByUUID(const UUID &id);
 
         void MoveActorInHierarchy(const UUID &uid, int index);
     };

@@ -1,4 +1,5 @@
 #include "Components.h"
+#include "Core/Logger.h"
 #include "Scene/Actor.h"
 
 namespace Core
@@ -7,15 +8,15 @@ namespace Core
     {
     }
 
-    Component::~Component()
-    {
-        Destroy();
-    }
-
     MeshComponent::MeshComponent()
     {
         mesh = new Mesh();
         type = ComponentTypes::Mesh;
+    }
+
+    MeshComponent::~MeshComponent()
+    {
+        Destroy();
     }
 
     void MeshComponent::Render()
@@ -54,5 +55,11 @@ namespace Core
             mesh->SetMaterial(mat->GetFileName());
         }
         mesh->GetMaterial()->SetColor(*mat->GetColor());
+    }
+
+    void MeshComponent::Destroy()
+    {
+        delete mesh;
+        mesh = nullptr;
     }
 }

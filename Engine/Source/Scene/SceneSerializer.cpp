@@ -175,6 +175,8 @@ namespace Core
                 if (actor["Transform"])
                 {
                     YAMLToVector3(actor["Transform"]["Position"], &a->GetTransform()->Position);
+                    YAMLToVector3(actor["Transform"]["Rotation"], &a->GetTransform()->Rotation);
+                    YAMLToVector3(actor["Transform"]["Scale"], &a->GetTransform()->Scale);
                 }
 
                 for (int i = 0; i < actor["MeshComponentCount"].as<int>(); i++)
