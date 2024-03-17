@@ -48,7 +48,6 @@ namespace Core
 
     void Material::SetTexture(const std::string &path, Texture::Configuration *cfg)
     {
-        // TODO: Handle material references and instances
         ReleaseTexture();
         texture = TextureSystem::Get(path); // TODO: With configuration
     }

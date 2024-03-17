@@ -1,9 +1,20 @@
 #include "EditorLayer.h"
+#include "EditorSettingsSerializer.h"
+
+#define CE_DEFINE_COLOR_EDITABLE(name, color) state.editorSettings.editableColors.push_back({name, color});
 
 namespace Core
 {
+    static EditorLayer *inst;
+
     void EditorLayer::OnAttach()
     {
+        inst = this;
+
+        LoadSettings();
+        SetupFromSettings();
+        RegisterColors();
+
         World::Create("New Scene");
         World::Activate("New Scene");
         SceneSerializer serializer(World::GetActive());
@@ -11,6 +22,39 @@ namespace Core
         state.sceneSaveFilePath = "EngineResources/Scenes/Main.ce_scene";
 
         World::StartActiveScene();
+    }
+
+    void EditorLayer::LoadSettings()
+    {
+        EditorSettingsSerializer ser(&state.editorSettings);
+        ser.Deserialize("EditorSettings.ce_ed_set");
+    }
+
+    void EditorLayer::SetupFromSettings()
+    {
+        state.editorCamera.SetupFromSetings(&state.editorSettings);
+    }
+
+    void EditorLayer::RegisterColors()
+    {
+        CE_DEFINE_COLOR_EDITABLE("Background", ImGuiCol_WindowBg);
+        CE_DEFINE_COLOR_EDITABLE("Header", ImGuiCol_Header);
+        CE_DEFINE_COLOR_EDITABLE("HeaderHovered", ImGuiCol_HeaderHovered);
+        CE_DEFINE_COLOR_EDITABLE("HeaderActive", ImGuiCol_HeaderActive);
+        CE_DEFINE_COLOR_EDITABLE("Button", ImGuiCol_Button);
+        CE_DEFINE_COLOR_EDITABLE("ButtonHovered", ImGuiCol_ButtonHovered);
+        CE_DEFINE_COLOR_EDITABLE("ButtonActive", ImGuiCol_ButtonActive);
+        CE_DEFINE_COLOR_EDITABLE("FrameBg", ImGuiCol_FrameBg);
+        CE_DEFINE_COLOR_EDITABLE("FrameBgHovered", ImGuiCol_FrameBgHovered);
+        CE_DEFINE_COLOR_EDITABLE("FrameBgActive", ImGuiCol_FrameBgActive);
+        CE_DEFINE_COLOR_EDITABLE("Tab", ImGuiCol_Tab);
+        CE_DEFINE_COLOR_EDITABLE("TabHovered", ImGuiCol_TabHovered);
+        CE_DEFINE_COLOR_EDITABLE("TabActive", ImGuiCol_TabActive);
+        CE_DEFINE_COLOR_EDITABLE("TabUnfocused", ImGuiCol_TabUnfocused);
+        CE_DEFINE_COLOR_EDITABLE("TabUnfocusedActive", ImGuiCol_TabUnfocusedActive);
+        CE_DEFINE_COLOR_EDITABLE("TitleBg", ImGuiCol_TitleBg);
+        CE_DEFINE_COLOR_EDITABLE("TitleBgActive", ImGuiCol_TitleBgActive);
+        CE_DEFINE_COLOR_EDITABLE("TitleBgCollapsed", ImGuiCol_TitleBgCollapsed);
     }
 
     void EditorLayer::OnImGuiRender()
@@ -24,6 +68,7 @@ namespace Core
         state.hierarchyPanel.OnImGuiRender();
 
         UI_DrawTopBar();
+        UI_DrawSettingsMenu();
 
         RenderSceneViewport();
         EndDockspace();
@@ -35,6 +80,9 @@ namespace Core
         {
             if (ImGui::MenuItem("Scene"))
                 ImGui::OpenPopup("ScenePopup");
+
+            if (ImGui::MenuItem("Editor"))
+                ImGui::OpenPopup("EditorPopup");
 
             if (ImGui::BeginPopup("ScenePopup"))
             {
@@ -50,8 +98,64 @@ namespace Core
                 ImGui::EndPopup();
             }
 
+            if (ImGui::BeginPopup("EditorPopup"))
+            {
+                if (ImGui::MenuItem("Settings..."))
+                    state.settingsMenu.Render = true;
+
+                ImGui::EndPopup();
+            }
+
             ImGui::EndMainMenuBar();
         }
+    }
+
+    void EditorLayer::UI_DrawSettingsMenu()
+    {
+        if (!state.settingsMenu.Render)
+            return;
+
+        float margin = 50.0f;
+
+        ImGui::SetNextWindowPos({margin, margin});
+        ImGui::SetNextWindowSize({Engine::GetWindow()->GetWidth() - (margin + 5), Engine::GetWindow()->GetHeight() - (margin + 5)});
+
+        ImGui::Begin("Editor Settings Menu");
+
+        ImGui::DragFloat("Camera Zoom", &state.editorSettings.CameraZoom, 0.05f, 0.1f, 100.0f);
+
+        ImGui::SeparatorText("Colors");
+
+        for (auto it : state.editorSettings.editableColors)
+            UI_UTIL_DrawColorChanger(it.Name.c_str(), it.Color);
+
+        if (ImGui::Button("Reset"))
+        {
+            ImGuiLayer::SetColorsToDefaultStyle();
+        }
+
+        // Create an empty space to push the button to the bottom-right
+        ImGui::Dummy(ImVec2(0, 0));
+
+        // Calculate the button size
+        ImVec2 buttonSize = ImVec2(80, ImGui::GetFrameHeightWithSpacing());
+
+        // Calculate the position to align the button to the bottom-right
+        ImVec2 buttonPos = ImVec2(ImGui::GetWindowSize().x - buttonSize.x - ImGui::GetStyle().FramePadding.x * 2,
+                                  ImGui::GetWindowSize().y - buttonSize.y - ImGui::GetStyle().FramePadding.y * 2);
+
+        ImGui::SetCursorPos(buttonPos);
+
+        if (ImGui::Button("Ok", buttonSize))
+        {
+            EditorSettingsSerializer ser(&state.editorSettings);
+            ser.Serialize("EditorSettings.ce_ed_set");
+            state.settingsMenu.Render = false;
+            LoadSettings();
+            SetupFromSettings();
+        }
+
+        ImGui::End();
     }
 
     void EditorLayer::ResizeViewport()
@@ -174,7 +278,29 @@ namespace Core
         ImGui::End();
     }
 
+    void EditorLayer::UI_UTIL_DrawColorChanger(const char *label, int target)
+    {
+        auto &colors = ImGui::GetStyle().Colors;
+
+        float data[4] = {colors[target].x, colors[target].y, colors[target].z, colors[target].w};
+        if (ImGui::ColorEdit4(label, data))
+        {
+            colors[target].x = data[0];
+            colors[target].y = data[1];
+            colors[target].z = data[2];
+            colors[target].w = data[3];
+        }
+    }
+
     void EditorLayer::OnUpdate()
     {
+    }
+
+    EditorSettings *EditorLayer::StaticGetEditorSettings()
+    {
+        if (!inst)
+            return nullptr;
+
+        return &inst->state.editorSettings;
     }
 }

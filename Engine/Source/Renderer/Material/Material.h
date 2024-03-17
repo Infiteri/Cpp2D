@@ -7,7 +7,7 @@
 
 namespace Core
 {
-    class Material
+    class CE_API Material
     {
     public:
         /// @brief LoadMode is how the material is loaded.

@@ -12,8 +12,12 @@ Actors:
     MeshComponent 0:
       Load Mode: 2
       FileName: EngineResources/Materials/Test.ce_mat
+      GeometryType: 1
+      Width: 100
+      Height: 100
+    CameraComponentCount: 0
   - Actor: Filed
-    UUID: 18372707170111505855
+    UUID: 1275278976166057676
     Name: Actor
     ParentUUID: 631977179020359481
     Transform:
@@ -21,12 +25,9 @@ Actors:
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     MeshComponentCount: 0
-  - Actor: Filed
-    UUID: 11780478036175976053
-    Name: Actor 3
-    ParentUUID: 631977179020359481
-    Transform:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [1, 1, 1]
-    MeshComponentCount: 0
+    CameraComponentCount: 1
+    CameraComponent 0:
+      Type: 0
+      OriginPoint: 1
+      Zoom: 1
+      TransformType: 1

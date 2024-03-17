@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Renderer/Object/Mesh.h"
+#include "Renderer/Camera/CameraSystem.h"
 
 namespace Core
 {
@@ -10,7 +11,8 @@ namespace Core
     enum class ComponentTypes
     {
         Base,
-        Mesh
+        Mesh,
+        Camera
     };
 
     class CE_API Component
@@ -50,6 +52,23 @@ namespace Core
 
         void From(MeshComponent *other);
 
+        void Destroy();
+    };
+
+    class CE_API CameraComponent : public Component
+    {
+    public:
+        OrthographicCamera *camera;
+
+        CameraComponent();
+        ~CameraComponent();
+
+        inline float GetZoom() { return camera->GetZoom(); };
+        inline void SetZoom(float z) { camera->SetZoom(z); };
+
+        void Update();
+
+        void From(CameraComponent *o);
         void Destroy();
     };
 }

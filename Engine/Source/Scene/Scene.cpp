@@ -91,6 +91,7 @@ namespace Core
     void Scene::AddActor(Actor *actor)
     {
         actors.push_back(actor);
+        actor->SetUUID({}); // I dunno
 
         if (state == Uninitialized)
             return;

@@ -5,6 +5,7 @@
 #include "Core/Input.h"
 #include "Core/Application.h"
 #include "Core/Layer/Layer.h"
+#include "Core/Layer/ImGuiLayer.h"
 #include "Core/Layer/LayerStack.h"
 
 #include "Math/Math.h"
@@ -18,12 +19,11 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/Color.h"
 #include "Renderer/Object/Mesh.h"
-#include "Renderer/Renderer.h"
 #include "Renderer/Material/Material.h"
-#include "Renderer/Camera/CameraSystem.h"
 #include "Renderer/Material/MaterialSystem.h"
-#include "Renderer/Object/Mesh.h"
 #include "Renderer/Texture/TextureSystem.h"
+#include "Renderer/Camera/CameraSystem.h"
+#include "Renderer/Geometry/Geometry.h"
 
 #include "Resources/Loader/MaterialLoader.h"
 

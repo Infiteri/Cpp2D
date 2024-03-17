@@ -159,6 +159,7 @@ namespace Core
     }
 
     void DrawMeshComponentUI(MeshComponent *component, Actor *a);
+    void DrawCameraComponentUI(CameraComponent *component, Actor *a);
 
     void SceneHierarchyPanel::RenderActorProps(Actor *a)
     {
@@ -168,6 +169,7 @@ namespace Core
         if (ImGui::BeginPopup("RightClickProps"))
         {
             CE_UTIL_ADD_COMPONENT("Mesh Component", MeshComponent);
+            CE_UTIL_ADD_COMPONENT("Camera Component", CameraComponent);
 
             ImGui::EndPopup();
         }
@@ -197,11 +199,23 @@ namespace Core
                 EditorUtils::DrawComponentBaseUI("Mesh Component", meshComponent, meshIndex, a, DrawMeshComponentUI);
             }
         }
+
+        {
+            int cameraIndex = -1;
+            for (auto cameraComponent : a->GetComponents<CameraComponent>())
+            {
+                cameraIndex++;
+                ImGui::NewLine();
+                EditorUtils::DrawComponentBaseUI("Camera Component", cameraComponent, cameraIndex, a, DrawCameraComponentUI);
+            }
+        }
     }
 
     void DrawMeshComponentUI(MeshComponent *component, Actor *a)
     {
+        if (ImGui::TreeNodeEx("Material"))
         {
+
             auto material = component->mesh->GetMaterial();
 
             Material::LoadMode loadMode = material->GetLoadMode();
@@ -213,19 +227,35 @@ namespace Core
 
             case Material::Config:
             {
-                char Buffer[256];
-                memset(Buffer, 0, 256);
-                memccpy(Buffer, material->GetName().c_str(), material->GetName().size(), 256);
-                if (ImGui::InputText("Name", Buffer, 256))
-                    material->SetName(Buffer);
-            }
+                {
+                    char Buffer[256];
+                    memset(Buffer, 0, 256);
+                    memccpy(Buffer, material->GetName().c_str(), material->GetName().size(), 256);
+                    if (ImGui::InputText("Name", Buffer, 256))
+                        material->SetName(Buffer);
+                }
 
                 EditorUtils::ImGuiColorEdit4(material->GetColor(), "Color");
-                break;
 
-            case Material::Default:
-            default:
-                break;
+                if (ImGui::TreeNodeEx("Texture"))
+                {
+                    Texture *texture = material->GetTexture();
+                    if (!texture->GetImagePath().empty())
+                    {
+                        ImGui::Image((void *)(CeU64)(CeU32)texture->GetID(), {100, 100});
+                    }
+
+                    if (ImGui::Button("Load Image"))
+                    {
+                        std::string filename = Platform::OpenFileDialog("Image (*.png *.jpg *.jpeg)\0*.png;*.jpg;*.jpeg\0");
+                        if (!filename.empty())
+                            component->mesh->GetMaterial()->SetTexture(filename);
+                    }
+
+                    ImGui::TreePop();
+                }
+            }
+            break;
             }
 
             switch (loadMode)
@@ -269,9 +299,65 @@ namespace Core
                 }
                 break;
             }
+
+            ImGui::TreePop();
         }
 
+        // WIP: Geometry
+        if (ImGui::TreeNodeEx("Geometry"))
         {
+            auto geometry = component->mesh->GetGeometry();
+
+            // NOTE: selection box
+            {
+                const int Count = 2;
+                const char *GeometryTypes[Count] = {"Empty", "Square"};
+                const char *Current = GeometryTypes[(int)geometry->GetType()];
+                if (ImGui::BeginCombo("Level", Current))
+                {
+                    for (int i = 0; i < Count; i++)
+                    {
+                        bool isSelected = (Current == GeometryTypes[i]);
+                        if (ImGui::Selectable(GeometryTypes[i], isSelected))
+                        {
+                            Current = GeometryTypes[i];
+
+                            if (i == Geometry::Empty)
+                                component->mesh->SetGeometry(new Geometry());
+                            else if (i == Geometry::Square)
+                                component->mesh->SetGeometry(new SquareGeometry(100, 100));
+                        }
+
+                        if (isSelected)
+                            ImGui::SetItemDefaultFocus();
+                    }
+
+                    ImGui::EndCombo();
+                }
+            }
+
+            switch (geometry->GetType())
+            {
+            case Geometry::Square:
+            {
+                SquareGeometry *castGeometry = geometry->As<SquareGeometry>();
+                float data[2] = {castGeometry->Width, castGeometry->Height};
+                if (ImGui::DragFloat2("Size", data, 0.05f))
+                    component->mesh->SetGeometry(new SquareGeometry(data[0], data[1]));
+            }
+            break;
+            }
+
+            ImGui::TreePop();
         }
+    }
+
+    void DrawCameraComponentUI(CameraComponent *component, Actor *a)
+    {
+        auto c = component->camera;
+
+        float zoomEdit = c->GetZoom();
+        if (ImGui::DragFloat("Zoom", &zoomEdit, 0.01f, 0.05f))
+            c->SetZoom(zoomEdit);
     }
 }

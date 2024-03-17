@@ -9,7 +9,7 @@ namespace Core
     namespace EditorUtils
     {
         void ImGuiVector3StyledEdit(const char *label, Vector3 *vector, float defaultValue = 0.0f);
-        void TransformGUIRender(Transform* transform);
+        void TransformGUIRender(Transform *transform);
 
         template <typename T, typename UIFun>
         void DrawComponentBaseUI(const std::string &name, T *component, int index, Actor *a, UIFun fun)
@@ -32,10 +32,12 @@ namespace Core
                         removeComp = true;
                     };
                     ImGui::TreePop();
-                }
+                } 
 
                 if (removeComp)
+                {
                     a->RemoveComponents<T>(index);
+                }
             }
         };
 

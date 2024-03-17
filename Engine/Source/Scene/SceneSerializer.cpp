@@ -110,6 +110,7 @@ namespace Core
             {
                 index++;
                 auto material = mc->mesh->GetMaterial();
+                auto geometry = mc->mesh->GetGeometry();
                 out << YAML::Key << "MeshComponent " + std::to_string(index);
                 out << YAML::BeginMap;
 
@@ -126,6 +127,45 @@ namespace Core
                     CE_SERIALIZE_FIELD("Color", material->GetColor());
                     CE_SERIALIZE_FIELD("TextureName", material->GetTexture()->GetImagePath().c_str());
                     break;
+                }
+
+                {
+                    CE_SERIALIZE_FIELD("GeometryType", (int)geometry->GetType());
+
+                    switch (geometry->GetType())
+                    {
+                    case Geometry::Square:
+                        SquareGeometry *geo = geometry->As<SquareGeometry>();
+                        CE_SERIALIZE_FIELD("Width", geo->Width);
+                        CE_SERIALIZE_FIELD("Height", geo->Height);
+                        break;
+                    }
+                }
+
+                out << YAML::EndMap;
+            }
+        }
+
+        {
+            auto cameraComponent = a->GetComponents<CameraComponent>();
+            CE_SERIALIZE_FIELD("CameraComponentCount", cameraComponent.size());
+            int index = -1;
+            for (auto cc : cameraComponent)
+            {
+                auto c = cc->camera;
+                index++;
+                out << YAML::Key << "CameraComponent " + std::to_string(index);
+                out << YAML::BeginMap;
+                CE_SERIALIZE_FIELD("Type", (int)c->GetType());
+                CE_SERIALIZE_FIELD("OriginPoint", (int)c->GetOriginPoint());
+                CE_SERIALIZE_FIELD("Zoom", (int)c->GetZoom());
+                CE_SERIALIZE_FIELD("TransformType", (int)c->GetTransformationType());
+
+                if (c->GetTransformationType() == Camera::TransformationType::Transform)
+                {
+                    CE_SERIALIZE_FIELD("Position", &c->GetTransform()->Position);
+                    CE_SERIALIZE_FIELD("Rotation", &c->GetTransform()->Rotation);
+                    CE_SERIALIZE_FIELD("Scale", &c->GetTransform()->Scale);
                 }
 
                 out << YAML::EndMap;
@@ -162,10 +202,6 @@ namespace Core
             for (auto actor : actors)
             {
                 Actor *a = new Actor();
-                if (actor["UUID"])
-                    a->SetUUID(actor["UUID"].as<CeU64>());
-                else
-                    a->SetUUID({});
 
                 if (actor["Name"])
                     a->SetName(actor["Name"].as<std::string>());
@@ -203,16 +239,54 @@ namespace Core
 
                             break;
                         }
-                    }
-                }
 
-                if (actor["ParentUUID"].as<CeU64>() == 0)
-                    scene->AddActor(a);
-                else
-                {
-                    auto thing = scene->FindActorByUUIDInHierarchy(
-                        actor["ParentUUID"].as<CeU64>());
-                    thing->AddChild(a);
+                        Geometry::Type gType = (Geometry::Type)mc["GeometryType"].as<int>();
+                        switch (gType)
+                        {
+                        case Geometry::Square:
+                            addedMc->mesh->SetGeometry(new SquareGeometry(mc["Width"].as<float>(), mc["Height"].as<float>()));
+                            break;
+
+                        default:
+                            addedMc->mesh->SetGeometry(new Geometry());
+                            break;
+                        }
+                    }
+
+                    for (int i = 0; i < actor["CameraComponentCount"].as<int>(); i++)
+                    {
+                        auto addedMc = a->AddComponent<CameraComponent>();
+                        auto mc = actor["CameraComponent " + std::to_string(i)];
+                        if (mc)
+                        {
+                            auto c = addedMc->camera;
+                            c->SetType((Camera::Type)mc["Type"].as<int>());
+                            c->SetOriginPoint((Camera::OriginPoint)mc["OriginPoint"].as<int>());
+                            c->SetZoom(mc["Zoom"].as<float>());
+                            c->SetTransformationType((Camera::TransformationType)mc["TransformType"].as<int>());
+
+                            if (c->GetTransformationType() == Camera::TransformationType::Transform)
+                            {
+                                YAMLToVector3(mc["Transform"]["Position"], &c->GetTransform()->Position);
+                                YAMLToVector3(mc["Transform"]["Rotation"], &c->GetTransform()->Rotation);
+                                YAMLToVector3(mc["Transform"]["Scale"], &c->GetTransform()->Scale);
+                            }
+                        }
+                    }
+
+                    if (actor["ParentUUID"].as<CeU64>() == 0)
+                        scene->AddActor(a);
+                    else
+                    {
+                        auto thing = scene->FindActorByUUIDInHierarchy(
+                            actor["ParentUUID"].as<CeU64>());
+                        thing->AddChild(a);
+                    }
+
+                    if (actor["UUID"])
+                        a->SetUUID(actor["UUID"].as<CeU64>());
+                    else
+                        a->SetUUID({});
                 }
             }
         }

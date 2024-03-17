@@ -4,25 +4,12 @@
 
 namespace Core
 {
-    static float vertices[] = {
-        100.0f, 100.0f, 0.0f, 1, 1,
-        100.0f, -100.0f, 0.0f, 1, 0,
-        -100.0f, -100.0f, 0.0f, 0, 0,
-        -100.0f, 100.0f, 0.0f, 0, 1};
-
-    static CeU32 indices[] = {
-        0, 1, 3,
-        1, 2, 3};
-
     Mesh::Mesh()
     {
         material = MaterialSystem::GetDefaultMaterial();
-
-        array = new VertexArray();
-        array->Upload(Buffer::Vertex, vertices, sizeof(vertices) * sizeof(float));
-        array->Upload(Buffer::Index, indices, sizeof(indices) * sizeof(CeU32));
-        array->GetVertexBuffer()->AddLayout(0, 0, 3);
-        array->GetVertexBuffer()->AddLayout(1, 3, 2);
+        array = nullptr;
+        geometry = new Geometry();
+        SetupVertexArray();
     }
 
     Mesh::~Mesh()
@@ -56,6 +43,13 @@ namespace Core
         material = MaterialSystem::Get(materialName);
     }
 
+    void Mesh::SetGeometry(Geometry *_geometry)
+    {
+        ReleaseGeometry();
+        geometry = _geometry;
+        SetupVertexArray();
+    }
+
     void Mesh::MakeMaterialUnique()
     {
         ReleaseMaterial();
@@ -81,5 +75,30 @@ namespace Core
         }
 
         material = nullptr;
+    }
+
+    void Mesh::ReleaseGeometry()
+    {
+        if (geometry)
+            delete geometry;
+
+        geometry = nullptr;
+    }
+
+    void Mesh::SetupVertexArray()
+    {
+        if (array != nullptr)
+        {
+            delete array;
+        }
+
+        if (!geometry)
+            return;
+
+        array = new VertexArray();
+        array->Upload(Buffer::Vertex, geometry->GetVertices(), geometry->GetVerticesSize() * sizeof(float));
+        array->Upload(Buffer::Index, geometry->GetIndices(), geometry->GetIndicesSize() * sizeof(CeU32));
+        array->GetVertexBuffer()->AddLayout(0, 0, 3);
+        array->GetVertexBuffer()->AddLayout(1, 3, 2);
     }
 }

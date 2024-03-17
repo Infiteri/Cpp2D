@@ -1,4 +1,5 @@
 #include "Actor.h"
+#include "Core/Logger.h"
 #include "Renderer/Shader/ShaderSystem.h"
 #include "Renderer/Object/Mesh.h"
 

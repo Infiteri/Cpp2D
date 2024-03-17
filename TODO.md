@@ -12,4 +12,9 @@ Add pls unique materials some time yupi idk how but will do
 
 a unique material is just a material loaded from a configuration thru code or smth like and not from file. (well its still saved in file but not a different file read. used for a one-time-use of the material or for a class that gets used over and over like a prefab when they are a thing)
 
+geometry broski, maybe vertices are generated are at user preference (custom geometry / separated update / so no bad ...)
+
+hear me out:
+what if... geometry is custom maybe? like an array of vertices and stuff, no idea how to do indices but hey we will figure it out MAYBE
+
 :)))))))))

@@ -79,17 +79,17 @@ namespace Core
         inline std::vector<Actor *> GetChildren() { return children; };
         void AddChild(Actor *actor);
 
-        Actor* FindChildInHierarchyByUUID(const UUID &uuid);
-        Actor* GetChildByUUID(const UUID &uuid);
+        Actor *FindChildInHierarchyByUUID(const UUID &uuid);
+        Actor *GetChildByUUID(const UUID &uuid);
 
         inline Matrix4 *GetWorldMatrix() { return &worldMatrix; };
         inline Matrix4 *GetLocalMatrix() { return &localMatrix; };
 
-        void MoveActorInHierarchy(const UUID& uid, int newIndex);
+        void MoveActorInHierarchy(const UUID &uid, int newIndex);
 
-        void EraseChildByUUID(const UUID& uuid);
-        void RemoveChildByUUID(const UUID& uuid);
-        void RemoveChildByUUIDInHierarchy(const UUID& uuid);
+        void EraseChildByUUID(const UUID &uuid);
+        void RemoveChildByUUID(const UUID &uuid);
+        void RemoveChildByUUIDInHierarchy(const UUID &uuid);
 
         // -- Components --
 
@@ -188,7 +188,6 @@ namespace Core
                     if (index == currentIndex)
                     {
                         components.erase(it);
-                        typedComponent->Destroy();
                         delete typedComponent;
                         break;
                     }

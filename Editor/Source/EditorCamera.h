@@ -5,6 +5,8 @@
 
 namespace Core
 {
+    struct EditorSettings;
+
     class EditorCamera
     {
     private:
@@ -16,6 +18,8 @@ namespace Core
 
         EditorCamera();
         ~EditorCamera();
+
+        void SetupFromSetings(EditorSettings* settings);
 
         void Activate();
 

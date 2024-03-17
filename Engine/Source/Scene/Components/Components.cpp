@@ -62,4 +62,43 @@ namespace Core
         delete mesh;
         mesh = nullptr;
     }
+
+    CameraComponent::CameraComponent()
+    {
+        type = ComponentTypes::Camera;
+        camera = new OrthographicCamera(1024, 576, -100, 100);
+        camera->SetTransformationType(Camera::TransformationType::Matrix);
+    }
+
+    CameraComponent::~CameraComponent()
+    {
+        Destroy();
+    }
+
+    void CameraComponent::Update()
+    {
+        switch (camera->GetTransformationType())
+        {
+        case Camera::TransformationType::Matrix:
+            camera->SetTransformMatrix(Owner->GetWorldMatrix());
+            break;
+        }
+    }
+
+    void CameraComponent::From(CameraComponent *o)
+    {
+        camera->SetOriginPoint(o->camera->GetOriginPoint());
+        camera->SetType(o->camera->GetType());
+        camera->SetZoom(o->camera->GetZoom());
+        camera->SetTransformationType(o->camera->GetTransformationType());
+
+        camera->GetTransform()->Position = o->camera->GetTransform()->Position;
+        camera->GetTransform()->Rotation = o->camera->GetTransform()->Rotation;
+        camera->GetTransform()->Scale = o->camera->GetTransform()->Scale;
+    }
+
+    void CameraComponent::Destroy()
+    {
+        delete camera;
+    }
 }

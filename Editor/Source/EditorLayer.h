@@ -4,12 +4,39 @@
 #include "Panels/SceneHierarchyPanel.h"
 #include "EditorCamera.h"
 #include <imgui.h>
+#include <vector>
 
 namespace Core
 {
+    struct EditableColorStyle
+    {
+        std::string Name;
+        ImGuiCol Color;
+
+        EditableColorStyle(const char *n, ImGuiCol c)
+        {
+            Name = n;
+            Color = c;
+        };
+    };
+
+    struct EditorSettings
+    {
+        float CameraZoom;
+        std::vector<EditableColorStyle> editableColors;
+    };
+
+    struct EditorSettingsMenu
+    {
+        bool Render = false;
+    };
+
     struct EditorState
     {
+        EditorSettings editorSettings;
         SceneHierarchyPanel hierarchyPanel;
+        EditorSettingsMenu settingsMenu;
+
         bool canUpdateCamera = false;
         EditorCamera editorCamera;
 
@@ -32,10 +59,17 @@ namespace Core
 
         EditorState state;
 
+        void OnAttach();
+        void OnUpdate();
+        void LoadSettings();
+        void SetupFromSettings();
+        void RegisterColors();
+
         void OnImGuiRender();
 
         // -- UI --
         void UI_DrawTopBar();
+        void UI_DrawSettingsMenu();
         // --------
 
         // -- Editor functions --
@@ -53,7 +87,8 @@ namespace Core
         void EndDockspace();
         // ----------------
 
-        void OnAttach();
-        void OnUpdate();
+        void UI_UTIL_DrawColorChanger(const char *label, int target);
+
+        static EditorSettings *StaticGetEditorSettings();
     };
 }

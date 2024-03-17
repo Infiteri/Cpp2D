@@ -9,6 +9,7 @@
 
 namespace Core
 {
+
     static Window *WinInst;
 
     void ImGuiLayer::Init()
@@ -37,7 +38,12 @@ namespace Core
         ImGui_ImplGlfw_InitForOpenGL(WinInst->GetHandle(), true);
         ImGui_ImplOpenGL3_Init("#version 330 core");
 
-        // TODO: Make CONFIGURABLE and SAVABLE
+        SetColorsToDefaultStyle();
+    }
+
+    void ImGuiLayer::SetColorsToDefaultStyle()
+    {
+        // DONE: Finna done broski
         auto &colors = ImGui::GetStyle().Colors;
 
         colors[ImGuiCol_WindowBg] = ImVec4{0.13f, 0.14f, 0.16f, 1.0f};

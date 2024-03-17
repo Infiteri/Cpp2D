@@ -1,4 +1,5 @@
 #include "EditorCamera.h"
+#include "EditorLayer.h"
 
 namespace Core
 {
@@ -11,6 +12,11 @@ namespace Core
     }
 
     EditorCamera::~EditorCamera() {}
+
+    void EditorCamera::SetupFromSetings(EditorSettings *settings)
+    {
+        camera->SetZoom(settings->CameraZoom);
+    }
 
     void EditorCamera::Activate()
     {

@@ -125,3 +125,14 @@
 - Added camera movement with mouse
 - Added camera zoom with mouse plus left control
 - Other stuff
+
+### 0.0.8 - 17.03.2024
+
+- Updated Core.h
+- Added editor settings along side (de)serialization
+- Added style color edits
+- Fixed Component deletion problem
+- Added ability to change texture image
+- Added basic geometry types
+- Geometry editing in editor
+- Added geometry serialization
