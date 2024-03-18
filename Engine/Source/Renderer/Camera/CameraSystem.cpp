@@ -34,6 +34,10 @@ namespace Core
         for (auto it : state.cameras)
             if (it.second->GetType() == Camera::Orthographic)
                 it.second->As<OrthographicCamera>()->CalculateProjection(width, height);
+
+        if (state.active)
+            if (state.active->GetType() == Camera::Orthographic)
+                state.active->As<OrthographicCamera>()->CalculateProjection(width, height);
     }
 
     OrthographicCamera *CameraSystem::CreateOrtho(const std::string &name)
@@ -73,6 +77,11 @@ namespace Core
             CE_LOG("CE_CAM_SYS", Warn, "No camera found for name: %s", name.c_str());
 
         return false;
+    }
+
+    void CameraSystem::Activate(OrthographicCamera *camera)
+    {
+        state.active = camera;
     }
 
     void CameraSystem::UpdateActive()

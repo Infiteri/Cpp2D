@@ -4,10 +4,30 @@
 
 namespace Core
 {
+    static GLenum FilterToGL(Texture::TextureFilter f)
+    {
+        switch (f)
+        {
+        case Texture::Nearest:
+            return GL_NEAREST;
+            break;
+
+        default:
+        case Texture::Linear:
+            return GL_LINEAR;
+            break;
+        }
+    }
+
     void Texture::LoadTextureWithInformation(int width, int height, char channels, CeU8 *data, Texture::Configuration *config)
     {
+        GLenum max = GL_LINEAR;
+        GLenum min = GL_LINEAR;
+
         if (config)
         {
+            min = FilterToGL(config->MinFilter);
+            max = FilterToGL(config->MaxFilter);
         }
 
         glGenTextures(1, &id);
@@ -17,8 +37,8 @@ namespace Core
         glTexImage2D(GL_TEXTURE_2D, 0, channels == 3 ? GL_RGB : GL_RGBA, width, height, 0, channels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
 
         glGenerateMipmap(GL_TEXTURE_2D);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // TODO: Configuration loaded type stuff
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // TODO: Configuration loaded type stuff
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, max);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -84,14 +104,25 @@ namespace Core
         image->FreeData();
     }
 
-    void Texture::Load(const std::string &name, Configuration *config)
+    void Texture::Load(const std::string &name, Configuration *_config)
     {
         if (id != 0)
             DestroyGLTexture();
 
+        if (_config != nullptr)
+        {
+            config.MinFilter = _config->MinFilter;
+            config.MaxFilter = _config->MaxFilter;
+        }
+        else
+        {
+            config.MinFilter = Linear;
+            config.MaxFilter = Linear;
+        }
+
         DestroyImageIfPresentAndSetNullptr();
         image = new Image(name);
-        LoadTextureWithInformation(image->GetWidth(), image->GetHeight(), image->GetChannels(), image->GetData(), nullptr);
+        LoadTextureWithInformation(image->GetWidth(), image->GetHeight(), image->GetChannels(), image->GetData(), &config);
         image->FreeData();
     }
 
@@ -101,6 +132,21 @@ namespace Core
             DestroyGLTexture();
 
         LoadTextureWithInformation(width, height, channels, data, cfg);
+    }
+
+    void Texture::UpdateWithConfig(Configuration *_config)
+    {
+        if (id != 0)
+            DestroyGLTexture();
+
+        config.MinFilter = _config->MinFilter;
+        config.MaxFilter = _config->MaxFilter;
+
+        std::string texName = image->GetPath();
+        DestroyImageIfPresentAndSetNullptr();
+        image = new Image(texName);
+        LoadTextureWithInformation(image->GetWidth(), image->GetHeight(), image->GetChannels(), image->GetData(), &config);
+        image->FreeData();
     }
 
     void Texture::Bind()

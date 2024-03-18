@@ -77,4 +77,58 @@ namespace Core
         if (ImGui::ColorEdit4(name.c_str(), data))
             color->Set(data, 255);
     }
+
+    void EditorUtils::RenderTextureUI(Material *material)
+    {
+        Texture *texture = material->GetTexture();
+        if (!texture->GetImagePath().empty())
+        {
+            ImGui::Image((void *)(CeU64)(CeU32)texture->GetID(), {100, 100});
+        }
+
+        RenderTextureUIChangeFilter(texture);
+
+        if (ImGui::Button("Load Image"))
+        {
+            std::string filename = Platform::OpenFileDialog("Image (*.png *.jpg *.jpeg)\0*.png;*.jpg;*.jpeg\0");
+            if (!filename.empty())
+                material->SetTexture(filename);
+        }
+    }
+
+    void EditorUtils::RenderTextureUIChangeFilter(Texture *texture)
+    {
+        auto cfg = texture->GetConfig();
+
+        for (int i = 0; i < 2; i++)
+        {
+            const int Count = 2;
+            const char *FilterType[Count] = {"Nearest", "Linear"};
+            const char *Current = FilterType[i == 0 ? (int)cfg->MinFilter : (int)cfg->MaxFilter];
+
+            if (ImGui::BeginCombo(i == 0 ? "MinFilter" : "MaxFilter", Current))
+            {
+                for (int ci = 0; ci < Count; ci++)
+                {
+                    bool isSelected = (Current == FilterType[ci]);
+                    if (ImGui::Selectable(FilterType[ci], isSelected))
+                    {
+                        Current = FilterType[ci];
+
+                        if (i == 0)
+                            cfg->MinFilter = (Texture::TextureFilter)ci;
+                        else
+                            cfg->MaxFilter = (Texture::TextureFilter)ci;
+
+                        texture->UpdateWithConfig(cfg);
+                    }
+
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
+                }
+
+                ImGui::EndCombo();
+            }
+        }
+    }
 }

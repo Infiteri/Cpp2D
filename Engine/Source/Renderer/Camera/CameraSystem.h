@@ -63,6 +63,10 @@ namespace Core
         /// @return True if activation was successful, false otherwise.
         static bool Activate(const std::string &name);
 
+        /// @brief Will activate a camera based on its instance.
+        /// @param camera The camera to use
+        static void Activate(OrthographicCamera *camera);
+
         /// @brief Updates the active camera.
         ///
         /// This function updates the state of the active camera.

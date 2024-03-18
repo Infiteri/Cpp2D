@@ -15,6 +15,7 @@ namespace Core
     Mesh::~Mesh()
     {
         ReleaseMaterial();
+        ReleaseGeometry();
 
         delete array;
     }

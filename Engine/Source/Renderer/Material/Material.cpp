@@ -26,6 +26,7 @@ namespace Core
         {
             ReleaseTexture();
             texture = TextureSystem::Get(config->TexturePath);
+            texture->UpdateWithConfig(&config->TextureConfiguration);
         }
         else // No specified texture path and no textures loaded earlier
         {

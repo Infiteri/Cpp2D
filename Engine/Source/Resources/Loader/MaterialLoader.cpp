@@ -21,6 +21,8 @@ namespace Core
         out << YAML::Key << "Name" << YAML::Value << c->Name.c_str();
         out << YAML::Key << "Color" << YAML::Value << &c->Color;
         out << YAML::Key << "TexturePath" << YAML::Value << c->TexturePath.c_str();
+        out << YAML::Key << "TextureMin" << YAML::Value << (int)c->TextureConfiguration.MinFilter;
+        out << YAML::Key << "TextureMax" << YAML::Value << (int)c->TextureConfiguration.MaxFilter;
         out << YAML::EndMap;
 
         std::ofstream fout(name);
@@ -50,6 +52,17 @@ namespace Core
         cfg.Name = node["Name"].as<std::string>();
         cfg.TexturePath = node["TexturePath"].as<std::string>();
         cfg.FileName = filename;
+
+        if (node["TextureMin"])
+        {
+            cfg.TextureConfiguration.MinFilter = (Texture::TextureFilter)node["TextureMin"].as<int>();
+        }
+
+        if (node["TextureMax"])
+        {
+            cfg.TextureConfiguration.MaxFilter = (Texture::TextureFilter)node["TextureMax"].as<int>();
+        }
+
         cfg.Color = {
             node["Color"][0].as<float>(),
             node["Color"][1].as<float>(),

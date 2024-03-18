@@ -11,6 +11,10 @@ namespace Core
     {
         inst = this;
 
+        state.editorAssets.PlayButtonTexture = new Texture("EngineResources/Images/Icons/PlayButton.png");
+        state.editorAssets.StopButtonTexture = new Texture("EngineResources/Images/Icons/StopButton.png");
+        state.editorScene = nullptr;
+
         LoadSettings();
         SetupFromSettings();
         RegisterColors();
@@ -21,7 +25,22 @@ namespace Core
         serializer.Deserialize("EngineResources/Scenes/Main.ce_scene");
         state.sceneSaveFilePath = "EngineResources/Scenes/Main.ce_scene";
 
-        World::StartActiveScene();
+        sceneState = SceneStatePlay;
+        StopSceneRuntime();
+    }
+
+    void EditorLayer::OnUpdate()
+    {
+        switch (sceneState)
+        {
+        case SceneStateStop:
+            UpdateEditor();
+            break;
+
+        case SceneStatePlay:
+            UpdateRuntime();
+            break;
+        }
     }
 
     void EditorLayer::LoadSettings()
@@ -69,9 +88,50 @@ namespace Core
 
         UI_DrawTopBar();
         UI_DrawSettingsMenu();
+        UI_DrawPlayStopBar();
 
         RenderSceneViewport();
         EndDockspace();
+    }
+
+    void EditorLayer::StartSceneRuntime()
+    {
+        if (sceneState != SceneStateStop)
+            return;
+
+        state.editorScene = Scene::From(World::GetActive());
+        World::StartActiveScene();
+        ResizeViewport();
+
+        sceneState = SceneStatePlay;
+    }
+
+    void EditorLayer::StopSceneRuntime()
+    {
+        if (sceneState != SceneStatePlay)
+            return;
+
+        World::StopActiveScene();
+
+        if (state.editorScene != nullptr)
+        {
+            World::CopyToActive(state.editorScene);
+
+            delete state.editorScene;
+        }
+
+        state.editorCamera.Activate();
+
+        sceneState = SceneStateStop;
+    }
+
+    void EditorLayer::UpdateRuntime()
+    {
+        World::UpdateActiveScene();
+    }
+
+    void EditorLayer::UpdateEditor()
+    {
     }
 
     void EditorLayer::UI_DrawTopBar()
@@ -108,6 +168,23 @@ namespace Core
 
             ImGui::EndMainMenuBar();
         }
+    }
+
+    void EditorLayer::UI_DrawPlayStopBar()
+    {
+        ImGui::Begin("PlayTopBar", NULL, ImGuiWindowFlags_NoScrollbar);
+
+        Texture *texture = sceneState == SceneStateStop ? state.editorAssets.PlayButtonTexture : state.editorAssets.StopButtonTexture;
+
+        if (ImGui::ImageButton((void *)(CeU64)(CeU32)texture->GetID(), {10, 10}))
+        {
+            if (sceneState == SceneStateStop)
+                StartSceneRuntime();
+            else
+                StopSceneRuntime();
+        }
+
+        ImGui::End();
     }
 
     void EditorLayer::UI_DrawSettingsMenu()
@@ -292,15 +369,19 @@ namespace Core
         }
     }
 
-    void EditorLayer::OnUpdate()
-    {
-    }
-
     EditorSettings *EditorLayer::StaticGetEditorSettings()
     {
         if (!inst)
             return nullptr;
 
         return &inst->state.editorSettings;
+    }
+
+    EditorAssets *EditorLayer::StaticGetEditorAssets()
+    {
+        if (!inst)
+            return nullptr;
+
+        return &inst->state.editorAssets;
     }
 }

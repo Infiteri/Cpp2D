@@ -44,6 +44,26 @@ namespace Core
             out->Set(node[0].as<float>(), node[1].as<float>(), node[2].as<float>());
     }
 
+    static void SerializeMaterial(Material *material, YAML::Emitter &out)
+    {
+        CE_SERIALIZE_FIELD("Load Mode", material->GetLoadMode());
+
+        switch (material->GetLoadMode())
+        {
+        case Material::File:
+            CE_SERIALIZE_FIELD("FileName", material->GetFileName().c_str());
+            break;
+
+        case Material::Config:
+            CE_SERIALIZE_FIELD("Name", material->GetName().c_str());
+            CE_SERIALIZE_FIELD("Color", material->GetColor());
+            CE_SERIALIZE_FIELD("TextureName", material->GetTexture()->GetImagePath().c_str());
+            CE_SERIALIZE_FIELD("TextureMin", (int)material->GetTexture()->GetConfig()->MinFilter);
+            CE_SERIALIZE_FIELD("TextureMax", (int)material->GetTexture()->GetConfig()->MaxFilter);
+            break;
+        }
+    }
+
     SceneSerializer::SceneSerializer(Scene *targetScene)
     {
         scene = targetScene;
@@ -114,20 +134,7 @@ namespace Core
                 out << YAML::Key << "MeshComponent " + std::to_string(index);
                 out << YAML::BeginMap;
 
-                CE_SERIALIZE_FIELD("Load Mode", material->GetLoadMode());
-
-                switch (material->GetLoadMode())
-                {
-                case Material::File:
-                    CE_SERIALIZE_FIELD("FileName", material->GetFileName().c_str());
-                    break;
-
-                case Material::Config:
-                    CE_SERIALIZE_FIELD("Name", material->GetName().c_str());
-                    CE_SERIALIZE_FIELD("Color", material->GetColor());
-                    CE_SERIALIZE_FIELD("TextureName", material->GetTexture()->GetImagePath().c_str());
-                    break;
-                }
+                SerializeMaterial(material, out);
 
                 {
                     CE_SERIALIZE_FIELD("GeometryType", (int)geometry->GetType());
@@ -168,6 +175,25 @@ namespace Core
                     CE_SERIALIZE_FIELD("Scale", &c->GetTransform()->Scale);
                 }
 
+                out << YAML::EndMap;
+            }
+        }
+
+        {
+            auto spriteComponent = a->GetComponents<SpriteComponent>();
+            CE_SERIALIZE_FIELD("SpriteComponentCount", spriteComponent.size());
+            int index = -1;
+            for (auto sprite : spriteComponent)
+            {
+                index++;
+                out << YAML::Key << "SpriteComponent " + std::to_string(index);
+                out << YAML::BeginMap;
+                SerializeMaterial(sprite->sprite->GetMaterial(), out);
+                Vector2 s = sprite->sprite->GetSize();
+                Vector2 l = sprite->sprite->GetFrameLayout();
+                CE_SERIALIZE_FIELD("Sizes", &s);
+                CE_SERIALIZE_FIELD("FrameLayout", &l);
+                CE_SERIALIZE_FIELD("CurrentFrame", sprite->sprite->GetCurrentFrame());
                 out << YAML::EndMap;
             }
         }
@@ -234,6 +260,8 @@ namespace Core
                             config.Name = mc["Name"].as<std::string>();
                             config.Color = {mc["Color"][0].as<float>(), mc["Color"][1].as<float>(), mc["Color"][2].as<float>(), mc["Color"][3].as<float>()};
                             config.TexturePath = mc["TextureName"].as<std::string>();
+                            config.TextureConfiguration.MinFilter = (Texture::TextureFilter)mc["TextureMin"].as<int>();
+                            config.TextureConfiguration.MaxFilter = (Texture::TextureFilter)mc["TextureMax"].as<int>();
 
                             addedMc->mesh->SetMaterial(&config);
 
@@ -252,42 +280,76 @@ namespace Core
                             break;
                         }
                     }
+                }
 
-                    for (int i = 0; i < actor["CameraComponentCount"].as<int>(); i++)
+                for (int i = 0; i < actor["CameraComponentCount"].as<int>(); i++)
+                {
+                    auto addedMc = a->AddComponent<CameraComponent>();
+                    auto mc = actor["CameraComponent " + std::to_string(i)];
+                    if (mc)
                     {
-                        auto addedMc = a->AddComponent<CameraComponent>();
-                        auto mc = actor["CameraComponent " + std::to_string(i)];
-                        if (mc)
-                        {
-                            auto c = addedMc->camera;
-                            c->SetType((Camera::Type)mc["Type"].as<int>());
-                            c->SetOriginPoint((Camera::OriginPoint)mc["OriginPoint"].as<int>());
-                            c->SetZoom(mc["Zoom"].as<float>());
-                            c->SetTransformationType((Camera::TransformationType)mc["TransformType"].as<int>());
+                        auto c = addedMc->camera;
+                        c->SetType((Camera::Type)mc["Type"].as<int>());
+                        c->SetOriginPoint((Camera::OriginPoint)mc["OriginPoint"].as<int>());
+                        c->SetZoom(mc["Zoom"].as<float>());
+                        c->SetTransformationType((Camera::TransformationType)mc["TransformType"].as<int>());
 
-                            if (c->GetTransformationType() == Camera::TransformationType::Transform)
-                            {
-                                YAMLToVector3(mc["Transform"]["Position"], &c->GetTransform()->Position);
-                                YAMLToVector3(mc["Transform"]["Rotation"], &c->GetTransform()->Rotation);
-                                YAMLToVector3(mc["Transform"]["Scale"], &c->GetTransform()->Scale);
-                            }
+                        if (c->GetTransformationType() == Camera::TransformationType::Transform)
+                        {
+                            YAMLToVector3(mc["Transform"]["Position"], &c->GetTransform()->Position);
+                            YAMLToVector3(mc["Transform"]["Rotation"], &c->GetTransform()->Rotation);
+                            YAMLToVector3(mc["Transform"]["Scale"], &c->GetTransform()->Scale);
                         }
                     }
-
-                    if (actor["ParentUUID"].as<CeU64>() == 0)
-                        scene->AddActor(a);
-                    else
-                    {
-                        auto thing = scene->FindActorByUUIDInHierarchy(
-                            actor["ParentUUID"].as<CeU64>());
-                        thing->AddChild(a);
-                    }
-
-                    if (actor["UUID"])
-                        a->SetUUID(actor["UUID"].as<CeU64>());
-                    else
-                        a->SetUUID({});
                 }
+
+                for (int i = 0; i < actor["SpriteComponentCount"].as<int>(); i++)
+                {
+                    auto addedMc = a->AddComponent<SpriteComponent>();
+                    auto mc = actor["SpriteComponent " + std::to_string(i)];
+                    if (mc)
+                    {
+                        auto c = addedMc->sprite;
+                        Material::LoadMode loadMode = (Material::LoadMode)mc["Load Mode"].as<int>();
+
+                        switch (loadMode)
+                        {
+                        case Material::File:
+                            addedMc->sprite->SetMaterial(mc["FileName"].as<std::string>());
+                            break;
+
+                        case Material::Config:
+                            Material::Configuration config;
+                            config.Name = mc["Name"].as<std::string>();
+                            config.Color = {mc["Color"][0].as<float>(), mc["Color"][1].as<float>(), mc["Color"][2].as<float>(), mc["Color"][3].as<float>()};
+                            config.TexturePath = mc["TextureName"].as<std::string>();
+                            config.TextureConfiguration.MinFilter = (Texture::TextureFilter)mc["TextureMin"].as<int>();
+                            config.TextureConfiguration.MaxFilter = (Texture::TextureFilter)mc["TextureMax"].as<int>();
+
+                            addedMc->sprite->SetMaterial(&config);
+
+                            break;
+                        }
+
+                        addedMc->sprite->SetSize({mc["Sizes"][0].as<float>(), mc["Sizes"][1].as<float>()});
+                        addedMc->sprite->SetFrameLayout({mc["FrameLayout"][0].as<float>(), mc["FrameLayout"][1].as<float>()});
+                        addedMc->sprite->SetCurrentFrame(mc["CurrentFrame"].as<float>());
+                    }
+                }
+
+                if (actor["ParentUUID"].as<CeU64>() == 0)
+                    scene->AddActor(a);
+                else
+                {
+                    auto thing = scene->FindActorByUUIDInHierarchy(
+                        actor["ParentUUID"].as<CeU64>());
+                    thing->AddChild(a);
+                }
+
+                if (actor["UUID"])
+                    a->SetUUID(actor["UUID"].as<CeU64>());
+                else
+                    a->SetUUID({});
             }
         }
     }

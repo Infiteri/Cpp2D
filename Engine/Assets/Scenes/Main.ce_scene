@@ -1,25 +1,30 @@
 Scene: New Scene
 Actors:
   - Actor: Filed
-    UUID: 631977179020359481
-    Name: Mesh actor
+    UUID: 5730567359334639028
+    Name: Sprite
     ParentUUID: 0
     Transform:
       Position: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    MeshComponentCount: 1
-    MeshComponent 0:
-      Load Mode: 2
-      FileName: EngineResources/Materials/Test.ce_mat
-      GeometryType: 1
-      Width: 100
-      Height: 100
+    MeshComponentCount: 0
     CameraComponentCount: 0
+    SpriteComponentCount: 1
+    SpriteComponent 0:
+      Load Mode: 1
+      Name: ""
+      Color: [255, 255, 255, 255]
+      TextureName: D:\Ion\Cpp2D\Bin\EngineResources\Images\hero.png
+      TextureMin: 0
+      TextureMax: 0
+      Sizes: [512, 512]
+      FrameLayout: [1, 4]
+      CurrentFrame: 0
   - Actor: Filed
-    UUID: 1275278976166057676
-    Name: Actor
-    ParentUUID: 631977179020359481
+    UUID: 15690817201535237022
+    Name: Camera
+    ParentUUID: 0
     Transform:
       Position: [0, 0, 0]
       Rotation: [0, 0, 0]
@@ -31,3 +36,4 @@ Actors:
       OriginPoint: 1
       Zoom: 1
       TransformType: 1
+    SpriteComponentCount: 0

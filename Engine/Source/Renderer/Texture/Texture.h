@@ -15,8 +15,16 @@ namespace Core
             File,
         };
 
+        enum TextureFilter
+        {
+            Nearest,
+            Linear,
+        };
+
         struct Configuration
         {
+            TextureFilter MinFilter;
+            TextureFilter MaxFilter;
         };
 
     private:
@@ -24,6 +32,8 @@ namespace Core
         int index;
         LoadedMode loadMode;
         Image *image;
+
+        Configuration config;
 
         void DestroyGLTexture();
         void DestroyImageIfPresentAndSetNullptr();
@@ -39,6 +49,8 @@ namespace Core
         void Load(const std::string &name);
         void Load(const std::string &name, Configuration *config);
         void Load(int width, int height, char channels, CeU8 *data, Configuration *cfg);
+
+        void UpdateWithConfig(Configuration* config);
 
         void Bind();
         void Unbind();
@@ -59,6 +71,7 @@ namespace Core
 
         inline CeU32 GetID() { return id; };
         inline int GetIndex() { return index; };
+        inline Configuration* GetConfig() { return &config; };
     };
 
 }

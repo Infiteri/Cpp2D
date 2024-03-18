@@ -136,3 +136,12 @@
 - Added basic geometry types
 - Geometry editing in editor
 - Added geometry serialization
+
+### 0.0.9 - 18.03.2024
+
+- Added Start/Stop editor logic
+- Added Start/Stop scene logic
+- Scene camera gets activated on runtime start
+- Fixed deserialization scope errors
+- Added sprite concept for future
+- Added primitive concept for animation

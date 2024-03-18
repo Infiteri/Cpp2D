@@ -41,6 +41,7 @@ namespace Core
             Load(name);
 
         state.references[name]->reference++;
+        CE_TRACE("Reference (%i): %s", state.references[name]->reference, name.c_str());
         return state.references[name]->material;
     }
 
@@ -60,7 +61,7 @@ namespace Core
         else
             state.references[name]->material->SetLoadMode(Material::File);
 
-        state.references[name]->reference++;
+        state.references[name]->reference = 0;
     }
 
     void MaterialSystem::Release(const std::string &name)
@@ -81,6 +82,8 @@ namespace Core
             }
 
             mat->reference--;
+            CE_TRACE("Remove Reference (%i): %s", state.references[name]->reference, name.c_str());
+
             if (mat->reference <= 0)
             {
                 CE_LOG("CE_MAT_SYS", Debug, "Clearing material: %s", name.c_str());

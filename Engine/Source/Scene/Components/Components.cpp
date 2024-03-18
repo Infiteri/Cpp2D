@@ -40,6 +40,7 @@ namespace Core
     void MeshComponent::From(MeshComponent *other)
     {
         auto mat = other->mesh->GetMaterial();
+        auto geo = other->mesh->GetGeometry();
 
         if (mat->GetFileName().empty())
         {
@@ -54,7 +55,14 @@ namespace Core
         {
             mesh->SetMaterial(mat->GetFileName());
         }
-        mesh->GetMaterial()->SetColor(*mat->GetColor());
+
+        switch (geo->GetType())
+        {
+        case Geometry::Square:
+            auto sq = geo->As<SquareGeometry>();
+            mesh->SetGeometry(new SquareGeometry(sq->Width, sq->Height));
+            break;
+        }
     }
 
     void MeshComponent::Destroy()
@@ -100,5 +108,48 @@ namespace Core
     void CameraComponent::Destroy()
     {
         delete camera;
+    }
+
+    SpriteComponent::SpriteComponent()
+    {
+        sprite = new Sprite();
+    }
+
+    SpriteComponent::~SpriteComponent()
+    {
+        delete sprite;
+    }
+
+    void SpriteComponent::Render()
+    {
+        if (!sprite)
+            return;
+
+        sprite->Render();
+    }
+
+    void SpriteComponent::From(SpriteComponent *o)
+    {
+        sprite->SetSize(o->sprite->GetSize());
+
+        auto mat = o->sprite->GetMaterial();
+
+        if (mat->GetFileName().empty())
+        {
+            Material::Configuration config;
+            config.Name = o->sprite->GetMaterial()->GetName();
+            config.Color = *o->sprite->GetMaterial()->GetColor();
+            config.TexturePath = o->sprite->GetMaterial()->GetTexture()->GetImagePath();
+            // config.TextureConfiguration = other->mesh->GetMaterial()->GetTexture()->GetC();
+            sprite->SetMaterial(&config);
+        }
+        else
+        {
+            sprite->SetMaterial(mat->GetFileName());
+        }
+    }
+
+    void SpriteComponent::Destroy()
+    {
     }
 }

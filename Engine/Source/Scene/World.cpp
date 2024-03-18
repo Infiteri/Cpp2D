@@ -93,6 +93,16 @@ namespace Core
         scenes.erase(name);
     }
 
+    void World::CopyToActive(Scene *scene)
+    {
+        if (activeScene)
+        {
+            delete activeScene;
+        }
+
+        activeScene = Scene::From(scene);
+    }
+
     void World::StartActiveScene()
     {
         CE_IMPL_FUNC_ACTIVE_METHOD(Start);

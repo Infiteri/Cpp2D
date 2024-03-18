@@ -20,6 +20,8 @@ namespace Core
 
     void EditorCamera::Activate()
     {
+        camera->CalculateProjection();
+        camera->CalculateView();
         CameraSystem::Activate(cameraName);
     }
 

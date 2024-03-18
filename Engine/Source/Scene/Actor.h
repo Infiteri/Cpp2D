@@ -50,6 +50,8 @@ namespace Core
         Actor();
         ~Actor();
 
+        static Actor *From(Actor *o);
+
         /// @brief Called when the actor is just created, called automatically so no need to manually call it.
         void Init();
 
@@ -193,6 +195,28 @@ namespace Core
                     }
                 }
             }
+        };
+
+        template <typename T>
+        T *GetComponentInHierarchy()
+        {
+            for (Component *c : components)
+            {
+                T *typedComponent = dynamic_cast<T *>(c);
+                if (typedComponent)
+                {
+                    return typedComponent;
+                }
+            }
+
+            for (auto it : children)
+            {
+                auto comp = it->GetComponentInHierarchy<T>();
+                if (comp)
+                    return comp;
+            }
+
+            return nullptr;
         };
 
         inline std::vector<Component *> GetAllComponents() { return components; };

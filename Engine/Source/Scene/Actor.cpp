@@ -31,6 +31,43 @@ namespace Core
         children.clear();
     }
 
+    Actor *Actor::From(Actor *o)
+    {
+        Actor *a = new Actor();
+        a->SetName(o->GetName());
+        a->SetUUID(*o->GetUUID());
+
+        a->transform.Position = o->transform.Position;
+        a->transform.Rotation = o->transform.Rotation;
+        a->transform.Scale = o->transform.Scale;
+
+        auto meshComponents = o->GetComponents<MeshComponent>();
+        for (auto mc : meshComponents)
+        {
+            a->AddComponent<MeshComponent>()->From(mc);
+        }
+
+        auto cameraComponents = o->GetComponents<CameraComponent>();
+        for (auto mc : cameraComponents)
+        {
+            a->AddComponent<CameraComponent>()->From(mc);
+        }
+
+        auto spriteComponents = o->GetComponents<SpriteComponent>();
+        for (auto mc : spriteComponents)
+        {
+            a->AddComponent<SpriteComponent>()->From(mc);
+        }
+
+        for (auto child : o->children)
+        {
+            auto nChild = Actor::From(child);
+            a->AddChild(nChild);
+        }
+
+        return a;
+    }
+
     void Actor::CalculateTransforms()
     {
         localMatrix = transform.GetTransformMatrix();
@@ -84,9 +121,6 @@ namespace Core
 
     void Actor::Render()
     {
-        if (!(state == Started || state == Running))
-            return;
-
         state = Running;
 
         Shader *objectShader = ShaderSystem::Get("EngineResources/Shaders/Object");

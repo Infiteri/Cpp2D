@@ -53,6 +53,11 @@ namespace Core
             selectionContext = nullptr;
         }
 
+        if (selectionContext && Input::GetKeyJustNow(Keys::D) && Input::GetKey(Keys::LeftControl))
+        {
+            World::GetActive()->AddActor(Actor::From(selectionContext));
+        }
+
         ImGui::Begin("Proprieties");
         if (selectionContext)
             RenderActorProps(selectionContext);
@@ -160,6 +165,7 @@ namespace Core
 
     void DrawMeshComponentUI(MeshComponent *component, Actor *a);
     void DrawCameraComponentUI(CameraComponent *component, Actor *a);
+    void DrawSpriteComponentUI(SpriteComponent *component, Actor *a);
 
     void SceneHierarchyPanel::RenderActorProps(Actor *a)
     {
@@ -170,6 +176,7 @@ namespace Core
         {
             CE_UTIL_ADD_COMPONENT("Mesh Component", MeshComponent);
             CE_UTIL_ADD_COMPONENT("Camera Component", CameraComponent);
+            CE_UTIL_ADD_COMPONENT("Sprite Component", SpriteComponent);
 
             ImGui::EndPopup();
         }
@@ -209,13 +216,22 @@ namespace Core
                 EditorUtils::DrawComponentBaseUI("Camera Component", cameraComponent, cameraIndex, a, DrawCameraComponentUI);
             }
         }
+
+        {
+            int spriteIndex = -1;
+            for (auto spriteComponent : a->GetComponents<SpriteComponent>())
+            {
+                spriteIndex++;
+                ImGui::NewLine();
+                EditorUtils::DrawComponentBaseUI("Sprite Component", spriteComponent, spriteIndex, a, DrawSpriteComponentUI);
+            }
+        }
     }
 
     void DrawMeshComponentUI(MeshComponent *component, Actor *a)
     {
         if (ImGui::TreeNodeEx("Material"))
         {
-
             auto material = component->mesh->GetMaterial();
 
             Material::LoadMode loadMode = material->GetLoadMode();
@@ -239,19 +255,7 @@ namespace Core
 
                 if (ImGui::TreeNodeEx("Texture"))
                 {
-                    Texture *texture = material->GetTexture();
-                    if (!texture->GetImagePath().empty())
-                    {
-                        ImGui::Image((void *)(CeU64)(CeU32)texture->GetID(), {100, 100});
-                    }
-
-                    if (ImGui::Button("Load Image"))
-                    {
-                        std::string filename = Platform::OpenFileDialog("Image (*.png *.jpg *.jpeg)\0*.png;*.jpg;*.jpeg\0");
-                        if (!filename.empty())
-                            component->mesh->GetMaterial()->SetTexture(filename);
-                    }
-
+                    EditorUtils::RenderTextureUI(material);
                     ImGui::TreePop();
                 }
             }
@@ -359,5 +363,101 @@ namespace Core
         float zoomEdit = c->GetZoom();
         if (ImGui::DragFloat("Zoom", &zoomEdit, 0.01f, 0.05f))
             c->SetZoom(zoomEdit);
+    }
+
+    void DrawSpriteComponentUI(SpriteComponent *component, Actor *a)
+    {
+        float sizes[2] = {component->sprite->GetSize().x, component->sprite->GetSize().y};
+        if (ImGui::DragFloat2("Size", sizes))
+            component->sprite->SetSize({sizes[0], sizes[1]});
+
+        if (ImGui::TreeNodeEx("Material"))
+        {
+            auto material = component->sprite->GetMaterial();
+            Material::LoadMode loadMode = material->GetLoadMode();
+            switch (loadMode)
+            {
+            case Material::File:
+                ImGui::Text("%s", material->GetFileName().c_str());
+                break;
+
+            case Material::Config:
+            {
+                {
+                    char Buffer[256];
+                    memset(Buffer, 0, 256);
+                    memccpy(Buffer, material->GetName().c_str(), material->GetName().size(), 256);
+                    if (ImGui::InputText("Name", Buffer, 256))
+                        material->SetName(Buffer);
+                }
+
+                EditorUtils::ImGuiColorEdit4(material->GetColor(), "Color");
+
+                if (ImGui::TreeNodeEx("Texture"))
+                {
+                    EditorUtils::RenderTextureUI(material);
+                    ImGui::TreePop();
+                }
+            }
+            break;
+            }
+
+            switch (loadMode)
+            {
+            case Material::Config:
+                if (ImGui::Button("Make Default"))
+                    component->sprite->MakeMaterialDefault();
+                ImGui::SameLine();
+                if (ImGui::Button("Load File"))
+                {
+                    std::string filename = Platform::OpenFileDialog("Material (*.ce_mat) \0*.ce_mat\0");
+                    if (!filename.empty())
+                        component->sprite->SetMaterial(filename);
+                }
+
+                break;
+
+            case Material::File:
+                if (ImGui::Button("Make Unique"))
+                    component->sprite->MakeMaterialUnique();
+                ImGui::SameLine();
+
+                if (ImGui::Button("Make Default"))
+                {
+                    component->sprite->MakeMaterialDefault();
+                }
+
+                break;
+
+            case Material::Default:
+            default:
+                if (ImGui::Button("Make Unique"))
+                    component->sprite->MakeMaterialUnique();
+                ImGui::SameLine();
+
+                if (ImGui::Button("Load File"))
+                {
+                    std::string filename = Platform::OpenFileDialog("Material (*.ce_mat) \0*.ce_mat\0");
+                    if (!filename.empty())
+                        component->sprite->SetMaterial(filename);
+                }
+                break;
+            }
+
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNodeEx("Animation"))
+        {
+            float frames[2] = {component->sprite->GetFrameLayout().x, component->sprite->GetFrameLayout().y};
+            if (ImGui::DragFloat2("Frame Layout", frames))
+                component->sprite->SetFrameLayout({frames[0], frames[1]});
+
+            float currentFrame = component->sprite->GetCurrentFrame();
+            if (ImGui::DragFloat("Current Frame", &currentFrame))
+                component->sprite->SetCurrentFrame(currentFrame);
+
+            ImGui::TreePop();
+        }
     }
 }

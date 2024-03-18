@@ -1,27 +1,30 @@
 #pragma once
 
 #include "Base.h"
+#include "Math/Vectors.h"
 #include "Renderer/Material/Material.h"
-#include "Renderer/Geometry/Geometry.h"
 #include "Renderer/Material/MaterialSystem.h"
 
 namespace Core
 {
-    class CE_API Mesh
+    class CE_API Sprite
     {
     private:
         class VertexArray *array;
-
         Material *material;
-        Geometry *geometry;
+        Vector2 size;
+
+        Vector2 frameLayout;
+        float currentFrame;
 
         void ReleaseMaterial();
-        void ReleaseGeometry();
         void SetupVertexArray();
 
+        void SetupVertexArrayWithData(void *vertices, CeU32 vertexSize, CeU32 *indices, CeU32 indexSize);
+
     public:
-        Mesh();
-        ~Mesh();
+        Sprite(const Vector2 &sizes = {100, 100});
+        ~Sprite();
 
         void Render();
 
@@ -34,12 +37,16 @@ namespace Core
         /// @param config The configuration.
         void SetMaterial(Material::Configuration *config);
 
-        /// @brief Will set the geometry to the new one. Use "new GEOMETRY_TYPE(ARGS...)" for best results.
-        /// @param _geometry An instance of the desired geometry
-        void SetGeometry(Geometry *_geometry);
-
         inline Material *GetMaterial() { return material; };
-        inline Geometry *GetGeometry() { return geometry; };
+
+        void SetSize(const Vector2 &sizes);
+        inline Vector2 GetSize() { return size; };
+
+        void SetCurrentFrame(float frames);
+        inline float GetCurrentFrame() { return currentFrame; };
+
+        void SetFrameLayout(const Vector2 &frames);
+        inline Vector2 GetFrameLayout() { return frameLayout; };
 
         void MakeMaterialUnique();
         void MakeMaterialDefault();

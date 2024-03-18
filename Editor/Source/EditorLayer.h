@@ -8,6 +8,12 @@
 
 namespace Core
 {
+    struct EditorAssets
+    {
+        Texture *PlayButtonTexture;
+        Texture *StopButtonTexture;
+    };
+
     struct EditableColorStyle
     {
         std::string Name;
@@ -36,6 +42,9 @@ namespace Core
         EditorSettings editorSettings;
         SceneHierarchyPanel hierarchyPanel;
         EditorSettingsMenu settingsMenu;
+        EditorAssets editorAssets;
+
+        Scene *editorScene;
 
         bool canUpdateCamera = false;
         EditorCamera editorCamera;
@@ -67,8 +76,24 @@ namespace Core
 
         void OnImGuiRender();
 
+        // -- SCENE RUNTIME --
+        enum SceneState
+        {
+            SceneStateStop,
+            SceneStatePlay,
+        };
+        SceneState sceneState;
+
+        void StartSceneRuntime();
+        void StopSceneRuntime();
+
+        void UpdateRuntime();
+        void UpdateEditor();
+        // -------------------
+
         // -- UI --
         void UI_DrawTopBar();
+        void UI_DrawPlayStopBar();
         void UI_DrawSettingsMenu();
         // --------
 
@@ -90,5 +115,6 @@ namespace Core
         void UI_UTIL_DrawColorChanger(const char *label, int target);
 
         static EditorSettings *StaticGetEditorSettings();
+        static EditorAssets *StaticGetEditorAssets();
     };
 }

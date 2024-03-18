@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "Core/Logger.h"
 
 #include <algorithm>
 
@@ -16,6 +17,23 @@ namespace Core
     {
         if (state == Running)
             Stop();
+
+        ClearActorSet();
+    }
+
+    Scene *Scene::From(Scene *o)
+    {
+        Scene *scene = new Scene();
+
+        scene->SetName(o->GetName());
+
+        for (auto a : o->GetActors())
+        {
+            auto act = Actor::From(a);
+            scene->AddActor(act);
+        }
+
+        return scene;
     }
 
     void Scene::Init()
@@ -38,10 +56,19 @@ namespace Core
 
         state = Started;
 
+        CameraComponent *cameraComponent = nullptr;
         for (auto a : actors)
         {
             a->Start();
+
+            if (cameraComponent == nullptr)
+                cameraComponent = a->GetComponentInHierarchy<CameraComponent>();
         }
+
+        if (cameraComponent)
+            CameraSystem::Activate(cameraComponent->camera);
+        else
+            CameraSystem::Activate(nullptr);
     }
 
     void Scene::Update()
@@ -59,9 +86,6 @@ namespace Core
 
     void Scene::Render()
     {
-        if (!(state == Started || state == Running))
-            return;
-
         state = Running;
 
         for (auto a : actors)

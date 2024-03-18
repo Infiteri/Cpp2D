@@ -2,6 +2,7 @@
 
 #include "Base.h"
 #include "Renderer/Object/Mesh.h"
+#include "Renderer/Object/Sprite.h"
 #include "Renderer/Camera/CameraSystem.h"
 
 namespace Core
@@ -69,6 +70,19 @@ namespace Core
         void Update();
 
         void From(CameraComponent *o);
+        void Destroy();
+    };
+
+    class CE_API SpriteComponent : public Component
+    {
+    public:
+        Sprite *sprite;
+
+        SpriteComponent();
+        ~SpriteComponent();
+
+        void Render();
+        void From(SpriteComponent *o);
         void Destroy();
     };
 }

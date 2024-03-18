@@ -60,6 +60,8 @@ namespace Core
 
         state.screen.BeginFrame();
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     void Renderer::Render()
@@ -76,8 +78,16 @@ namespace Core
         state.objectShader->Use();
 
         auto camera = CameraSystem::GetActive();
-        state.objectShader->Mat4(camera->GetProjection(), "uProjection");
-        state.objectShader->Mat4(camera->GetInvertedView(), "uView");
+        if (camera)
+        {
+            state.objectShader->Mat4(camera->GetProjection(), "uProjection");
+            state.objectShader->Mat4(camera->GetInvertedView(), "uView");
+        }
+        else
+        {
+            state.objectShader->Mat4(Matrix4::Empty(), "uProjection");
+            state.objectShader->Mat4(Matrix4::Empty(), "uView");
+        }
     }
 
     void Renderer::EndFrame()

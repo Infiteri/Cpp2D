@@ -2,3 +2,5 @@ Material: EngineResources/Materials/Test.ce_mat
 Name: test
 Color: [0, 125, 255, 255]
 TexturePath: EngineResources/Images/crate.png
+TextureMin: 0
+TextureMin: 0

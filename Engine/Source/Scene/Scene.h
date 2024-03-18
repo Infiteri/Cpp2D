@@ -44,6 +44,8 @@ namespace Core
         Scene();
         ~Scene();
 
+        static Scene* From(Scene* o);
+
         /// @brief Called when the scene is just created, called automatically so no need to manually call it.
         void Init();
 
