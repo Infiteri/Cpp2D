@@ -85,4 +85,15 @@ namespace Core
         void From(SpriteComponent *o);
         void Destroy();
     };
+
+    class CE_API ActorScriptComponent : public Component
+    {
+    public:
+        std::string ClassName;
+
+        ActorScriptComponent();
+        ~ActorScriptComponent();
+
+        void From(ActorScriptComponent* o);
+    };
 }

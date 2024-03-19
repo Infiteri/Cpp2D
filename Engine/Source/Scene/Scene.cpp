@@ -1,5 +1,7 @@
 #include "Scene.h"
 #include "Core/Logger.h"
+#include "Script/ScriptEngine.h"
+#include "Components/Components.h"
 
 #include <algorithm>
 
@@ -61,6 +63,12 @@ namespace Core
         {
             a->Start();
 
+            // Script setup
+            auto scriptComponents = a->GetComponents<ActorScriptComponent>();
+            for (auto sc : scriptComponents)
+                ScriptEngine::RegisterActorScript(sc->ClassName, a, a->GetName());
+
+            // Camera setup
             if (cameraComponent == nullptr)
                 cameraComponent = a->GetComponentInHierarchy<CameraComponent>();
         }
@@ -69,6 +77,8 @@ namespace Core
             CameraSystem::Activate(cameraComponent->camera);
         else
             CameraSystem::Activate(nullptr);
+
+        ScriptEngine::StartRuntime();
     }
 
     void Scene::Update()
@@ -82,6 +92,8 @@ namespace Core
         {
             a->Update();
         }
+
+        ScriptEngine::UpdateRuntime();
     }
 
     void Scene::Render()
@@ -105,6 +117,8 @@ namespace Core
         {
             a->Stop();
         }
+
+        ScriptEngine::StopRuntime();
     }
 
     void Scene::SetName(const std::string &_name)

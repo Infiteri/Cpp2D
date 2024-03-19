@@ -4,6 +4,12 @@
 
 namespace Core
 {
+    Texture::Configuration::Configuration()
+    {
+        MinFilter = TextureFilter::Linear;
+        MaxFilter = TextureFilter::Linear;
+    }
+
     static GLenum FilterToGL(Texture::TextureFilter f)
     {
         switch (f)
@@ -142,11 +148,19 @@ namespace Core
         config.MinFilter = _config->MinFilter;
         config.MaxFilter = _config->MaxFilter;
 
-        std::string texName = image->GetPath();
-        DestroyImageIfPresentAndSetNullptr();
-        image = new Image(texName);
-        LoadTextureWithInformation(image->GetWidth(), image->GetHeight(), image->GetChannels(), image->GetData(), &config);
-        image->FreeData();
+        if (image != nullptr)
+        {
+            std::string texName = image->GetPath();
+            DestroyImageIfPresentAndSetNullptr();
+            image = new Image(texName);
+            LoadTextureWithInformation(image->GetWidth(), image->GetHeight(), image->GetChannels(), image->GetData(), &config);
+            image->FreeData();
+        }
+        else
+        {
+            CeU8 data[4] = {255, 255, 255, 255};
+            LoadTextureWithInformation(1, 1, 4, data, nullptr);
+        }
     }
 
     void Texture::Bind()

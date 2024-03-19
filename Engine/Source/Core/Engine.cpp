@@ -6,6 +6,10 @@
 #include "Layer/ImGuiLayer.h"
 #include "Layer/LayerStack.h"
 #include "Scene/World.h"
+#include "Platform/Platform.h"
+#include "Script/ScriptEngine.h"
+
+#include <glfw/glfw3.h>
 
 namespace Core
 {
@@ -45,6 +49,9 @@ namespace Core
         LayerStack::Init();
         World::Init();
 
+        ScriptEngine::Init();
+        ScriptEngine::CreateLibrary("TestLibrary");
+
         CE_CORE_INFO("Started Engine with success");
     }
 
@@ -70,6 +77,10 @@ namespace Core
 
     void Engine::Update()
     {
+        double currentFrameTime = glfwGetTime();
+        state.deltaTime = static_cast<float>(currentFrameTime - state.lastTime);
+        state.lastTime = static_cast<float>(currentFrameTime);
+
         state.window->Update();
         World::UpdateActiveScene();
         LayerStack::Update();
@@ -92,6 +103,11 @@ namespace Core
     {
 
         return state.window->ShouldRun();
+    }
+
+    float Engine::GetDeltaTime()
+    {
+        return state.deltaTime;
     }
 
     Window *Engine::GetWindow()

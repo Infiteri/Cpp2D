@@ -48,7 +48,9 @@ namespace Core
             config.Name = other->mesh->GetMaterial()->GetName();
             config.Color = *other->mesh->GetMaterial()->GetColor();
             config.TexturePath = other->mesh->GetMaterial()->GetTexture()->GetImagePath();
-            // config.TextureConfiguration = other->mesh->GetMaterial()->GetTexture()->GetC();
+            auto cfg = other->mesh->GetMaterial()->GetTexture()->GetConfig();
+            config.TextureConfiguration.MinFilter = cfg->MinFilter;
+            config.TextureConfiguration.MaxFilter = cfg->MaxFilter;
             mesh->SetMaterial(&config);
         }
         else
@@ -131,6 +133,8 @@ namespace Core
     void SpriteComponent::From(SpriteComponent *o)
     {
         sprite->SetSize(o->sprite->GetSize());
+        sprite->SetCurrentFrame(o->sprite->GetCurrentFrame());
+        sprite->SetFrameLayout(o->sprite->GetFrameLayout());
 
         auto mat = o->sprite->GetMaterial();
 
@@ -140,7 +144,9 @@ namespace Core
             config.Name = o->sprite->GetMaterial()->GetName();
             config.Color = *o->sprite->GetMaterial()->GetColor();
             config.TexturePath = o->sprite->GetMaterial()->GetTexture()->GetImagePath();
-            // config.TextureConfiguration = other->mesh->GetMaterial()->GetTexture()->GetC();
+            auto cfg = o->sprite->GetMaterial()->GetTexture()->GetConfig();
+            config.TextureConfiguration.MinFilter = cfg->MinFilter;
+            config.TextureConfiguration.MaxFilter = cfg->MaxFilter;
             sprite->SetMaterial(&config);
         }
         else
@@ -151,5 +157,18 @@ namespace Core
 
     void SpriteComponent::Destroy()
     {
+    }
+
+    ActorScriptComponent::ActorScriptComponent()
+    {
+    }
+
+    ActorScriptComponent::~ActorScriptComponent()
+    {
+    }
+
+    void ActorScriptComponent::From(ActorScriptComponent *o)
+    {
+        ClassName = o->ClassName;
     }
 }

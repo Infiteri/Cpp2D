@@ -145,3 +145,15 @@
 - Fixed deserialization scope errors
 - Added sprite concept for future
 - Added primitive concept for animation
+
+### 0.1.0 - 19.03.2024
+
+- Updated Core.h
+- Added basic library loading
+- Added basic dll function loading
+- Added ScriptEngine and ActorScript
+- Added ActorScriptComponent +(de)serialization and in-editor editing
+- QoL changes in code
+- Fixed texture config copying when starting scenes
+- Hooked up script logic with scene
+- Test scripting example

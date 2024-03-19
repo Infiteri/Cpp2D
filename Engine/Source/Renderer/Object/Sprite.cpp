@@ -1,4 +1,5 @@
 #include "Sprite.h"
+#include "Core/Logger.h"
 #include "Renderer/Geometry/Geometry.h"
 #include "Renderer/Buffer/VertexArray.h"
 #include "Renderer/Shader/ShaderSystem.h"
@@ -82,9 +83,6 @@ namespace Core
         float max_uvx = min_uvx + frameWidth;
         float min_uvy = 1.0f - ((rowIndex + 1) * frameHeight);
         float max_uvy = 1.0f - (rowIndex * frameHeight);
-
-        if (frameLayout.x * frameLayout.y > currentFrame)
-            min_uvx = min_uvy = max_uvx = max_uvy = 0;
 
         for (CeU32 i = 0; i < 6; ++i)
         {

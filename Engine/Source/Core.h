@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Base.h"
+
 #include "Core/Logger.h"
 #include "Core/Engine.h"
 #include "Core/Input.h"
@@ -19,6 +21,7 @@
 #include "Renderer/Renderer.h"
 #include "Renderer/Color.h"
 #include "Renderer/Object/Mesh.h"
+#include "Renderer/Object/Sprite.h"
 #include "Renderer/Material/Material.h"
 #include "Renderer/Material/MaterialSystem.h"
 #include "Renderer/Texture/TextureSystem.h"
@@ -32,3 +35,6 @@
 #include "Scene/World.h"
 #include "Scene/SceneSerializer.h"
 #include "Scene/Components/Components.h"
+
+#include "Script/ActorScript.h"
+#include "Script/ScriptEngine.h"

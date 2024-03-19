@@ -3,6 +3,7 @@
 #if CE_PLATFORM_WIN32 == 1
 
 #include "Core/Engine.h"
+#include "Core/Logger.h"
 #include <Windows.h>
 #include <Shlwapi.h>
 #include <commdlg.h>
@@ -112,6 +113,67 @@ namespace Core
             return ofn.lpstrFile;
 
         return std::string();
+    }
+
+    bool Platform::CreateLibrary(const std::string &_name, DynamicLibrary *out)
+    {
+        if (_name.empty())
+        {
+            out->Valid = false;
+            CE_CORE_ERROR("Platform::CreateLibrary: Unable to create a library with no name.");
+            return false;
+        }
+
+        HMODULE mod = LoadLibrary((_name + ".dll").c_str());
+        if (mod == NULL)
+        {
+            out->Valid = false;
+            CE_CORE_ERROR("Platform::CreateLibrary: Unable to create a library with name '%s'.", _name.c_str());
+            return false;
+        }
+
+        out->Valid = true;
+        out->Name = _name;
+        out->FileName = _name + ".dll";
+        out->Internal = mod;
+
+        return true;
+    }
+
+    bool Platform::LibraryLoadFunction(DynamicLibrary *library, const std::string &functionName)
+    {
+        if (!library || !library->Valid || library->Functions[functionName] != nullptr)
+        {
+            CE_CORE_ERROR("Platform::LibraryLoadFunction: Invalid library.");
+            return false;
+        }
+
+        FARPROC f_addr = GetProcAddress((HMODULE)library->Internal, functionName.c_str());
+        if (!f_addr)
+        {
+            CE_CORE_ERROR("Platform::LibraryLoadFunction: Invalid function under name '%s'.", functionName.c_str());
+            return false;
+        }
+
+        DynamicLibraryFunction *f = new DynamicLibraryFunction;
+        f->PFN = (void *)f_addr;
+        f->Name = functionName;
+        library->Functions[functionName] = f;
+
+        return true;
+    }
+
+    void Platform::DestroyLibrary(DynamicLibrary *library)
+    {
+        if (!library || !library->Valid || library->Name.empty())
+            return;
+
+        for (auto it = library->Functions.begin(); it != library->Functions.end(); it++)
+            delete it->second;
+
+        library->Functions.clear();
+
+        FreeLibrary((HMODULE)library->Internal);
     }
 }
 

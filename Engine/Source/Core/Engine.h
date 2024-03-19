@@ -18,6 +18,8 @@ namespace Core
         {
             Window *window;
             Configuration *config;
+            float lastTime;
+            float deltaTime;
         };
 
         Engine(){};
@@ -31,6 +33,8 @@ namespace Core
         static void Shutdown();
 
         static bool ShouldRun();
+        
+        static float GetDeltaTime();
 
         static Window *GetWindow();
         static Configuration *CreateDefaultConfiguration();

@@ -5,6 +5,11 @@
 
 #include <algorithm>
 
+#define CE_COPY_ACTOR_COMPONENT(type)                \
+    auto component##type = o->GetComponents<type>(); \
+    for (auto comp##type : component##type)          \
+    a->AddComponent<type>()->From(comp##type)
+
 namespace Core
 {
 
@@ -41,23 +46,10 @@ namespace Core
         a->transform.Rotation = o->transform.Rotation;
         a->transform.Scale = o->transform.Scale;
 
-        auto meshComponents = o->GetComponents<MeshComponent>();
-        for (auto mc : meshComponents)
-        {
-            a->AddComponent<MeshComponent>()->From(mc);
-        }
-
-        auto cameraComponents = o->GetComponents<CameraComponent>();
-        for (auto mc : cameraComponents)
-        {
-            a->AddComponent<CameraComponent>()->From(mc);
-        }
-
-        auto spriteComponents = o->GetComponents<SpriteComponent>();
-        for (auto mc : spriteComponents)
-        {
-            a->AddComponent<SpriteComponent>()->From(mc);
-        }
+        CE_COPY_ACTOR_COMPONENT(MeshComponent);
+        CE_COPY_ACTOR_COMPONENT(CameraComponent);
+        CE_COPY_ACTOR_COMPONENT(SpriteComponent);
+        CE_COPY_ACTOR_COMPONENT(ActorScriptComponent);
 
         for (auto child : o->children)
         {

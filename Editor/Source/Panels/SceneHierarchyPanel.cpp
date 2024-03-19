@@ -5,6 +5,15 @@
     if (ImGui::MenuItem(name))            \
     a->AddComponent<type>()
 
+#define CE_UTIL_ADD_RENDER(name, type, cb)                                           \
+    int index##type = -1;                                                            \
+    for (auto Component##type : a->GetComponents<type>())                            \
+    {                                                                                \
+        index##type++;                                                               \
+        ImGui::NewLine();                                                            \
+        EditorUtils::DrawComponentBaseUI(name, Component##type, index##type, a, cb); \
+    }
+
 namespace Core
 {
     struct ActorMoveDragInfo
@@ -166,6 +175,7 @@ namespace Core
     void DrawMeshComponentUI(MeshComponent *component, Actor *a);
     void DrawCameraComponentUI(CameraComponent *component, Actor *a);
     void DrawSpriteComponentUI(SpriteComponent *component, Actor *a);
+    void DrawActorScriptComponentUI(ActorScriptComponent *component, Actor *a);
 
     void SceneHierarchyPanel::RenderActorProps(Actor *a)
     {
@@ -177,6 +187,7 @@ namespace Core
             CE_UTIL_ADD_COMPONENT("Mesh Component", MeshComponent);
             CE_UTIL_ADD_COMPONENT("Camera Component", CameraComponent);
             CE_UTIL_ADD_COMPONENT("Sprite Component", SpriteComponent);
+            CE_UTIL_ADD_COMPONENT("Script Component", ActorScriptComponent);
 
             ImGui::EndPopup();
         }
@@ -197,35 +208,10 @@ namespace Core
             ImGui::TreePop();
         }
 
-        {
-            int meshIndex = -1;
-            for (auto meshComponent : a->GetComponents<MeshComponent>())
-            {
-                meshIndex++;
-                ImGui::NewLine();
-                EditorUtils::DrawComponentBaseUI("Mesh Component", meshComponent, meshIndex, a, DrawMeshComponentUI);
-            }
-        }
-
-        {
-            int cameraIndex = -1;
-            for (auto cameraComponent : a->GetComponents<CameraComponent>())
-            {
-                cameraIndex++;
-                ImGui::NewLine();
-                EditorUtils::DrawComponentBaseUI("Camera Component", cameraComponent, cameraIndex, a, DrawCameraComponentUI);
-            }
-        }
-
-        {
-            int spriteIndex = -1;
-            for (auto spriteComponent : a->GetComponents<SpriteComponent>())
-            {
-                spriteIndex++;
-                ImGui::NewLine();
-                EditorUtils::DrawComponentBaseUI("Sprite Component", spriteComponent, spriteIndex, a, DrawSpriteComponentUI);
-            }
-        }
+        CE_UTIL_ADD_RENDER("Mesh Component", MeshComponent, DrawMeshComponentUI);
+        CE_UTIL_ADD_RENDER("Camera Component", CameraComponent, DrawCameraComponentUI);
+        CE_UTIL_ADD_RENDER("Sprite Component", SpriteComponent, DrawSpriteComponentUI);
+        CE_UTIL_ADD_RENDER("Actor Script Component", ActorScriptComponent, DrawActorScriptComponentUI);
     }
 
     void DrawMeshComponentUI(MeshComponent *component, Actor *a)
@@ -460,4 +446,16 @@ namespace Core
             ImGui::TreePop();
         }
     }
+
+    void DrawActorScriptComponentUI(ActorScriptComponent *component, Actor *a)
+    {
+        {
+            char Buffer[256];
+            memset(Buffer, 0, 256);
+            memccpy(Buffer, component->ClassName.c_str(), component->ClassName.size(), 256);
+            if (ImGui::InputText("Class Name", Buffer, 256))
+                component->ClassName = Buffer;
+        }
+    }
+
 }

@@ -198,6 +198,20 @@ namespace Core
             }
         }
 
+        {
+            auto actorScriptComponent = a->GetComponents<ActorScriptComponent>();
+            CE_SERIALIZE_FIELD("ActorScriptComponentCount", actorScriptComponent.size());
+            int index = -1;
+            for (auto sc : actorScriptComponent)
+            {
+                index++;
+                out << YAML::Key << "ActorScriptComponent " + std::to_string(index);
+                out << YAML::BeginMap;
+                CE_SERIALIZE_FIELD("ClassName", sc->ClassName.c_str());
+                out << YAML::EndMap;
+            }
+        }
+
         out << YAML::EndMap;
 
         for (auto c : a->GetChildren())
@@ -334,6 +348,16 @@ namespace Core
                         addedMc->sprite->SetSize({mc["Sizes"][0].as<float>(), mc["Sizes"][1].as<float>()});
                         addedMc->sprite->SetFrameLayout({mc["FrameLayout"][0].as<float>(), mc["FrameLayout"][1].as<float>()});
                         addedMc->sprite->SetCurrentFrame(mc["CurrentFrame"].as<float>());
+                    }
+                }
+
+                for (int i = 0; i < actor["ActorScriptComponentCount"].as<int>(); i++)
+                {
+                    auto addedMc = a->AddComponent<ActorScriptComponent>();
+                    auto mc = actor["ActorScriptComponent " + std::to_string(i)];
+                    if (mc)
+                    {
+                        addedMc->ClassName = mc["ClassName"].as<std::string>();
                     }
                 }
 
