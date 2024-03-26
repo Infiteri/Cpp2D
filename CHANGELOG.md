@@ -157,3 +157,8 @@
 - Fixed texture config copying when starting scenes
 - Hooked up script logic with scene
 - Test scripting example
+
+### 0.1.1 - 26.03.2024
+
+- Bugs and fixes
+- Started physics

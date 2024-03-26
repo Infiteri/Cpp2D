@@ -3,6 +3,14 @@
 #include "Script/ScriptEngine.h"
 #include "Components/Components.h"
 
+#include "Core/Engine.h"
+
+#include "box2d/b2_world.h"
+#include "box2d/b2_body.h"
+#include "box2d/b2_fixture.h"
+#include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
+
 #include <algorithm>
 
 namespace Core
@@ -11,6 +19,7 @@ namespace Core
 
     Scene::Scene()
     {
+        physicsWorld = nullptr;
         state = Uninitialized;
         Init();
     }
@@ -58,15 +67,51 @@ namespace Core
 
         state = Started;
 
+        physicsWorld = new b2World({0.0, 9.81f * 250});
+
         CameraComponent *cameraComponent = nullptr;
         for (auto a : actors)
         {
             a->Start();
 
             // Script setup
-            auto scriptComponents = a->GetComponents<ActorScriptComponent>();
-            for (auto sc : scriptComponents)
-                ScriptEngine::RegisterActorScript(sc->ClassName, a, a->GetName());
+            {
+                auto scriptComponents = a->GetComponents<ActorScriptComponent>();
+                for (auto sc : scriptComponents)
+                    ScriptEngine::RegisterActorScript(sc->ClassName, a, a->GetName());
+            }
+
+            // Physics setup
+            {
+                auto rigidComponents = a->GetComponents<RigidBody2DComponent>();
+                for (auto r : rigidComponents)
+                {
+                    b2BodyDef def;
+                    def.type = (b2BodyType)r->Type;
+                    Vector3 wPos = a->GetWorldPosition();
+                    def.position.Set(wPos.x, wPos.y);
+                    def.angle = a->GetTransform()->Rotation.z;
+                    b2Body *body = physicsWorld->CreateBody(&def);
+                    body->SetFixedRotation(r->FixedRotation);
+                    r->RuntimeBody = body;
+
+                    auto boxComponents = a->GetComponents<BoxCollider2DComponent>();
+                    for (auto b : boxComponents)
+                    {
+                        b2PolygonShape shape;
+                        shape.SetAsBox((b->Size.x) * a->GetTransform()->Scale.x, (b->Size.y) * a->GetTransform()->Scale.y);
+
+                        b2FixtureDef fixDef;
+                        fixDef.shape = &shape;
+                        fixDef.density = b->Density;
+                        fixDef.friction = b->Friction;
+                        fixDef.restitution = b->Restitution;
+                        fixDef.restitutionThreshold = b->RestitutionThreshold;
+
+                        body->CreateFixture(&fixDef);
+                    }
+                }
+            }
 
             // Camera setup
             if (cameraComponent == nullptr)
@@ -88,9 +133,27 @@ namespace Core
 
         state = Running;
 
+        {
+            const int32_t velocityIterations = 6;
+            const int32_t positionIterations = 2;
+            physicsWorld->Step(0.016f, velocityIterations, positionIterations);
+        }
+
         for (auto a : actors)
         {
             a->Update();
+
+            auto rigidComps = a->GetComponents<RigidBody2DComponent>();
+            for (auto rb : rigidComps)
+            {
+                b2Body *body = (b2Body *)rb->RuntimeBody;
+
+                auto pos = body->GetPosition();
+
+                a->GetTransform()->Position.x = body->GetPosition().x;
+                a->GetTransform()->Position.y = body->GetPosition().y;
+                a->GetTransform()->Rotation.z = body->GetAngle();
+            }
         }
 
         ScriptEngine::UpdateRuntime();
@@ -116,6 +179,12 @@ namespace Core
         for (auto a : actors)
         {
             a->Stop();
+        }
+
+        if (physicsWorld)
+        {
+            delete physicsWorld;
+            physicsWorld = nullptr;
         }
 
         ScriptEngine::StopRuntime();

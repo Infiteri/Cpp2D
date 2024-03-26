@@ -114,7 +114,8 @@ namespace Core
 
     SpriteComponent::SpriteComponent()
     {
-        sprite = new Sprite();
+        type = ComponentTypes::Sprite;
+        sprite = new Sprite({100, 100});
     }
 
     SpriteComponent::~SpriteComponent()
@@ -161,6 +162,7 @@ namespace Core
 
     ActorScriptComponent::ActorScriptComponent()
     {
+        type = ComponentTypes::ActorScript;
     }
 
     ActorScriptComponent::~ActorScriptComponent()
@@ -170,5 +172,50 @@ namespace Core
     void ActorScriptComponent::From(ActorScriptComponent *o)
     {
         ClassName = o->ClassName;
+    }
+
+    RigidBody2DComponent::RigidBody2DComponent()
+    {
+        type = ComponentTypes::RigidBody2D;
+    }
+
+    RigidBody2DComponent::~RigidBody2DComponent()
+    {
+        Destroy();
+    }
+
+    void RigidBody2DComponent::From(RigidBody2DComponent *comp)
+    {
+        Type = comp->Type;
+        FixedRotation = comp->FixedRotation;
+    }
+
+    void RigidBody2DComponent::Destroy()
+    {
+    }
+
+    BoxCollider2DComponent::BoxCollider2DComponent()
+    {
+        type = ComponentTypes::BoxCollider2D;
+    }
+
+    BoxCollider2DComponent::~BoxCollider2DComponent()
+    {
+        Destroy();
+    }
+
+    void BoxCollider2DComponent::From(BoxCollider2DComponent *comp)
+    {
+        Offset = comp->Offset;
+        Size = comp->Size;
+
+        Density = comp->Density;
+        Friction = comp->Friction;
+        Restitution = comp->Restitution;
+        RestitutionThreshold = comp->RestitutionThreshold;
+    }
+
+    void BoxCollider2DComponent::Destroy()
+    {
     }
 }

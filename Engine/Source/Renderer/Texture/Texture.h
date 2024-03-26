@@ -13,6 +13,7 @@ namespace Core
         {
             Default,
             File,
+            Params
         };
 
         enum TextureFilter
@@ -63,13 +64,7 @@ namespace Core
 
         inline Image *GetImage() { return image; };
         inline bool HasImage() { return image != nullptr; };
-        std::string GetImagePath()
-        {
-            if (HasImage())
-                return image->GetPath();
-            else
-                return "";
-        };
+        std::string GetImagePath();
 
         inline CeU32 GetID() { return id; };
         inline int GetIndex() { return index; };

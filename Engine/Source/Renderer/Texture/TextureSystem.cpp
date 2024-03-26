@@ -23,6 +23,7 @@ namespace Core
     void TextureSystem::Shutdown()
     {
         delete state.defaultTexture.texture;
+        state.defaultTexture.texture = nullptr;
     }
 
     Texture *TextureSystem::Get(const std::string &name)

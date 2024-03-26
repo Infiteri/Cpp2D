@@ -4,6 +4,8 @@
 #include "Actor.h"
 #include <vector>
 
+class b2World;
+
 namespace Core
 {
     class CE_API Scene
@@ -40,11 +42,13 @@ namespace Core
         std::vector<Actor *> actors;
         std::string name;
 
+        b2World *physicsWorld;
+
     public:
         Scene();
         ~Scene();
 
-        static Scene* From(Scene* o);
+        static Scene *From(Scene *o);
 
         /// @brief Called when the scene is just created, called automatically so no need to manually call it.
         void Init();

@@ -82,7 +82,7 @@ namespace Core
     {
         DestroyGLTexture();
 
-        if (HasImage())
+        if (image != nullptr)
             delete image;
 
         image = nullptr;
@@ -95,6 +95,7 @@ namespace Core
         if (id != 0)
             DestroyGLTexture();
 
+        loadMode = Default;
         CeU8 data[4] = {255, 255, 255, 255};
         LoadTextureWithInformation(1, 1, 4, data, nullptr);
     }
@@ -104,6 +105,7 @@ namespace Core
         if (id != 0)
             DestroyGLTexture();
 
+        loadMode = File;
         DestroyImageIfPresentAndSetNullptr();
         image = new Image(name);
         LoadTextureWithInformation(image->GetWidth(), image->GetHeight(), image->GetChannels(), image->GetData(), nullptr);
@@ -126,6 +128,7 @@ namespace Core
             config.MaxFilter = Linear;
         }
 
+        loadMode = File;
         DestroyImageIfPresentAndSetNullptr();
         image = new Image(name);
         LoadTextureWithInformation(image->GetWidth(), image->GetHeight(), image->GetChannels(), image->GetData(), &config);
@@ -137,6 +140,7 @@ namespace Core
         if (id != 0)
             DestroyGLTexture();
 
+        loadMode = Params;
         LoadTextureWithInformation(width, height, channels, data, cfg);
     }
 
@@ -147,6 +151,8 @@ namespace Core
 
         config.MinFilter = _config->MinFilter;
         config.MaxFilter = _config->MaxFilter;
+
+        loadMode = File;
 
         if (image != nullptr)
         {
@@ -177,6 +183,14 @@ namespace Core
     {
         glActiveTexture(GL_TEXTURE0 + index); // TODO
         Bind();
+    }
+
+    std::string Texture::GetImagePath()
+    {
+        if (image != nullptr)
+            return image->GetPath();
+        else
+            return "";
     }
 
     void Texture::DestroyGLTexture()

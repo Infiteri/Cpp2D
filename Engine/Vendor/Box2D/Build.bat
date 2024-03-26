@@ -1,0 +1,1 @@
+g++ -g -shared -IEngine/Vendor/Box2D/include -IEngine/Vendor/Box2D/src Engine/Vendor/Box2D/src/common/*.cpp Engine/Vendor/Box2D/src/collision/*.cpp Engine/Vendor/Box2D/src/dynamics/*.cpp Engine/Vendor/Box2D/src/rope/*.cpp -o Bin/Box2D.dll

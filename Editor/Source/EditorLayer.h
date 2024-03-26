@@ -69,6 +69,7 @@ namespace Core
         EditorState state;
 
         void OnAttach();
+        void OnDetach();
         void OnUpdate();
         void LoadSettings();
         void SetupFromSettings();

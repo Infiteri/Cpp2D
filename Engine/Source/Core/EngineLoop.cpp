@@ -30,10 +30,10 @@ namespace Core
     {
         while (Engine::ShouldRun())
         {
-            Engine::Render();
             Engine::Update();
             if (app)
                 app->OnUpdate();
+            Engine::Render();
         }
     }
 

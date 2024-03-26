@@ -13,9 +13,9 @@ namespace Core
         material = MaterialSystem::GetDefaultMaterial();
         array = nullptr;
         size = sizes;
-        SetupVertexArray();
         frameLayout = {1, 1};
         currentFrame = 0;
+        SetupVertexArray();
     }
 
     Sprite::~Sprite()

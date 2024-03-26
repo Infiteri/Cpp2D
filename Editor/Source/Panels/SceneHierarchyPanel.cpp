@@ -176,6 +176,8 @@ namespace Core
     void DrawCameraComponentUI(CameraComponent *component, Actor *a);
     void DrawSpriteComponentUI(SpriteComponent *component, Actor *a);
     void DrawActorScriptComponentUI(ActorScriptComponent *component, Actor *a);
+    void DrawRigidBody2DComponentUI(RigidBody2DComponent *component, Actor *a);
+    void DrawBoxCollider2DComponentUI(BoxCollider2DComponent *component, Actor *a);
 
     void SceneHierarchyPanel::RenderActorProps(Actor *a)
     {
@@ -188,6 +190,8 @@ namespace Core
             CE_UTIL_ADD_COMPONENT("Camera Component", CameraComponent);
             CE_UTIL_ADD_COMPONENT("Sprite Component", SpriteComponent);
             CE_UTIL_ADD_COMPONENT("Script Component", ActorScriptComponent);
+            CE_UTIL_ADD_COMPONENT("Rigid Body 2D Component", RigidBody2DComponent);
+            CE_UTIL_ADD_COMPONENT("Box 2D Collider Component", BoxCollider2DComponent);
 
             ImGui::EndPopup();
         }
@@ -212,6 +216,8 @@ namespace Core
         CE_UTIL_ADD_RENDER("Camera Component", CameraComponent, DrawCameraComponentUI);
         CE_UTIL_ADD_RENDER("Sprite Component", SpriteComponent, DrawSpriteComponentUI);
         CE_UTIL_ADD_RENDER("Actor Script Component", ActorScriptComponent, DrawActorScriptComponentUI);
+        CE_UTIL_ADD_RENDER("Rigid Body 2D Component", RigidBody2DComponent, DrawRigidBody2DComponentUI);
+        CE_UTIL_ADD_RENDER("Box Collider 2D Component", BoxCollider2DComponent, DrawBoxCollider2DComponentUI);
     }
 
     void DrawMeshComponentUI(MeshComponent *component, Actor *a)
@@ -458,4 +464,42 @@ namespace Core
         }
     }
 
+    void DrawRigidBody2DComponentUI(RigidBody2DComponent *component, Actor *a)
+    {
+        {
+            const int Count = 3;
+            const char *GeometryTypes[Count] = {"Static", "Kinematic", "Rigid"};
+            const char *Current = GeometryTypes[(int)component->Type];
+            if (ImGui::BeginCombo("Body Type", Current))
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    bool isSelected = (Current == GeometryTypes[i]);
+                    if (ImGui::Selectable(GeometryTypes[i], isSelected))
+                    {
+                        Current = GeometryTypes[i];
+                        component->Type = (RigidBody2DComponent::BodyType)i;
+                    }
+
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
+                }
+
+                ImGui::EndCombo();
+            }
+        }
+
+        ImGui::Checkbox("Fixed Rotation", &component->FixedRotation);
+    }
+
+    void DrawBoxCollider2DComponentUI(BoxCollider2DComponent *component, Actor *a)
+    {
+        EditorUtils::ImGuiVector2Edit("Size", &component->Size);
+        EditorUtils::ImGuiVector2Edit("Offset", &component->Offset);
+
+        ImGui::DragFloat("Friction", &component->Friction);
+        ImGui::DragFloat("Density", &component->Density);
+        ImGui::DragFloat("Restitution", &component->Restitution);
+        ImGui::DragFloat("Restitution Threshold", &component->RestitutionThreshold);
+    }
 }

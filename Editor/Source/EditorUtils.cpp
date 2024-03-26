@@ -131,4 +131,12 @@ namespace Core
             }
         }
     }
+
+    void EditorUtils::ImGuiVector2Edit(const char *name, Vector2 *v)
+    {
+        float data[2] = {v->x, v->y};
+        if (ImGui::DragFloat2(name, data, 0.05f))
+            v->Set(data[0], data[1]);
+    }
+
 }

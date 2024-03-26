@@ -50,6 +50,8 @@ namespace Core
         CE_COPY_ACTOR_COMPONENT(CameraComponent);
         CE_COPY_ACTOR_COMPONENT(SpriteComponent);
         CE_COPY_ACTOR_COMPONENT(ActorScriptComponent);
+        CE_COPY_ACTOR_COMPONENT(RigidBody2DComponent);
+        CE_COPY_ACTOR_COMPONENT(BoxCollider2DComponent);
 
         for (auto child : o->children)
         {
@@ -276,4 +278,11 @@ namespace Core
         }
     }
 
+    Vector3 Actor::GetWorldPosition()
+    {
+        return {
+            worldMatrix[12],
+            worldMatrix[13],
+            worldMatrix[14]};
+    }
 }

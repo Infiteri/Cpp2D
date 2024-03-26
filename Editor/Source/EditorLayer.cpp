@@ -22,11 +22,19 @@ namespace Core
         World::Create("New Scene");
         World::Activate("New Scene");
         SceneSerializer serializer(World::GetActive());
+        // serializer.Serialize("EngineResources/Scenes/Main.ce_scene");
         serializer.Deserialize("EngineResources/Scenes/Main.ce_scene");
         state.sceneSaveFilePath = "EngineResources/Scenes/Main.ce_scene";
 
         sceneState = SceneStatePlay;
         StopSceneRuntime();
+    }
+
+    void EditorLayer::OnDetach()
+    {
+        sceneState = SceneStateStop;
+        if (state.editorScene)
+            delete state.editorScene;
     }
 
     void EditorLayer::OnUpdate()

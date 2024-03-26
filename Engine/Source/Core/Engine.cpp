@@ -82,7 +82,6 @@ namespace Core
         state.lastTime = static_cast<float>(currentFrameTime);
 
         state.window->Update();
-        World::UpdateActiveScene();
         LayerStack::Update();
         Input::InternalUpdate();
     }
@@ -90,10 +89,10 @@ namespace Core
     void Engine::Shutdown()
     {
         CE_CORE_INFO("Stopping Engine...");
-        Renderer::Shutdown();
         ImGuiLayer::Shutdown();
         LayerStack::Destroy();
         World::Shutdown();
+        Renderer::Shutdown();
 
         delete state.window;
         Logger::Shutdown();

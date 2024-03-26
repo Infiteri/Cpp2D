@@ -59,7 +59,10 @@ namespace Core
         {
             if (texture->GetLoadMode() != Texture::Default)
             {
-                TextureSystem::Release(texture->GetImagePath());
+                if (texture->GetLoadMode() == Texture::File)
+                    TextureSystem::Release(texture->GetImagePath());
+                else
+                    delete texture;
             }
         }
 

@@ -45,5 +45,7 @@ namespace Core
 
         void RenderTextureUI(Material *material);
         void RenderTextureUIChangeFilter(Texture *texture);
+
+        void ImGuiVector2Edit(const char* name, Vector2* v);
     };
 }

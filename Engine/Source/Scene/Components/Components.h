@@ -13,7 +13,11 @@ namespace Core
     {
         Base,
         Mesh,
-        Camera
+        Camera,
+        Sprite,
+        ActorScript,
+        RigidBody2D,
+        BoxCollider2D
     };
 
     class CE_API Component
@@ -94,6 +98,53 @@ namespace Core
         ActorScriptComponent();
         ~ActorScriptComponent();
 
-        void From(ActorScriptComponent* o);
+        void From(ActorScriptComponent *o);
     };
+
+    class CE_API RigidBody2DComponent : public Component
+    {
+    public:
+        enum class BodyType
+        {
+            Static,
+            Kinematic,
+            Rigid,
+        };
+
+        BodyType Type = BodyType::Static;
+        bool FixedRotation = false;
+
+        void *RuntimeBody = nullptr;
+
+        RigidBody2DComponent();
+        ~RigidBody2DComponent();
+
+        void From(RigidBody2DComponent *comp);
+
+        void Destroy();
+    };
+
+    class CE_API BoxCollider2DComponent : public Component
+    {
+    public:
+        Vector2 Offset;
+        Vector2 Size;
+
+        // TODO: move to physics material
+
+        float Density = 1.0f;
+        float Friction = 1.0f;
+        float Restitution = 0.0f;
+        float RestitutionThreshold = 0.5f;
+
+        void *RuntimeBody = nullptr;
+
+        BoxCollider2DComponent();
+        ~BoxCollider2DComponent();
+
+        void From(BoxCollider2DComponent *comp);
+
+        void Destroy();
+    };
+
 }
