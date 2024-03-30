@@ -44,6 +44,8 @@ namespace Core
 
         b2World *physicsWorld;
 
+        float gravityScale;
+
     public:
         Scene();
         ~Scene();
@@ -67,6 +69,9 @@ namespace Core
 
         inline std::string GetName() { return name; };
         void SetName(const std::string &name);
+
+        inline float GetGravityScale() { return gravityScale; };
+        void SetGravityScale(float ns) { gravityScale = ns; };
 
         /// @brief Will ad an actor to the scene, also it keeps the reference, use "new Actor()" as argument for best result as the scene keeps the reference and uses it.
         /// @param actor The actor to spawn.

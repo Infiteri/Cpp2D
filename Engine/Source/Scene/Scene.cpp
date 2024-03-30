@@ -22,6 +22,8 @@ namespace Core
         physicsWorld = nullptr;
         state = Uninitialized;
         Init();
+
+        gravityScale = 1000.0f;
     }
 
     Scene::~Scene()
@@ -37,6 +39,7 @@ namespace Core
         Scene *scene = new Scene();
 
         scene->SetName(o->GetName());
+        scene->SetGravityScale(o->GetGravityScale());
 
         for (auto a : o->GetActors())
         {
@@ -67,7 +70,7 @@ namespace Core
 
         state = Started;
 
-        physicsWorld = new b2World({0.0, 9.81f * 250});
+        physicsWorld = new b2World({0.0, 9.81f * gravityScale});
 
         CameraComponent *cameraComponent = nullptr;
         for (auto a : actors)
@@ -103,10 +106,10 @@ namespace Core
 
                         b2FixtureDef fixDef;
                         fixDef.shape = &shape;
-                        fixDef.density = b->Density;
-                        fixDef.friction = b->Friction;
-                        fixDef.restitution = b->Restitution;
-                        fixDef.restitutionThreshold = b->RestitutionThreshold;
+                        fixDef.density = r->MaterialPhysics.Density;
+                        fixDef.friction = r->MaterialPhysics.Friction;
+                        fixDef.restitution = r->MaterialPhysics.Restitution;
+                        fixDef.restitutionThreshold = r->MaterialPhysics.RestitutionThreshold;
 
                         body->CreateFixture(&fixDef);
                     }
@@ -133,9 +136,10 @@ namespace Core
 
         state = Running;
 
+        ScriptEngine::UpdateRuntime();
         {
             const int32_t velocityIterations = 6;
-            const int32_t positionIterations = 2;
+            const int32_t positionIterations = 6;
             physicsWorld->Step(0.016f, velocityIterations, positionIterations);
         }
 
@@ -147,16 +151,12 @@ namespace Core
             for (auto rb : rigidComps)
             {
                 b2Body *body = (b2Body *)rb->RuntimeBody;
-
-                auto pos = body->GetPosition();
-
                 a->GetTransform()->Position.x = body->GetPosition().x;
                 a->GetTransform()->Position.y = body->GetPosition().y;
                 a->GetTransform()->Rotation.z = body->GetAngle();
             }
         }
 
-        ScriptEngine::UpdateRuntime();
     }
 
     void Scene::Render()

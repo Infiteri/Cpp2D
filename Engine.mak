@@ -5,7 +5,7 @@ OBJ_DIR := Bin-Obj
 ASSEMBLY := Engine
 EXTENSION := .dll
 VP = Engine/Vendor
-COMPILER_FLAGS := -g -std=c++17  #-fPIC
+COMPILER_FLAGS := -g -std=c++2a  #-fPIC
 INCLUDE_FLAGS := -IEngine\Source -I$(VP)/GLFW/include -I$(VP)/GLAD/include -I$(VP)/ImGui -I$(VP)/YAML/include -I$(VP)/stb -I$(VP)/Box2D/include
 LINKER_FLAGS := -g -shared -LBin -lglfw3 -lglad -lImGui -lYAML -lcomdlg32 -lShlwapi -lBox2D
 DEFINES := -D_DEBUG -DCE_BUILD_DLL -D_CRT_SECURE_NO_WARNINGS

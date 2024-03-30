@@ -101,6 +101,14 @@ namespace Core
         void From(ActorScriptComponent *o);
     };
 
+    struct PhysicsMaterial
+    {
+        float Density = 1.0f;
+        float Friction = 1.0f;
+        float Restitution = 0.0f;
+        float RestitutionThreshold = 0.5f;
+    };
+
     class CE_API RigidBody2DComponent : public Component
     {
     public:
@@ -111,16 +119,21 @@ namespace Core
             Rigid,
         };
 
+        Vector2 Velocity;
+
         BodyType Type = BodyType::Static;
         bool FixedRotation = false;
-
         void *RuntimeBody = nullptr;
+
+        PhysicsMaterial MaterialPhysics;
 
         RigidBody2DComponent();
         ~RigidBody2DComponent();
 
-        void From(RigidBody2DComponent *comp);
+        void ApplyForce(const Vector2 &v);
 
+        void From(RigidBody2DComponent *comp);
+        void Update();
         void Destroy();
     };
 
@@ -129,13 +142,6 @@ namespace Core
     public:
         Vector2 Offset;
         Vector2 Size;
-
-        // TODO: move to physics material
-
-        float Density = 1.0f;
-        float Friction = 1.0f;
-        float Restitution = 0.0f;
-        float RestitutionThreshold = 0.5f;
 
         void *RuntimeBody = nullptr;
 

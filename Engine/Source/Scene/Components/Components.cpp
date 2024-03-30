@@ -2,6 +2,8 @@
 #include "Core/Logger.h"
 #include "Scene/Actor.h"
 
+#include <box2d/b2_body.h>
+
 namespace Core
 {
     Component::Component()
@@ -184,10 +186,31 @@ namespace Core
         Destroy();
     }
 
+    void RigidBody2DComponent::ApplyForce(const Vector2 &v)
+    {
+        if (!RuntimeBody)
+            return;
+        auto b = (b2Body *)RuntimeBody;
+        b->ApplyLinearImpulseToCenter({v.x, v.y}, true);
+    }
+
     void RigidBody2DComponent::From(RigidBody2DComponent *comp)
     {
         Type = comp->Type;
         FixedRotation = comp->FixedRotation;
+
+        MaterialPhysics.Density = comp->MaterialPhysics.Density;
+        MaterialPhysics.Friction = comp->MaterialPhysics.Friction;
+        MaterialPhysics.Restitution = comp->MaterialPhysics.Restitution;
+        MaterialPhysics.RestitutionThreshold = comp->MaterialPhysics.RestitutionThreshold;
+    }
+
+    void RigidBody2DComponent::Update()
+    {
+        if (!RuntimeBody)
+            return;
+        auto b = (b2Body *)RuntimeBody;
+        b->ApplyLinearImpulseToCenter({Velocity.x, Velocity.y}, true);
     }
 
     void RigidBody2DComponent::Destroy()
@@ -208,11 +231,6 @@ namespace Core
     {
         Offset = comp->Offset;
         Size = comp->Size;
-
-        Density = comp->Density;
-        Friction = comp->Friction;
-        Restitution = comp->Restitution;
-        RestitutionThreshold = comp->RestitutionThreshold;
     }
 
     void BoxCollider2DComponent::Destroy()

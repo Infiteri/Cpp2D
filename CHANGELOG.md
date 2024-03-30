@@ -162,3 +162,8 @@
 
 - Bugs and fixes
 - Started physics
+
+### 0.1.2 - 30.03.2024
+
+- Work
+- Safe net

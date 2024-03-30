@@ -29,6 +29,7 @@ namespace Core
     struct EditorSettings
     {
         float CameraZoom;
+        float CameraMoveUnits;
         std::vector<EditableColorStyle> editableColors;
     };
 

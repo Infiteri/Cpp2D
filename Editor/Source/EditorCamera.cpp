@@ -16,6 +16,7 @@ namespace Core
     void EditorCamera::SetupFromSetings(EditorSettings *settings)
     {
         camera->SetZoom(settings->CameraZoom);
+        movementUnits = settings->CameraMoveUnits;
     }
 
     void EditorCamera::Activate()
@@ -34,14 +35,14 @@ namespace Core
             Input::SetMouseMode(MouseMode::Locked);
 
             auto mouseDelta = Input::GetMouseDelta();
-            camera->GetTransform()->Position.x += mouseDelta.x;
-            camera->GetTransform()->Position.y += mouseDelta.y;
+            camera->GetTransform()->Position.x += mouseDelta.x / movementUnits;
+            camera->GetTransform()->Position.y += mouseDelta.y / movementUnits;
         }
 
         float mouseDelta = Input::GetMouseWheelDelta();
         if (Input::GetKey(Keys::LeftControl) && mouseDelta != 0)
         {
-            camera->AddZoom(mouseDelta * 0.01);
+            camera->AddZoom(mouseDelta * 0.1);
             camera->CalculateProjection();
         }
 

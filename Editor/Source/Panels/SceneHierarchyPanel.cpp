@@ -6,6 +6,8 @@
     a->AddComponent<type>()
 
 #define CE_UTIL_ADD_RENDER(name, type, cb)                                           \
+    if (!a)                                                                          \
+        return;                                                                      \
     int index##type = -1;                                                            \
     for (auto Component##type : a->GetComponents<type>())                            \
     {                                                                                \
@@ -467,6 +469,12 @@ namespace Core
     void DrawRigidBody2DComponentUI(RigidBody2DComponent *component, Actor *a)
     {
         {
+            float gs = World::GetActive()->GetGravityScale();
+            if (ImGui::DragFloat("Scene Gravity Scale", &gs))
+                World::GetActive()->SetGravityScale(gs);
+        }
+
+        {
             const int Count = 3;
             const char *GeometryTypes[Count] = {"Static", "Kinematic", "Rigid"};
             const char *Current = GeometryTypes[(int)component->Type];
@@ -490,16 +498,16 @@ namespace Core
         }
 
         ImGui::Checkbox("Fixed Rotation", &component->FixedRotation);
+
+        ImGui::DragFloat("Friction", &component->MaterialPhysics.Friction);
+        ImGui::DragFloat("Density", &component->MaterialPhysics.Density);
+        ImGui::DragFloat("Restitution", &component->MaterialPhysics.Restitution);
+        ImGui::DragFloat("Restitution Threshold", &component->MaterialPhysics.RestitutionThreshold);
     }
 
     void DrawBoxCollider2DComponentUI(BoxCollider2DComponent *component, Actor *a)
     {
         EditorUtils::ImGuiVector2Edit("Size", &component->Size);
         EditorUtils::ImGuiVector2Edit("Offset", &component->Offset);
-
-        ImGui::DragFloat("Friction", &component->Friction);
-        ImGui::DragFloat("Density", &component->Density);
-        ImGui::DragFloat("Restitution", &component->Restitution);
-        ImGui::DragFloat("Restitution Threshold", &component->RestitutionThreshold);
     }
 }

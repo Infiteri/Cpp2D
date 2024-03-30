@@ -232,6 +232,10 @@ namespace Core
                 out << YAML::BeginMap;
                 CE_SERIALIZE_FIELD("Type", (int)rb->Type);
                 CE_SERIALIZE_FIELD("FixedRotation", rb->FixedRotation);
+                CE_SERIALIZE_FIELD("Friction", rb->MaterialPhysics.Friction);
+                CE_SERIALIZE_FIELD("Density", rb->MaterialPhysics.Density);
+                CE_SERIALIZE_FIELD("Restitution", rb->MaterialPhysics.Restitution);
+                CE_SERIALIZE_FIELD("RestitutionThreshold", rb->MaterialPhysics.RestitutionThreshold);
                 out << YAML::EndMap;
             }
         }
@@ -247,10 +251,6 @@ namespace Core
                 out << YAML::BeginMap;
                 CE_SERIALIZE_FIELD("Size", &rb->Size);
                 CE_SERIALIZE_FIELD("Offset", &rb->Offset);
-                CE_SERIALIZE_FIELD("Friction", rb->Friction);
-                CE_SERIALIZE_FIELD("Density", rb->Density);
-                CE_SERIALIZE_FIELD("Restitution", rb->Restitution);
-                CE_SERIALIZE_FIELD("RestitutionThreshold", rb->RestitutionThreshold);
                 out << YAML::EndMap;
             }
         }
@@ -412,6 +412,10 @@ namespace Core
                     {
                         addedMc->Type = (RigidBody2DComponent::BodyType)mc["Type"].as<int>();
                         addedMc->FixedRotation = mc["FixedRotation"].as<std::string>() == "true";
+                        addedMc->MaterialPhysics.Friction = mc["Friction"].as<float>();
+                        addedMc->MaterialPhysics.Density = mc["Density"].as<float>();
+                        addedMc->MaterialPhysics.Restitution = mc["Restitution"].as<float>();
+                        addedMc->MaterialPhysics.RestitutionThreshold = mc["RestitutionThreshold"].as<float>();
                     }
                 }
 
@@ -423,10 +427,6 @@ namespace Core
                     {
                         YAMLToVector2(mc["Size"], &addedMc->Size);
                         YAMLToVector2(mc["Offset"], &addedMc->Offset);
-                        addedMc->Friction = mc["Friction"].as<float>();
-                        addedMc->Density = mc["Density"].as<float>();
-                        addedMc->Restitution = mc["Restitution"].as<float>();
-                        addedMc->RestitutionThreshold = mc["RestitutionThreshold"].as<float>();
                     }
                 }
 
