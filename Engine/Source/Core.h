@@ -38,3 +38,8 @@
 
 #include "Script/ActorScript.h"
 #include "Script/ScriptEngine.h"
+
+#include "Physics/PhysicsBody.h"
+#include "Physics/PhysicsEngine.h"
+#include "Physics/Force/ForceGenerator.h"
+#include "Physics/Force/ForceRegistry.h"

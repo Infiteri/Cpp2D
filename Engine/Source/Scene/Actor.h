@@ -70,7 +70,6 @@ namespace Core
         inline StateType GetState() { return state; };
 
         inline Transform *GetTransform() { return &transform; };
-        Vector3 GetWorldPosition();
 
         inline std::string GetName() { return name; };
         void SetName(const std::string &name);

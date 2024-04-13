@@ -76,6 +76,15 @@ namespace Core
         Set(o->x, o->y, o->z);
     }
 
+    void Vector3::Normalize()
+    {
+        float m = Mag();
+        m = 1 / m;
+        x *= m;
+        y *= m;
+        z *= m;
+    };
+
     Vector4::Vector4()
     {
         Set(0, 0, 0, 0);

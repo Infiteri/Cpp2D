@@ -2,14 +2,9 @@
 #include "Core/Logger.h"
 #include "Script/ScriptEngine.h"
 #include "Components/Components.h"
+#include "Script/ScriptEngine.h"
 
-#include "Core/Engine.h"
-
-#include "box2d/b2_world.h"
-#include "box2d/b2_body.h"
-#include "box2d/b2_fixture.h"
-#include "box2d/b2_polygon_shape.h"
-#include "box2d/b2_circle_shape.h"
+#include "Physics/PhysicsEngine.h"
 
 #include <algorithm>
 
@@ -19,11 +14,8 @@ namespace Core
 
     Scene::Scene()
     {
-        physicsWorld = nullptr;
         state = Uninitialized;
         Init();
-
-        gravityScale = 1000.0f;
     }
 
     Scene::~Scene()
@@ -39,7 +31,6 @@ namespace Core
         Scene *scene = new Scene();
 
         scene->SetName(o->GetName());
-        scene->SetGravityScale(o->GetGravityScale());
 
         for (auto a : o->GetActors())
         {
@@ -70,7 +61,7 @@ namespace Core
 
         state = Started;
 
-        physicsWorld = new b2World({0.0, 9.81f * gravityScale});
+        ScriptEngine::CreateLibrary("TestLibrary");
 
         CameraComponent *cameraComponent = nullptr;
         for (auto a : actors)
@@ -78,42 +69,18 @@ namespace Core
             a->Start();
 
             // Script setup
+            auto scriptComponents = a->GetComponents<ActorScriptComponent>();
+            for (auto sc : scriptComponents)
+                ScriptEngine::RegisterActorScript(sc->ClassName, a, a->GetName());
+
+            auto physicsBodyComponents = a->GetComponents<PhysicsBodyComponent>();
+            for (auto rb : physicsBodyComponents)
             {
-                auto scriptComponents = a->GetComponents<ActorScriptComponent>();
-                for (auto sc : scriptComponents)
-                    ScriptEngine::RegisterActorScript(sc->ClassName, a, a->GetName());
-            }
-
-            // Physics setup
-            {
-                auto rigidComponents = a->GetComponents<RigidBody2DComponent>();
-                for (auto r : rigidComponents)
-                {
-                    b2BodyDef def;
-                    def.type = (b2BodyType)r->Type;
-                    Vector3 wPos = a->GetWorldPosition();
-                    def.position.Set(wPos.x, wPos.y);
-                    def.angle = a->GetTransform()->Rotation.z;
-                    b2Body *body = physicsWorld->CreateBody(&def);
-                    body->SetFixedRotation(r->FixedRotation);
-                    r->RuntimeBody = body;
-
-                    auto boxComponents = a->GetComponents<BoxCollider2DComponent>();
-                    for (auto b : boxComponents)
-                    {
-                        b2PolygonShape shape;
-                        shape.SetAsBox((b->Size.x) * a->GetTransform()->Scale.x, (b->Size.y) * a->GetTransform()->Scale.y);
-
-                        b2FixtureDef fixDef;
-                        fixDef.shape = &shape;
-                        fixDef.density = r->MaterialPhysics.Density;
-                        fixDef.friction = r->MaterialPhysics.Friction;
-                        fixDef.restitution = r->MaterialPhysics.Restitution;
-                        fixDef.restitutionThreshold = r->MaterialPhysics.RestitutionThreshold;
-
-                        body->CreateFixture(&fixDef);
-                    }
-                }
+                auto b = PhysicsEngine::CreateBody();
+                b->SetOwner(a);
+                rb->Body = b;
+                b->SetBodyType(rb->BodyType);
+                b->UsePhysicsMaterial(&rb->MaterialPhysics);
             }
 
             // Camera setup
@@ -127,6 +94,7 @@ namespace Core
             CameraSystem::Activate(nullptr);
 
         ScriptEngine::StartRuntime();
+        PhysicsEngine::StartRuntime();
     }
 
     void Scene::Update()
@@ -136,27 +104,13 @@ namespace Core
 
         state = Running;
 
-        ScriptEngine::UpdateRuntime();
-        {
-            const int32_t velocityIterations = 6;
-            const int32_t positionIterations = 6;
-            physicsWorld->Step(0.016f, velocityIterations, positionIterations);
-        }
-
         for (auto a : actors)
         {
             a->Update();
-
-            auto rigidComps = a->GetComponents<RigidBody2DComponent>();
-            for (auto rb : rigidComps)
-            {
-                b2Body *body = (b2Body *)rb->RuntimeBody;
-                a->GetTransform()->Position.x = body->GetPosition().x;
-                a->GetTransform()->Position.y = body->GetPosition().y;
-                a->GetTransform()->Rotation.z = body->GetAngle();
-            }
         }
 
+        ScriptEngine::UpdateRuntime();
+        PhysicsEngine::Update();
     }
 
     void Scene::Render()
@@ -181,13 +135,9 @@ namespace Core
             a->Stop();
         }
 
-        if (physicsWorld)
-        {
-            delete physicsWorld;
-            physicsWorld = nullptr;
-        }
-
         ScriptEngine::StopRuntime();
+        ScriptEngine::DestroyLibrary();
+        PhysicsEngine::StopRuntime();
     }
 
     void Scene::SetName(const std::string &_name)

@@ -77,6 +77,7 @@ namespace Core
             CE_LOG("WORLD", Warn, "Scene '%s' doesn't exist. Cannot be activated.", name.c_str());
             return;
         }
+
         activeScene = scenes[name];
     }
 

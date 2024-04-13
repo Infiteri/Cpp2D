@@ -4,8 +4,6 @@
 #include "Actor.h"
 #include <vector>
 
-class b2World;
-
 namespace Core
 {
     class CE_API Scene
@@ -42,15 +40,11 @@ namespace Core
         std::vector<Actor *> actors;
         std::string name;
 
-        b2World *physicsWorld;
-
-        float gravityScale;
-
     public:
         Scene();
         ~Scene();
 
-        static Scene *From(Scene *o);
+        static Scene* From(Scene* o);
 
         /// @brief Called when the scene is just created, called automatically so no need to manually call it.
         void Init();
@@ -69,9 +63,6 @@ namespace Core
 
         inline std::string GetName() { return name; };
         void SetName(const std::string &name);
-
-        inline float GetGravityScale() { return gravityScale; };
-        void SetGravityScale(float ns) { gravityScale = ns; };
 
         /// @brief Will ad an actor to the scene, also it keeps the reference, use "new Actor()" as argument for best result as the scene keeps the reference and uses it.
         /// @param actor The actor to spawn.

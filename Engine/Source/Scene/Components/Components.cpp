@@ -2,8 +2,6 @@
 #include "Core/Logger.h"
 #include "Scene/Actor.h"
 
-#include <box2d/b2_body.h>
-
 namespace Core
 {
     Component::Component()
@@ -116,8 +114,7 @@ namespace Core
 
     SpriteComponent::SpriteComponent()
     {
-        type = ComponentTypes::Sprite;
-        sprite = new Sprite({100, 100});
+        sprite = new Sprite();
     }
 
     SpriteComponent::~SpriteComponent()
@@ -176,64 +173,21 @@ namespace Core
         ClassName = o->ClassName;
     }
 
-    RigidBody2DComponent::RigidBody2DComponent()
+    PhysicsBodyComponent::PhysicsBodyComponent()
     {
-        type = ComponentTypes::RigidBody2D;
+        type = ComponentTypes::PhysicsBody;
+        Body = nullptr;
     }
 
-    RigidBody2DComponent::~RigidBody2DComponent()
-    {
-        Destroy();
-    }
-
-    void RigidBody2DComponent::ApplyForce(const Vector2 &v)
-    {
-        if (!RuntimeBody)
-            return;
-        auto b = (b2Body *)RuntimeBody;
-        b->ApplyLinearImpulseToCenter({v.x, v.y}, true);
-    }
-
-    void RigidBody2DComponent::From(RigidBody2DComponent *comp)
-    {
-        Type = comp->Type;
-        FixedRotation = comp->FixedRotation;
-
-        MaterialPhysics.Density = comp->MaterialPhysics.Density;
-        MaterialPhysics.Friction = comp->MaterialPhysics.Friction;
-        MaterialPhysics.Restitution = comp->MaterialPhysics.Restitution;
-        MaterialPhysics.RestitutionThreshold = comp->MaterialPhysics.RestitutionThreshold;
-    }
-
-    void RigidBody2DComponent::Update()
-    {
-        if (!RuntimeBody)
-            return;
-        auto b = (b2Body *)RuntimeBody;
-        b->ApplyLinearImpulseToCenter({Velocity.x, Velocity.y}, true);
-    }
-
-    void RigidBody2DComponent::Destroy()
+    PhysicsBodyComponent::~PhysicsBodyComponent()
     {
     }
 
-    BoxCollider2DComponent::BoxCollider2DComponent()
+    void PhysicsBodyComponent::From(PhysicsBodyComponent *o)
     {
-        type = ComponentTypes::BoxCollider2D;
-    }
-
-    BoxCollider2DComponent::~BoxCollider2DComponent()
-    {
-        Destroy();
-    }
-
-    void BoxCollider2DComponent::From(BoxCollider2DComponent *comp)
-    {
-        Offset = comp->Offset;
-        Size = comp->Size;
-    }
-
-    void BoxCollider2DComponent::Destroy()
-    {
+        BodyType = o->BodyType;
+        MaterialPhysics.Damping = o->MaterialPhysics.Damping;
+        MaterialPhysics.Mass = o->MaterialPhysics.Mass;
+        MaterialPhysics.AngularDamping = o->MaterialPhysics.AngularDamping;
     }
 }

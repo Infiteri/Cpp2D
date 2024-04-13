@@ -1,4 +1,5 @@
 #include "Math.h"
+#include <cmath>
 
 namespace Core
 {
@@ -20,6 +21,19 @@ namespace Core
                 return max;
 
             return value;
+        }
+        float Sqrt(float x)
+        {
+            return sqrtf(x);
+        }
+
+        float Pow(float x, float y)
+        {
+            return powf(x, y);
+        }
+        float Abs(float x)
+        {
+            return fabs(x);
         }
     }
 }

@@ -178,8 +178,7 @@ namespace Core
     void DrawCameraComponentUI(CameraComponent *component, Actor *a);
     void DrawSpriteComponentUI(SpriteComponent *component, Actor *a);
     void DrawActorScriptComponentUI(ActorScriptComponent *component, Actor *a);
-    void DrawRigidBody2DComponentUI(RigidBody2DComponent *component, Actor *a);
-    void DrawBoxCollider2DComponentUI(BoxCollider2DComponent *component, Actor *a);
+    void DrawPhysicsBodyComponentUI(PhysicsBodyComponent *component, Actor *a);
 
     void SceneHierarchyPanel::RenderActorProps(Actor *a)
     {
@@ -192,8 +191,7 @@ namespace Core
             CE_UTIL_ADD_COMPONENT("Camera Component", CameraComponent);
             CE_UTIL_ADD_COMPONENT("Sprite Component", SpriteComponent);
             CE_UTIL_ADD_COMPONENT("Script Component", ActorScriptComponent);
-            CE_UTIL_ADD_COMPONENT("Rigid Body 2D Component", RigidBody2DComponent);
-            CE_UTIL_ADD_COMPONENT("Box 2D Collider Component", BoxCollider2DComponent);
+            CE_UTIL_ADD_COMPONENT("Physics Body Component", PhysicsBodyComponent);
 
             ImGui::EndPopup();
         }
@@ -218,8 +216,7 @@ namespace Core
         CE_UTIL_ADD_RENDER("Camera Component", CameraComponent, DrawCameraComponentUI);
         CE_UTIL_ADD_RENDER("Sprite Component", SpriteComponent, DrawSpriteComponentUI);
         CE_UTIL_ADD_RENDER("Actor Script Component", ActorScriptComponent, DrawActorScriptComponentUI);
-        CE_UTIL_ADD_RENDER("Rigid Body 2D Component", RigidBody2DComponent, DrawRigidBody2DComponentUI);
-        CE_UTIL_ADD_RENDER("Box Collider 2D Component", BoxCollider2DComponent, DrawBoxCollider2DComponentUI);
+        CE_UTIL_ADD_RENDER("Physics Body Component", PhysicsBodyComponent, DrawPhysicsBodyComponentUI);
     }
 
     void DrawMeshComponentUI(MeshComponent *component, Actor *a)
@@ -466,27 +463,25 @@ namespace Core
         }
     }
 
-    void DrawRigidBody2DComponentUI(RigidBody2DComponent *component, Actor *a)
+    void DrawPhysicsBodyComponentUI(PhysicsBodyComponent *component, Actor *a)
     {
-        {
-            float gs = World::GetActive()->GetGravityScale();
-            if (ImGui::DragFloat("Scene Gravity Scale", &gs))
-                World::GetActive()->SetGravityScale(gs);
-        }
+        PhysicsMaterial *pMat = &component->MaterialPhysics;
+        if (component->Body != nullptr)
+            pMat = component->Body->GetPhysicsMaterial();
 
         {
             const int Count = 3;
-            const char *GeometryTypes[Count] = {"Static", "Kinematic", "Rigid"};
-            const char *Current = GeometryTypes[(int)component->Type];
-            if (ImGui::BeginCombo("Body Type", Current))
+            const char *Types[Count] = {"Static", "Kinematic", "Rigid"};
+            const char *Current = Types[(int)component->BodyType];
+            if (ImGui::BeginCombo("Type", Current))
             {
                 for (int i = 0; i < Count; i++)
                 {
-                    bool isSelected = (Current == GeometryTypes[i]);
-                    if (ImGui::Selectable(GeometryTypes[i], isSelected))
+                    bool isSelected = (Current == Types[i]);
+                    if (ImGui::Selectable(Types[i], isSelected))
                     {
-                        Current = GeometryTypes[i];
-                        component->Type = (RigidBody2DComponent::BodyType)i;
+                        Current = Types[i];
+                        component->BodyType = (PhysicsBody::BodyType)i;
                     }
 
                     if (isSelected)
@@ -497,17 +492,16 @@ namespace Core
             }
         }
 
-        ImGui::Checkbox("Fixed Rotation", &component->FixedRotation);
+        ImGui::DragFloat("Damping", &pMat->Damping, 0.05, 0.0, 1.0);
+        ImGui::DragFloat("Angular Damping", &pMat->AngularDamping, 0.05, 0.0, 1.0);
+        ImGui::DragFloat("Mass", &pMat->Mass, 0.1, 0.0);
 
-        ImGui::DragFloat("Friction", &component->MaterialPhysics.Friction);
-        ImGui::DragFloat("Density", &component->MaterialPhysics.Density);
-        ImGui::DragFloat("Restitution", &component->MaterialPhysics.Restitution);
-        ImGui::DragFloat("Restitution Threshold", &component->MaterialPhysics.RestitutionThreshold);
-    }
-
-    void DrawBoxCollider2DComponentUI(BoxCollider2DComponent *component, Actor *a)
-    {
-        EditorUtils::ImGuiVector2Edit("Size", &component->Size);
-        EditorUtils::ImGuiVector2Edit("Offset", &component->Offset);
+        // Spring
+        Spring *spr = PhysicsEngine::GetTempSpring();
+        if (spr)
+        {
+            ImGui::DragFloat("RestLength", &spr->RestLength, 0.1, 0.0);
+            ImGui::DragFloat("SpringConstant", &spr->SpringConstant, 0.1, 0.0);
+        }
     }
 }

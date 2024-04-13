@@ -5,6 +5,8 @@
 #include "Renderer/Object/Sprite.h"
 #include "Renderer/Camera/CameraSystem.h"
 
+#include "Physics/PhysicsBody.h"
+
 namespace Core
 {
     class Actor;
@@ -14,10 +16,8 @@ namespace Core
         Base,
         Mesh,
         Camera,
-        Sprite,
         ActorScript,
-        RigidBody2D,
-        BoxCollider2D
+        PhysicsBody
     };
 
     class CE_API Component
@@ -101,56 +101,16 @@ namespace Core
         void From(ActorScriptComponent *o);
     };
 
-    struct PhysicsMaterial
-    {
-        float Density = 1.0f;
-        float Friction = 1.0f;
-        float Restitution = 0.0f;
-        float RestitutionThreshold = 0.5f;
-    };
-
-    class CE_API RigidBody2DComponent : public Component
+    class CE_API PhysicsBodyComponent : public Component
     {
     public:
-        enum class BodyType
-        {
-            Static,
-            Kinematic,
-            Rigid,
-        };
+        PhysicsBody *Body;
+        PhysicsBody::BodyType BodyType = PhysicsBody::Static;
+        struct PhysicsMaterial MaterialPhysics;
 
-        Vector2 Velocity;
+        PhysicsBodyComponent();
+        ~PhysicsBodyComponent();
 
-        BodyType Type = BodyType::Static;
-        bool FixedRotation = false;
-        void *RuntimeBody = nullptr;
-
-        PhysicsMaterial MaterialPhysics;
-
-        RigidBody2DComponent();
-        ~RigidBody2DComponent();
-
-        void ApplyForce(const Vector2 &v);
-
-        void From(RigidBody2DComponent *comp);
-        void Update();
-        void Destroy();
+        void From(PhysicsBodyComponent *o);
     };
-
-    class CE_API BoxCollider2DComponent : public Component
-    {
-    public:
-        Vector2 Offset;
-        Vector2 Size;
-
-        void *RuntimeBody = nullptr;
-
-        BoxCollider2DComponent();
-        ~BoxCollider2DComponent();
-
-        void From(BoxCollider2DComponent *comp);
-
-        void Destroy();
-    };
-
 }

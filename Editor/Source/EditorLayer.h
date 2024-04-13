@@ -29,7 +29,6 @@ namespace Core
     struct EditorSettings
     {
         float CameraZoom;
-        float CameraMoveUnits;
         std::vector<EditableColorStyle> editableColors;
     };
 
@@ -70,8 +69,8 @@ namespace Core
         EditorState state;
 
         void OnAttach();
-        void OnDetach();
         void OnUpdate();
+        void OnDetach();
         void LoadSettings();
         void SetupFromSettings();
         void RegisterColors();

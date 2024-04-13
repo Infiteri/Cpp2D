@@ -23,7 +23,7 @@ namespace Core
     void ScriptEngine::CreateLibrary(const std::string &name)
     {
         Platform::CreateLibrary(name, &library);
-    } 
+    }
 
     DynamicLibrary *ScriptEngine::GetLibrary()
     {
@@ -55,6 +55,12 @@ namespace Core
         for (auto it : scripts)
             delete it.second;
         scripts.clear();
+    }
+
+    void ScriptEngine::DestroyLibrary()
+    {
+        if (library.Valid)
+            Platform::DestroyLibrary(&library);
     }
 
     void ScriptEngine::RegisterActorScript(ActorScript *script, Actor *owner, const std::string &name)

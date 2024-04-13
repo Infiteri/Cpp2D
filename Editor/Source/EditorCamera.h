@@ -15,12 +15,11 @@ namespace Core
 
     public:
         bool isRightClicking;
-        float movementUnits = 1.0f;
 
         EditorCamera();
         ~EditorCamera();
 
-        void SetupFromSetings(EditorSettings *settings);
+        void SetupFromSetings(EditorSettings* settings);
 
         void Activate();
 

@@ -5,6 +5,8 @@
 class TestActor : public Core::ActorScript
 {
 public:
+    Core::SpriteComponent *Sprite;
+
     TestActor();
     ~TestActor();
 

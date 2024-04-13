@@ -26,6 +26,8 @@ namespace Core
 
         static void ClearScriptSet();
 
+        static void DestroyLibrary();
+
         static void RegisterActorScript(ActorScript *script, Actor *owner, const std::string &name);
         static void RegisterActorScript(const std::string& className, Actor *owner, const std::string &name);
     };

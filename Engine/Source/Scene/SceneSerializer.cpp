@@ -44,12 +44,6 @@ namespace Core
             out->Set(node[0].as<float>(), node[1].as<float>(), node[2].as<float>());
     }
 
-    void YAMLToVector2(YAML::Node node, Vector2 *out)
-    {
-        if (node)
-            out->Set(node[0].as<float>(), node[1].as<float>());
-    }
-
     static void SerializeMaterial(Material *material, YAML::Emitter &out)
     {
         CE_SERIALIZE_FIELD("Load Mode", material->GetLoadMode());
@@ -89,19 +83,16 @@ namespace Core
         out << YAML::Key << "Scene";
         out << YAML::Value << scene->GetName().c_str();
 
-        if (scene->GetActors().size() > 0)
-        {
-            out << YAML::Key << "Actors";
-            out << YAML::Value << YAML::BeginSeq;
+        out << YAML::Key << "Actors";
+        out << YAML::Value << YAML::BeginSeq;
 
-            //
-            for (Actor *a : scene->GetActors())
-                SerializeActor(a, out);
+        //
+        for (Actor *a : scene->GetActors())
+            SerializeActor(a, out);
 
-            out << YAML::EndSeq;
-        }
-
+        out << YAML::EndSeq;
         out << YAML::EndMap;
+
         std::ofstream fout(filename);
         fout << out.c_str();
     }
@@ -222,35 +213,15 @@ namespace Core
         }
 
         {
-            auto rigidBody2DComponent = a->GetComponents<RigidBody2DComponent>();
-            CE_SERIALIZE_FIELD("RigidBody2DComponentCount", rigidBody2DComponent.size());
+            auto physicsBodyComponent = a->GetComponents<PhysicsBodyComponent>();
+            CE_SERIALIZE_FIELD("PhysicsBodyComponentCount", physicsBodyComponent.size());
             int index = -1;
-            for (auto rb : rigidBody2DComponent)
+            for (auto sc : physicsBodyComponent)
             {
                 index++;
-                out << YAML::Key << "RigidBody2DComponent " + std::to_string(index);
+                out << YAML::Key << "PhysicsBodyComponent " + std::to_string(index);
                 out << YAML::BeginMap;
-                CE_SERIALIZE_FIELD("Type", (int)rb->Type);
-                CE_SERIALIZE_FIELD("FixedRotation", rb->FixedRotation);
-                CE_SERIALIZE_FIELD("Friction", rb->MaterialPhysics.Friction);
-                CE_SERIALIZE_FIELD("Density", rb->MaterialPhysics.Density);
-                CE_SERIALIZE_FIELD("Restitution", rb->MaterialPhysics.Restitution);
-                CE_SERIALIZE_FIELD("RestitutionThreshold", rb->MaterialPhysics.RestitutionThreshold);
-                out << YAML::EndMap;
-            }
-        }
-
-        {
-            auto boxCollider2DComponent = a->GetComponents<BoxCollider2DComponent>();
-            CE_SERIALIZE_FIELD("BoxCollider2DComponentCount", boxCollider2DComponent.size());
-            int index = -1;
-            for (auto rb : boxCollider2DComponent)
-            {
-                index++;
-                out << YAML::Key << "BoxCollider2DComponent " + std::to_string(index);
-                out << YAML::BeginMap;
-                CE_SERIALIZE_FIELD("Size", &rb->Size);
-                CE_SERIALIZE_FIELD("Offset", &rb->Offset);
+                CE_SERIALIZE_FIELD("BodyType", (int)sc->BodyType);
                 out << YAML::EndMap;
             }
         }
@@ -404,29 +375,13 @@ namespace Core
                     }
                 }
 
-                for (int i = 0; i < actor["RigidBody2DComponentCount"].as<int>(); i++)
+                for (int i = 0; i < actor["PhysicsBodyComponentCount"].as<int>(); i++)
                 {
-                    auto addedMc = a->AddComponent<RigidBody2DComponent>();
-                    auto mc = actor["RigidBody2DComponent " + std::to_string(i)];
+                    auto addedMc = a->AddComponent<PhysicsBodyComponent>();
+                    auto mc = actor["PhysicsBodyComponent " + std::to_string(i)];
                     if (mc)
                     {
-                        addedMc->Type = (RigidBody2DComponent::BodyType)mc["Type"].as<int>();
-                        addedMc->FixedRotation = mc["FixedRotation"].as<std::string>() == "true";
-                        addedMc->MaterialPhysics.Friction = mc["Friction"].as<float>();
-                        addedMc->MaterialPhysics.Density = mc["Density"].as<float>();
-                        addedMc->MaterialPhysics.Restitution = mc["Restitution"].as<float>();
-                        addedMc->MaterialPhysics.RestitutionThreshold = mc["RestitutionThreshold"].as<float>();
-                    }
-                }
-
-                for (int i = 0; i < actor["BoxCollider2DComponentCount"].as<int>(); i++)
-                {
-                    auto addedMc = a->AddComponent<BoxCollider2DComponent>();
-                    auto mc = actor["BoxCollider2DComponent " + std::to_string(i)];
-                    if (mc)
-                    {
-                        YAMLToVector2(mc["Size"], &addedMc->Size);
-                        YAMLToVector2(mc["Offset"], &addedMc->Offset);
+                        addedMc->BodyType = (PhysicsBody::BodyType)mc["BodyType"].as<int>();
                     }
                 }
 

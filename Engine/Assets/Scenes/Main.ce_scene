@@ -10,8 +10,8 @@ Actors:
       Scale: [1, 1, 1]
     MeshComponentCount: 0
     CameraComponentCount: 0
-    SpriteComponentCount: 0
-    ActorScriptComponentCount 0:
+    SpriteComponentCount: 1
+    SpriteComponent 0:
       Load Mode: 1
       Name: ""
       Color: [255, 255, 255, 255]
@@ -21,3 +21,19 @@ Actors:
       Sizes: [512, 512]
       FrameLayout: [1, 4]
       CurrentFrame: 0
+  - Actor: Filed
+    UUID: 15690817201535237022
+    Name: Camera
+    ParentUUID: 0
+    Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    MeshComponentCount: 0
+    CameraComponentCount: 1
+    CameraComponent 0:
+      Type: 0
+      OriginPoint: 1
+      Zoom: 1
+      TransformType: 1
+    SpriteComponentCount: 0

@@ -55,15 +55,12 @@ namespace Core
 
     void Material::ReleaseTexture()
     {
-        if (texture != nullptr)
+        if (texture->GetLoadMode() != Texture::Default)
         {
-            if (texture->GetLoadMode() != Texture::Default)
-            {
-                if (texture->GetLoadMode() == Texture::File)
-                    TextureSystem::Release(texture->GetImagePath());
-                else
-                    delete texture;
-            }
+            if (texture->GetLoadMode() == Texture::File)
+                TextureSystem::Release(texture->GetImagePath());
+            else
+                delete texture;
         }
 
         texture = nullptr;

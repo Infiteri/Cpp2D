@@ -8,6 +8,7 @@
 #include "Scene/World.h"
 #include "Platform/Platform.h"
 #include "Script/ScriptEngine.h"
+#include "Physics/PhysicsEngine.h"
 
 #include <glfw/glfw3.h>
 
@@ -48,9 +49,9 @@ namespace Core
         ImGuiLayer::Init();
         LayerStack::Init();
         World::Init();
+        PhysicsEngine::Init();
 
         ScriptEngine::Init();
-        ScriptEngine::CreateLibrary("TestLibrary");
 
         CE_CORE_INFO("Started Engine with success");
     }

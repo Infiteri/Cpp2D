@@ -67,7 +67,24 @@ namespace Core
     void EditorUtils::TransformGUIRender(Transform *transform)
     {
         ImGuiVector3StyledEdit("Position", &transform->Position, 0.0f);
-        ImGuiVector3StyledEdit("Rotation", &transform->Rotation, 0.0f);
+
+        {
+            Vector3 tempRot = transform->Rotation;
+            tempRot.x = tempRot.x * CE_RAD_TO_DEG;
+            tempRot.y = tempRot.y * CE_RAD_TO_DEG;
+            tempRot.z = tempRot.z * CE_RAD_TO_DEG;
+            ImGuiVector3StyledEdit("Rotation", &tempRot, 0.0f);
+            if (tempRot.x > 360)
+                tempRot.x -= 360;
+            if (tempRot.y > 360)
+                tempRot.y -= 360;
+            if (tempRot.z > 360)
+                tempRot.z -= 360;
+            transform->Rotation.x = tempRot.x * CE_DEG_TO_RAD;
+            transform->Rotation.y = tempRot.y * CE_DEG_TO_RAD;
+            transform->Rotation.z = tempRot.z * CE_DEG_TO_RAD;
+        }
+
         ImGuiVector3StyledEdit("Scale", &transform->Scale, 1.0f);
     }
 
@@ -138,5 +155,4 @@ namespace Core
         if (ImGui::DragFloat2(name, data, 0.05f))
             v->Set(data[0], data[1]);
     }
-
 }

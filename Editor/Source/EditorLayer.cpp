@@ -22,7 +22,6 @@ namespace Core
         World::Create("New Scene");
         World::Activate("New Scene");
         SceneSerializer serializer(World::GetActive());
-        // serializer.Serialize("EngineResources/Scenes/Main.ce_scene");
         serializer.Deserialize("EngineResources/Scenes/Main.ce_scene");
         state.sceneSaveFilePath = "EngineResources/Scenes/Main.ce_scene";
 
@@ -106,8 +105,6 @@ namespace Core
     {
         if (sceneState != SceneStateStop)
             return;
-
-        state.hierarchyPanel.selectionContext = nullptr;
 
         state.editorScene = Scene::From(World::GetActive());
         World::StartActiveScene();
@@ -210,7 +207,6 @@ namespace Core
         ImGui::Begin("Editor Settings Menu");
 
         ImGui::DragFloat("Camera Zoom", &state.editorSettings.CameraZoom, 0.05f, 0.1f, 100.0f);
-        ImGui::DragFloat("Camera Move Units", &state.editorSettings.CameraMoveUnits, 0.05f, 0.1f, 100.0f);
 
         ImGui::SeparatorText("Colors");
 

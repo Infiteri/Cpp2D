@@ -158,12 +158,10 @@
 - Hooked up script logic with scene
 - Test scripting example
 
-### 0.1.1 - 26.03.2024
+### 0.1.1 - 13.04.2024
 
-- Bugs and fixes
-- Started physics
-
-### 0.1.2 - 30.03.2024
-
-- Work
-- Safe net
+- Updated Core.h
+- Started custom physics
+- Fixed rotation in editor
+- Fixed some math
+- Started springs and force systems

@@ -140,7 +140,7 @@ namespace Core
         if (id != 0)
             DestroyGLTexture();
 
-        loadMode = Params;
+        loadMode = File;
         LoadTextureWithInformation(width, height, channels, data, cfg);
     }
 
@@ -151,8 +151,6 @@ namespace Core
 
         config.MinFilter = _config->MinFilter;
         config.MaxFilter = _config->MaxFilter;
-
-        loadMode = File;
 
         if (image != nullptr)
         {
@@ -183,14 +181,6 @@ namespace Core
     {
         glActiveTexture(GL_TEXTURE0 + index); // TODO
         Bind();
-    }
-
-    std::string Texture::GetImagePath()
-    {
-        if (image != nullptr)
-            return image->GetPath();
-        else
-            return "";
     }
 
     void Texture::DestroyGLTexture()

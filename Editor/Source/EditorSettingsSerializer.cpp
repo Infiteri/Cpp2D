@@ -32,7 +32,6 @@ namespace Core
         out << YAML::Value << "Field";
 
         CE_SERIALIZE_FIELD("CameraZoom", settings->CameraZoom);
-        CE_SERIALIZE_FIELD("CameraMoveUnits", settings->CameraMoveUnits);
 
         out << YAML::Key << "Colors";
         out << YAML::Value << YAML::BeginSeq;
@@ -72,7 +71,6 @@ namespace Core
             return;
 
         settings->CameraZoom = data["CameraZoom"].as<float>();
-        settings->CameraMoveUnits = data["CameraMoveUnits"].as<float>();
 
         auto colors = data["Colors"];
         if (colors)
