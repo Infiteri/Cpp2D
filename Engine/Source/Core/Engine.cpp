@@ -49,9 +49,11 @@ namespace Core
         ImGuiLayer::Init();
         LayerStack::Init();
         World::Init();
-        PhysicsEngine::Init();
 
         ScriptEngine::Init();
+        ScriptEngine::CreateLibrary("TestLibrary");
+
+        PhysicsEngine::Init();
 
         CE_CORE_INFO("Started Engine with success");
     }
@@ -83,6 +85,7 @@ namespace Core
         state.lastTime = static_cast<float>(currentFrameTime);
 
         state.window->Update();
+        // World::UpdateActiveScene(); todo: update runtime (somehow) when: runtime environment is created (CoreRuntime)
         LayerStack::Update();
         Input::InternalUpdate();
     }
@@ -90,10 +93,10 @@ namespace Core
     void Engine::Shutdown()
     {
         CE_CORE_INFO("Stopping Engine...");
-        ImGuiLayer::Shutdown();
         LayerStack::Destroy();
         World::Shutdown();
         Renderer::Shutdown();
+        ImGuiLayer::Shutdown();
 
         delete state.window;
         Logger::Shutdown();

@@ -50,7 +50,7 @@ namespace Core
         CE_COPY_ACTOR_COMPONENT(CameraComponent);
         CE_COPY_ACTOR_COMPONENT(SpriteComponent);
         CE_COPY_ACTOR_COMPONENT(ActorScriptComponent);
-        CE_COPY_ACTOR_COMPONENT(PhysicsBodyComponent);
+        CE_COPY_ACTOR_COMPONENT(RigidBodyComponent);
 
         for (auto child : o->children)
         {

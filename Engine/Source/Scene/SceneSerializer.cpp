@@ -1,4 +1,5 @@
 
+
 #include "SceneSerializer.h"
 #include "Core/Logger.h"
 #include "Math/Vectors.h"
@@ -43,6 +44,15 @@ namespace Core
         if (node)
             out->Set(node[0].as<float>(), node[1].as<float>(), node[2].as<float>());
     }
+
+    static int GetNodeCount(const std::string &name, YAML::Node node) // Ensures node exists and then returns it as "<int>", useful for when components get added but not serialized yet
+    {
+        std::string fmt = name + "Count";
+        if (node[fmt])
+            return node[fmt].as<int>();
+        else
+            return 0;
+    };
 
     static void SerializeMaterial(Material *material, YAML::Emitter &out)
     {
@@ -213,15 +223,15 @@ namespace Core
         }
 
         {
-            auto physicsBodyComponent = a->GetComponents<PhysicsBodyComponent>();
-            CE_SERIALIZE_FIELD("PhysicsBodyComponentCount", physicsBodyComponent.size());
+            auto rigidBodyComponent = a->GetComponents<RigidBodyComponent>();
+            CE_SERIALIZE_FIELD("RigidBodyComponentCount", rigidBodyComponent.size());
             int index = -1;
-            for (auto sc : physicsBodyComponent)
+            for (auto sc : rigidBodyComponent)
             {
                 index++;
-                out << YAML::Key << "PhysicsBodyComponent " + std::to_string(index);
+                out << YAML::Key << "RigidBodyComponent " + std::to_string(index);
                 out << YAML::BeginMap;
-                CE_SERIALIZE_FIELD("BodyType", (int)sc->BodyType);
+                CE_SERIALIZE_FIELD("Mass", sc->Configuration.Mass);
                 out << YAML::EndMap;
             }
         }
@@ -269,7 +279,7 @@ namespace Core
                     YAMLToVector3(actor["Transform"]["Scale"], &a->GetTransform()->Scale);
                 }
 
-                for (int i = 0; i < actor["MeshComponentCount"].as<int>(); i++)
+                for (int i = 0; i < GetNodeCount("MeshComponent", actor); i++)
                 {
                     auto addedMc = a->AddComponent<MeshComponent>();
                     auto mc = actor["MeshComponent " + std::to_string(i)];
@@ -279,6 +289,10 @@ namespace Core
 
                         switch (loadMode)
                         {
+                        case Material::Default:
+                            addedMc->mesh->MakeMaterialDefault();
+                            break;
+
                         case Material::File:
                             addedMc->SetMaterial(mc["FileName"].as<std::string>());
                             break;
@@ -310,7 +324,7 @@ namespace Core
                     }
                 }
 
-                for (int i = 0; i < actor["CameraComponentCount"].as<int>(); i++)
+                for (int i = 0; i < GetNodeCount("CameraComponent", actor); i++)
                 {
                     auto addedMc = a->AddComponent<CameraComponent>();
                     auto mc = actor["CameraComponent " + std::to_string(i)];
@@ -331,7 +345,7 @@ namespace Core
                     }
                 }
 
-                for (int i = 0; i < actor["SpriteComponentCount"].as<int>(); i++)
+                for (int i = 0; i < GetNodeCount("SpriteComponent", actor); i++)
                 {
                     auto addedMc = a->AddComponent<SpriteComponent>();
                     auto mc = actor["SpriteComponent " + std::to_string(i)];
@@ -342,6 +356,10 @@ namespace Core
 
                         switch (loadMode)
                         {
+                        case Material::Default:
+                            addedMc->sprite->MakeMaterialDefault();
+                            break;
+
                         case Material::File:
                             addedMc->sprite->SetMaterial(mc["FileName"].as<std::string>());
                             break;
@@ -353,11 +371,9 @@ namespace Core
                             config.TexturePath = mc["TextureName"].as<std::string>();
                             config.TextureConfiguration.MinFilter = (Texture::TextureFilter)mc["TextureMin"].as<int>();
                             config.TextureConfiguration.MaxFilter = (Texture::TextureFilter)mc["TextureMax"].as<int>();
-
                             addedMc->sprite->SetMaterial(&config);
-
                             break;
-                        }
+                        } // TODO: Refactor to a function for deserializing materials with meshes
 
                         addedMc->sprite->SetSize({mc["Sizes"][0].as<float>(), mc["Sizes"][1].as<float>()});
                         addedMc->sprite->SetFrameLayout({mc["FrameLayout"][0].as<float>(), mc["FrameLayout"][1].as<float>()});
@@ -365,7 +381,7 @@ namespace Core
                     }
                 }
 
-                for (int i = 0; i < actor["ActorScriptComponentCount"].as<int>(); i++)
+                for (int i = 0; i < GetNodeCount("ActorScriptComponent", actor); i++)
                 {
                     auto addedMc = a->AddComponent<ActorScriptComponent>();
                     auto mc = actor["ActorScriptComponent " + std::to_string(i)];
@@ -375,13 +391,13 @@ namespace Core
                     }
                 }
 
-                for (int i = 0; i < actor["PhysicsBodyComponentCount"].as<int>(); i++)
+                for (int i = 0; i < GetNodeCount("RigidBodyComponent", actor); i++)
                 {
-                    auto addedMc = a->AddComponent<PhysicsBodyComponent>();
-                    auto mc = actor["PhysicsBodyComponent " + std::to_string(i)];
-                    if (mc)
+                    auto pc = a->AddComponent<RigidBodyComponent>();
+                    auto data = actor["RigidBodyComponent " + std::to_string(i)];
+                    if (data)
                     {
-                        addedMc->BodyType = (PhysicsBody::BodyType)mc["BodyType"].as<int>();
+                        pc->Configuration.Mass = data["Mass"].as<float>();
                     }
                 }
 

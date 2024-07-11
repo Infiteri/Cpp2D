@@ -1,10 +1,4 @@
 #include "Test.h"
-#include "iostream"
-
-float CycleSecond = 0.5f;
-float Progress = 0.0f;
-int ActionIndex = 0;
-int Direction = 1;
 
 TestActor::TestActor()
 {
@@ -20,12 +14,12 @@ void TestActor::OnStart()
 
 void TestActor::OnUpdate()
 {
-    auto c = GetComponent<Core::PhysicsBodyComponent>();
-    if (!c || !c->Body)
+    rb = GetComponent<Core::RigidBodyComponent>();
+    if (!rb)
         return;
 
-    if (Core::Input::GetKeyJustNow(Core::Keys::A))
+    if (Core::Input::GetKey(Core::Keys::W))
     {
-        c->Body->ApplyTorqueForce(1);
+        rb->Body->ApplyTorque(10);
     }
 }

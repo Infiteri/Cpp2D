@@ -1,3 +1,3 @@
 @ECHO OFF
 
-g++ -g -shared -ITestLibrary -IEngine/Source TestLibrary/*.cpp -LBin -lEngine -o Bin/TestLibrary.dll 
+g++ -g -shared -I../TestLibrary -I../Engine/Source ../TestLibrary/*.cpp -L. -lEngine -o TestLibrary.dll 

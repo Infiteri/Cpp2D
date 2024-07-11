@@ -1,4 +1,5 @@
 #include "Vectors.h"
+#include "Math.h"
 
 namespace Core
 {
@@ -38,6 +39,17 @@ namespace Core
         Set(o->x, o->y);
     }
 
+    float Vector2::Magnitude()
+    {
+        return Math::Sqrt(x * x + y * y);
+    }
+
+    void Vector2::Normalize()
+    {
+        float l = Magnitude();
+        (*this) *= (1) / l;
+    }
+
     Vector3::Vector3()
     {
         Set(0, 0, 0);
@@ -75,15 +87,6 @@ namespace Core
     {
         Set(o->x, o->y, o->z);
     }
-
-    void Vector3::Normalize()
-    {
-        float m = Mag();
-        m = 1 / m;
-        x *= m;
-        y *= m;
-        z *= m;
-    };
 
     Vector4::Vector4()
     {

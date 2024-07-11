@@ -36,6 +36,7 @@ namespace Core
         static void Shutdown();
 
         static void Log(const std::string &catName, LoggingLevel level, const char *message, ...);
+        static bool IsCategoryPresent(const std::string &CategoryName);
 
         /// @brief Will define a new log category.
         /// @param pending The pending. ((PENDING LEVEL): MESSAGE)
@@ -71,3 +72,6 @@ namespace Core
 #endif
 
 #define CE_DEFINE_LOG_CATEGORY(pending, name) Core::Logger::DefineLogCategory(pending, name)
+#define CE_DEFINE_LOG_CATEGORY_IF_NOT_EXIST(pending, name) \
+    if (!Core::Logger::IsCategoryPresent(name))            \
+    Core::Logger::DefineLogCategory(pending, name)

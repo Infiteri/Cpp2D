@@ -20,6 +20,7 @@
       "args": [],
       "stopAtEntry": false,
       "environment": [],
+      "console": "newExternalWindow"
     }
   ]
 }

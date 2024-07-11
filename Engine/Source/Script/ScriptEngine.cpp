@@ -30,6 +30,11 @@ namespace Core
         return &library;
     }
 
+    void ScriptEngine::UnloadLibrary()
+    {
+        Platform::DestroyLibrary(&library);
+    }
+
     void ScriptEngine::StartRuntime()
     {
         for (auto it : scripts)
@@ -55,12 +60,6 @@ namespace Core
         for (auto it : scripts)
             delete it.second;
         scripts.clear();
-    }
-
-    void ScriptEngine::DestroyLibrary()
-    {
-        if (library.Valid)
-            Platform::DestroyLibrary(&library);
     }
 
     void ScriptEngine::RegisterActorScript(ActorScript *script, Actor *owner, const std::string &name)

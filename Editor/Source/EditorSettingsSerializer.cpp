@@ -21,10 +21,10 @@ namespace Core
     {
     }
 
-    void EditorSettingsSerializer::Serialize(const std::string &name)
+    bool EditorSettingsSerializer::Serialize(const std::string &name)
     {
         if (name.empty() || !settings)
-            return;
+            return false;
 
         YAML::Emitter out;
         out << YAML::BeginMap;
@@ -53,22 +53,30 @@ namespace Core
 
         std::ofstream fout(name);
         fout << out.c_str();
+
+        return true;
     }
 
-    void EditorSettingsSerializer::Deserialize(const std::string &name)
+    bool EditorSettingsSerializer::Deserialize(const std::string &name)
     {
         if (name.empty() || !settings)
-            return;
+            return false;
 
         std::ifstream stream(name);
         std::stringstream strStream(name);
 
         strStream << stream.rdbuf();
 
+        if (!stream.good())
+            return false;
+
+        if (strStream.str().size() <= 0) // Empty file
+            return false;
+
         YAML::Node data = YAML::Load(strStream.str());
 
-        if (!data["Settings"])
-            return;
+        if (data.IsNull() || !data["Settings"])
+            return false;
 
         settings->CameraZoom = data["CameraZoom"].as<float>();
 
@@ -85,5 +93,7 @@ namespace Core
                 imColors[(ImGuiCol)c["Color"].as<int>()].w = c["Color Value"][3].as<float>();
             }
         }
+
+        return true;
     }
 }

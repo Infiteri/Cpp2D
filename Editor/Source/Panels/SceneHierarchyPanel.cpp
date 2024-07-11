@@ -1,13 +1,12 @@
 #include "SceneHierarchyPanel.h"
 #include "EditorUtils.h"
+#include "EditorLayer.h"
 
 #define CE_UTIL_ADD_COMPONENT(name, type) \
     if (ImGui::MenuItem(name))            \
     a->AddComponent<type>()
 
 #define CE_UTIL_ADD_RENDER(name, type, cb)                                           \
-    if (!a)                                                                          \
-        return;                                                                      \
     int index##type = -1;                                                            \
     for (auto Component##type : a->GetComponents<type>())                            \
     {                                                                                \
@@ -178,10 +177,13 @@ namespace Core
     void DrawCameraComponentUI(CameraComponent *component, Actor *a);
     void DrawSpriteComponentUI(SpriteComponent *component, Actor *a);
     void DrawActorScriptComponentUI(ActorScriptComponent *component, Actor *a);
-    void DrawPhysicsBodyComponentUI(PhysicsBodyComponent *component, Actor *a);
+    void DrawRigidBodyComponentUI(RigidBodyComponent *component, Actor *a);
 
     void SceneHierarchyPanel::RenderActorProps(Actor *a)
     {
+        if (!a)
+            return;
+
         if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(ImGuiMouseButton_Right))
             ImGui::OpenPopup("RightClickProps");
 
@@ -191,7 +193,7 @@ namespace Core
             CE_UTIL_ADD_COMPONENT("Camera Component", CameraComponent);
             CE_UTIL_ADD_COMPONENT("Sprite Component", SpriteComponent);
             CE_UTIL_ADD_COMPONENT("Script Component", ActorScriptComponent);
-            CE_UTIL_ADD_COMPONENT("Physics Body Component", PhysicsBodyComponent);
+            CE_UTIL_ADD_COMPONENT("Rigid Component", RigidBodyComponent);
 
             ImGui::EndPopup();
         }
@@ -216,7 +218,7 @@ namespace Core
         CE_UTIL_ADD_RENDER("Camera Component", CameraComponent, DrawCameraComponentUI);
         CE_UTIL_ADD_RENDER("Sprite Component", SpriteComponent, DrawSpriteComponentUI);
         CE_UTIL_ADD_RENDER("Actor Script Component", ActorScriptComponent, DrawActorScriptComponentUI);
-        CE_UTIL_ADD_RENDER("Physics Body Component", PhysicsBodyComponent, DrawPhysicsBodyComponentUI);
+        CE_UTIL_ADD_RENDER("Rigid Body Component", RigidBodyComponent, DrawRigidBodyComponentUI);
     }
 
     void DrawMeshComponentUI(MeshComponent *component, Actor *a)
@@ -463,45 +465,19 @@ namespace Core
         }
     }
 
-    void DrawPhysicsBodyComponentUI(PhysicsBodyComponent *component, Actor *a)
+    void DrawRigidBodyComponentUI(RigidBodyComponent *component, Actor *a)
     {
-        PhysicsMaterial *pMat = &component->MaterialPhysics;
-        if (component->Body != nullptr)
-            pMat = component->Body->GetPhysicsMaterial();
+        RigidBodyConfiguration *config = nullptr;
+        if (EditorLayer::StaticGetEditorState()->sceneState == SceneStatePlay)
+            config = component->Body->GetConfiguration();
+        else
+            config = &component->Configuration;
 
-        {
-            const int Count = 3;
-            const char *Types[Count] = {"Static", "Kinematic", "Rigid"};
-            const char *Current = Types[(int)component->BodyType];
-            if (ImGui::BeginCombo("Type", Current))
-            {
-                for (int i = 0; i < Count; i++)
-                {
-                    bool isSelected = (Current == Types[i]);
-                    if (ImGui::Selectable(Types[i], isSelected))
-                    {
-                        Current = Types[i];
-                        component->BodyType = (PhysicsBody::BodyType)i;
-                    }
+        if (!config)
+            return;
 
-                    if (isSelected)
-                        ImGui::SetItemDefaultFocus();
-                }
-
-                ImGui::EndCombo();
-            }
-        }
-
-        ImGui::DragFloat("Damping", &pMat->Damping, 0.05, 0.0, 1.0);
-        ImGui::DragFloat("Angular Damping", &pMat->AngularDamping, 0.05, 0.0, 1.0);
-        ImGui::DragFloat("Mass", &pMat->Mass, 0.1, 0.0);
-
-        // Spring
-        Spring *spr = PhysicsEngine::GetTempSpring();
-        if (spr)
-        {
-            ImGui::DragFloat("RestLength", &spr->RestLength, 0.1, 0.0);
-            ImGui::DragFloat("SpringConstant", &spr->SpringConstant, 0.1, 0.0);
-        }
+        ImGui::DragFloat("Mass", &config->Mass, 0.05f, 0.0f);
+        ImGui::DragFloat("Damp", &config->Damp, 0.05f, 0.0f);
+        ImGui::DragFloat("Gravity Scale", &config->GravityScale, 0.05f, 0.0f);
     }
 }

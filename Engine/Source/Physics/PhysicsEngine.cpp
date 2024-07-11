@@ -1,69 +1,54 @@
 #include "PhysicsEngine.h"
 #include "Core/Logger.h"
-#include "Core/Engine.h"
 
 namespace Core
 {
-    static PhysicsEngineState state;
-    Spring spring;
+    static PhysicsEngine::State state;
 
     void PhysicsEngine::Init()
     {
-        state.GravityScaled = 9.81f * CE_GRAVITY_SCALE;
+        CE_DEFINE_LOG_CATEGORY_IF_NOT_EXIST("Physics", "CE_PHYS");
+        state.processStep = Initialized;
     }
 
     void PhysicsEngine::Shutdown()
     {
+        state.processStep = Stopped;
     }
 
-    void PhysicsEngine::SetGravity(float G)
+    RigidBody *PhysicsEngine::RegisterFromConfig(RigidBodyConfiguration *Configuration)
     {
-        state.GravityScaled = G * CE_GRAVITY_SCALE;
+        RigidBody *rb = new RigidBody(Configuration);
+        state.bodies.push_back(rb);
+        return rb;
     }
 
-    PhysicsBody *PhysicsEngine::CreateBody()
+    PhysicsEngine::Values *PhysicsEngine::GetValueSet()
     {
-        auto b = new PhysicsBody();
-        state.bodies.push_back(b);
-        return b;
+        return &state.valuesSet;
     }
 
-    void PhysicsEngine::StartRuntime()
+    void PhysicsEngine::UpdateRuntime()
     {
-    }
+        // if (state.processStep == Stopped)
+        //     return;
 
-    void PhysicsEngine::Update()
-    {
-        if (state.bodies.size() >= 2)
-        {
-            spring.Point = state.bodies[0];
-            spring.Target = state.bodies[1];
-        }
-        spring.Update();
+        state.processStep = Running;
 
         for (auto b : state.bodies)
         {
+            state.ForcesManager.Update(b);
             b->Update();
-            state.ForceReg.UpdateWithBody(b, Engine::GetDeltaTime());
         }
     }
 
     void PhysicsEngine::StopRuntime()
     {
-        for (auto it : state.bodies)
-            delete it;
+        for (auto b : state.bodies)
+        {
+            delete b;
+        }
 
         state.bodies.clear();
     }
-
-    Spring *PhysicsEngine::GetTempSpring()
-    {
-        return &spring;
-    }
-
-    float PhysicsEngine::GetGravityScaledValue()
-    {
-        return state.GravityScaled;
-    }
-
 }

@@ -1,4 +1,5 @@
 #include "Material.h"
+#include "Core/Logger.h"
 #include "Renderer/Shader/ShaderSystem.h"
 #include "Renderer/Texture/TextureSystem.h"
 
@@ -55,12 +56,12 @@ namespace Core
 
     void Material::ReleaseTexture()
     {
-        if (texture->GetLoadMode() != Texture::Default)
+        if (texture != nullptr)
         {
-            if (texture->GetLoadMode() == Texture::File)
+            if (texture->GetLoadMode() != Texture::Default)
+            {
                 TextureSystem::Release(texture->GetImagePath());
-            else
-                delete texture;
+            }
         }
 
         texture = nullptr;

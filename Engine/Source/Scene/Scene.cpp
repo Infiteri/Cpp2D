@@ -1,10 +1,8 @@
 #include "Scene.h"
 #include "Core/Logger.h"
 #include "Script/ScriptEngine.h"
-#include "Components/Components.h"
-#include "Script/ScriptEngine.h"
-
 #include "Physics/PhysicsEngine.h"
+#include "Components/Components.h"
 
 #include <algorithm>
 
@@ -61,27 +59,23 @@ namespace Core
 
         state = Started;
 
-        ScriptEngine::CreateLibrary("TestLibrary");
-
         CameraComponent *cameraComponent = nullptr;
         for (auto a : actors)
         {
             a->Start();
 
+            auto rigidComponents = a->GetComponents<RigidBodyComponent>();
+            for (auto sc : rigidComponents)
+            {
+                sc->Owner = a;
+                sc->Configuration.Owner = a;
+                sc->Body = PhysicsEngine::RegisterFromConfig(&sc->Configuration);
+            }
+
             // Script setup
             auto scriptComponents = a->GetComponents<ActorScriptComponent>();
             for (auto sc : scriptComponents)
                 ScriptEngine::RegisterActorScript(sc->ClassName, a, a->GetName());
-
-            auto physicsBodyComponents = a->GetComponents<PhysicsBodyComponent>();
-            for (auto rb : physicsBodyComponents)
-            {
-                auto b = PhysicsEngine::CreateBody();
-                b->SetOwner(a);
-                rb->Body = b;
-                b->SetBodyType(rb->BodyType);
-                b->UsePhysicsMaterial(&rb->MaterialPhysics);
-            }
 
             // Camera setup
             if (cameraComponent == nullptr)
@@ -94,7 +88,6 @@ namespace Core
             CameraSystem::Activate(nullptr);
 
         ScriptEngine::StartRuntime();
-        PhysicsEngine::StartRuntime();
     }
 
     void Scene::Update()
@@ -110,7 +103,7 @@ namespace Core
         }
 
         ScriptEngine::UpdateRuntime();
-        PhysicsEngine::Update();
+        PhysicsEngine::UpdateRuntime();
     }
 
     void Scene::Render()
@@ -136,7 +129,6 @@ namespace Core
         }
 
         ScriptEngine::StopRuntime();
-        ScriptEngine::DestroyLibrary();
         PhysicsEngine::StopRuntime();
     }
 

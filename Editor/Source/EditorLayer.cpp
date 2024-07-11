@@ -6,10 +6,12 @@
 namespace Core
 {
     static EditorLayer *inst;
+    static EditorState *refState;
 
     void EditorLayer::OnAttach()
     {
         inst = this;
+        refState = &state;
 
         state.editorAssets.PlayButtonTexture = new Texture("EngineResources/Images/Icons/PlayButton.png");
         state.editorAssets.StopButtonTexture = new Texture("EngineResources/Images/Icons/StopButton.png");
@@ -25,19 +27,20 @@ namespace Core
         serializer.Deserialize("EngineResources/Scenes/Main.ce_scene");
         state.sceneSaveFilePath = "EngineResources/Scenes/Main.ce_scene";
 
-        sceneState = SceneStatePlay;
+        sceneState = SceneStateStop;
         StopSceneRuntime();
     }
 
     void EditorLayer::OnDetach()
     {
-        sceneState = SceneStateStop;
-        if (state.editorScene)
-            delete state.editorScene;
+        state.isClosing = true;
+        StopSceneRuntime();
     }
 
     void EditorLayer::OnUpdate()
     {
+        state.sceneState = sceneState;
+
         switch (sceneState)
         {
         case SceneStateStop:
@@ -53,7 +56,11 @@ namespace Core
     void EditorLayer::LoadSettings()
     {
         EditorSettingsSerializer ser(&state.editorSettings);
-        ser.Deserialize("EditorSettings.ce_ed_set");
+        if (!ser.Deserialize("EditorSettings.ce_ed_set"))
+        {
+            CreateEditorSettingsFile();
+            LoadSettings();
+        }
     }
 
     void EditorLayer::SetupFromSettings()
@@ -119,12 +126,14 @@ namespace Core
             return;
 
         World::StopActiveScene();
+        if (state.isClosing)
+            return;
 
         if (state.editorScene != nullptr)
         {
             World::CopyToActive(state.editorScene);
-
             delete state.editorScene;
+            state.editorScene = nullptr;
         }
 
         state.editorCamera.Activate();
@@ -151,6 +160,9 @@ namespace Core
             if (ImGui::MenuItem("Editor"))
                 ImGui::OpenPopup("EditorPopup");
 
+            if (ImGui::MenuItem("Script"))
+                ImGui::OpenPopup("ScriptPopup");
+
             if (ImGui::BeginPopup("ScenePopup"))
             {
                 if (ImGui::MenuItem("Save..."))
@@ -169,6 +181,14 @@ namespace Core
             {
                 if (ImGui::MenuItem("Settings..."))
                     state.settingsMenu.Render = true;
+
+                ImGui::EndPopup();
+            }
+
+            if (ImGui::BeginPopup("ScriptPopup"))
+            {
+                if (ImGui::MenuItem("Build"))
+                    LoadCodeLibrary();
 
                 ImGui::EndPopup();
             }
@@ -384,11 +404,32 @@ namespace Core
         return &inst->state.editorSettings;
     }
 
+    void EditorLayer::CreateEditorSettingsFile()
+    {
+        EditorSettingsSerializer ser(&state.editorSettings);
+        ser.Serialize("EditorSettings.ce_ed_set");
+    }
+
+    void EditorLayer::LoadCodeLibrary()
+    {
+        ScriptEngine::UnloadLibrary();
+
+        // TODO: When projects exist, use project configuration
+        std::string command = "call ../TestLibrary/Build.bat\n";
+        system(command.c_str());
+        ScriptEngine::CreateLibrary("TestLibrary");
+    }
+
     EditorAssets *EditorLayer::StaticGetEditorAssets()
     {
         if (!inst)
             return nullptr;
 
         return &inst->state.editorAssets;
+    }
+
+    EditorState *EditorLayer::StaticGetEditorState()
+    {
+        return refState;
     }
 }

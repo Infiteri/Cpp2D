@@ -158,10 +158,19 @@
 - Hooked up script logic with scene
 - Test scripting example
 
-### 0.1.1 - 13.04.2024
+### 0.1.1 - 11.07.2024
 
-- Updated Core.h
-- Started custom physics
-- Fixed rotation in editor
-- Fixed some math
-- Started springs and force systems
+- Fixed Editor settings file
+- Fixed Geometry Related Bugs
+- Fixed some closing bugs
+- Fixed Material mode confusion
+- Started Physics Engine
+- Added "CE_DEFINE_LOG_CATEGORY_IF_NOT_EXIST" in Logger
+- Refactored Physics Body System
+- Added Library reloading in editor
+- Added different rigid body configurations (Mass/Damp/etc...)
+- Fixed inverted Y-axis (Orthographic Camera issue)
+- Added Force Generators (mostly used in game scripting)
+- Added torque acceleration
+- Fixed transform rotation
+- Started quaternions math

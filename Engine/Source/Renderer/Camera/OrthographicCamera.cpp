@@ -33,7 +33,7 @@ namespace Core
         {
             float calculatedWidth = (width / 2) * (zoom / 2);
             float calculatedHeight = (height / 2) * (zoom / 2);
-            projection = Matrix4::Ortho(-calculatedWidth, calculatedWidth, -calculatedHeight, calculatedHeight, near, far);
+            projection = Matrix4::Ortho(-calculatedWidth, calculatedWidth, calculatedHeight, -calculatedHeight, near, far);
         }
         break;
 

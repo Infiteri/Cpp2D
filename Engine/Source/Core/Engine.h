@@ -33,7 +33,7 @@ namespace Core
         static void Shutdown();
 
         static bool ShouldRun();
-        
+
         static float GetDeltaTime();
 
         static Window *GetWindow();

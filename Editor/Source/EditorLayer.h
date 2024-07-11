@@ -37,8 +37,15 @@ namespace Core
         bool Render = false;
     };
 
+    enum SceneState
+    {
+        SceneStateStop,
+        SceneStatePlay,
+    };
+
     struct EditorState
     {
+        SceneState sceneState;
         EditorSettings editorSettings;
         SceneHierarchyPanel hierarchyPanel;
         EditorSettingsMenu settingsMenu;
@@ -46,6 +53,7 @@ namespace Core
 
         Scene *editorScene;
 
+        bool isClosing = false;
         bool canUpdateCamera = false;
         EditorCamera editorCamera;
 
@@ -69,8 +77,8 @@ namespace Core
         EditorState state;
 
         void OnAttach();
-        void OnUpdate();
         void OnDetach();
+        void OnUpdate();
         void LoadSettings();
         void SetupFromSettings();
         void RegisterColors();
@@ -78,11 +86,6 @@ namespace Core
         void OnImGuiRender();
 
         // -- SCENE RUNTIME --
-        enum SceneState
-        {
-            SceneStateStop,
-            SceneStatePlay,
-        };
         SceneState sceneState;
 
         void StartSceneRuntime();
@@ -114,8 +117,11 @@ namespace Core
         // ----------------
 
         void UI_UTIL_DrawColorChanger(const char *label, int target);
+        void CreateEditorSettingsFile();
+        void LoadCodeLibrary();
 
         static EditorSettings *StaticGetEditorSettings();
         static EditorAssets *StaticGetEditorAssets();
+        static EditorState *StaticGetEditorState();
     };
 }

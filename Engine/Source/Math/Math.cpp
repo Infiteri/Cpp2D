@@ -12,6 +12,12 @@ namespace Core
             else
                 return -x;
         }
+
+        float Pow(float x, float pow)
+        {
+            return powf(x, pow);
+        }
+
         float Clamp(float value, float min, float max)
         {
             if (value < min)
@@ -22,18 +28,15 @@ namespace Core
 
             return value;
         }
-        float Sqrt(float x)
+
+        float Sqrt(float value)
         {
-            return sqrtf(x);
+            return sqrtf(value);
         }
 
-        float Pow(float x, float y)
+        float Abs(float value)
         {
-            return powf(x, y);
-        }
-        float Abs(float x)
-        {
-            return fabs(x);
+            return abs(value);
         }
     }
 }

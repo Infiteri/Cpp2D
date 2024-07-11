@@ -1,10 +1,74 @@
-#include "Matrix4.h"
+#include "Matrices.h"
 #include "Platform/Platform.h"
 
 #include "cmath"
 
 namespace Core
 {
+    Matrix3::Matrix3()
+    {
+        for (int i = 0; i < 9; i++)
+            data[i] = 0;
+
+        data[0] = data[4] = data[8] = 1;
+    }
+
+    Matrix3::Matrix3(float *dataParameters)
+    {
+        for (int i = 0; i < 9; i++)
+            data[i] = dataParameters[i];
+    }
+
+    Matrix3::~Matrix3()
+    {
+    }
+
+    void Matrix3::SetInverse(const Matrix3 &m)
+    {
+        float t4 = m.data[0] * m.data[4];
+        float t6 = m.data[0] * m.data[5];
+        float t8 = m.data[1] * m.data[3];
+        float t10 = m.data[2] * m.data[3];
+        float t12 = m.data[1] * m.data[6];
+        float t14 = m.data[2] * m.data[6];
+        // Calculate the determinant.
+        float t16 = (t4 * m.data[8] - t6 * m.data[7] - t8 * m.data[8] +
+                     t10 * m.data[7] + t12 * m.data[5] - t14 * m.data[4]);
+        // Make sure the determinant is non-zero.
+        if (t16 == 0.0f)
+            return;
+        float t17 = 1 / t16;
+        data[0] = (m.data[4] * m.data[8] - m.data[5] * m.data[7]) * t17;
+        data[1] = -(m.data[1] * m.data[8] - m.data[2] * m.data[7]) * t17;
+        data[2] = (m.data[1] * m.data[5] - m.data[2] * m.data[4]) * t17;
+        data[3] = -(m.data[3] * m.data[8] - m.data[5] * m.data[6]) * t17;
+        data[4] = (m.data[0] * m.data[8] - t14) * t17;
+        data[5] = -(t6 - t10) * t17;
+        data[6] = (m.data[3] * m.data[7] - m.data[4] * m.data[6]) * t17;
+        data[7] = -(m.data[0] * m.data[7] - t12) * t17;
+        data[8] = (t4 - t8) * t17;
+    }
+
+    Matrix3 Matrix3::Inverse()
+    {
+        Matrix3 out;
+        out.SetInverse(*this);
+        return out;
+    }
+
+    void Matrix3::Invert()
+    {
+        SetInverse(*this);
+    }
+
+    Matrix4x3::Matrix4x3()
+    {
+    }
+
+    Matrix4x3::~Matrix4x3()
+    {
+    }
+
     Matrix4::Matrix4()
     {
         Platform::MemSet(&data, 0, sizeof(float) * 16);

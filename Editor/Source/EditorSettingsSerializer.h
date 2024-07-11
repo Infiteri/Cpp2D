@@ -16,8 +16,8 @@ namespace Core
         EditorSettingsSerializer(EditorSettings *s);
         ~EditorSettingsSerializer();
 
-        void Serialize(const std::string &name);
-        void Deserialize(const std::string &name);
+        bool Serialize(const std::string &name);
+        bool Deserialize(const std::string &name);
     };
 
 }

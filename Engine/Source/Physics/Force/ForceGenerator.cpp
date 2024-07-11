@@ -1,59 +1,34 @@
 #include "ForceGenerator.h"
 #include "Scene/Actor.h"
-#include "Core/Logger.h"
+#include "Math/Math.h"
+#include "Physics/PhysCore.h"
 
 namespace Core
 {
-    DragForceGenerator::DragForceGenerator(float _k1, float _k2)
+    BodySpringForceGenerator::BodySpringForceGenerator(const Vector2 &Location, float SpringConstant, float RestLength)
     {
-        k1 = _k1;
-        k2 = _k2;
+        Type = Spring;
+        this->Location = Location;
+        this->SpringConstant = SpringConstant;
+        this->RestLength = RestLength;
     }
 
-    DragForceGenerator::~DragForceGenerator()
+    void BodySpringForceGenerator::Update(PhysicsBody *Body)
     {
-    }
-
-    void DragForceGenerator::Integrate(PhysicsBody *b, float dt)
-    {
-        Vector2 force;
-        force = b->GetVelocity();
-
-        float dragCoeff = force.Mag();
-        dragCoeff = k1 * dragCoeff * k2 * dragCoeff;
-
-        force.Normalize();
-        force *= -dragCoeff;
-        b->ApplyForce(force);
-    }
-
-    SpringForceGenerator::SpringForceGenerator(PhysicsBody *_a, PhysicsBody *_b)
-    {
-        a = _a;
-        b = _b;
-    }
-
-    SpringForceGenerator::~SpringForceGenerator()
-    {
-    }
-
-    // "disregard" is not needed, will pas in nullptr. (special kind of force generator)
-    void SpringForceGenerator::Integrate(PhysicsBody *disregard, float dt)
-    {
-        if (!a || !b)
+        if (!Body)
             return;
 
-        Vector3 force;
-        force = a->GetOwner()->GetTransform()->Position;
-        force -= b->GetOwner()->GetTransform()->Position;
+        Vector2 force;
+        force = {Body->GetOwner()->GetTransform()->Position.x, Body->GetOwner()->GetTransform()->Position.y};
+        force -= Location;
 
-        // Calculate the magnitude of the force.
-        float magnitude = force.Mag();
-        magnitude = Math::Abs(magnitude - restLength);
-        magnitude *= springConstant;
+        float magnitude = force.Magnitude();
+        magnitude *= Math::Abs(magnitude - RestLength);
+        magnitude *= SpringConstant;
 
         force.Normalize();
         force *= -magnitude;
-        a->ApplyForce({force.x * dt, force.y * dt});
+        RigidBody *b = (RigidBody *)Body; // Spooky
+        b->ApplyImpulse(force * CE_PHYSICS_DELTA_TIME);
     }
 }

@@ -5,7 +5,7 @@
 class TestActor : public Core::ActorScript
 {
 public:
-    Core::SpriteComponent *Sprite;
+    Core::RigidBodyComponent *rb;
 
     TestActor();
     ~TestActor();

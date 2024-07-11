@@ -25,7 +25,7 @@ namespace Core
     protected:
         std::vector<Vertex3D> vertices;
         std::vector<CeU32> indices;
-        Type type;
+        Type type = Empty;
 
     public:
         Geometry();

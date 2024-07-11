@@ -74,6 +74,11 @@ namespace Core
         Platform::Log(OutMessageWithLevels);
     }
 
+    bool Logger::IsCategoryPresent(const std::string &CategoryName)
+    {
+        return categories[CategoryName] != nullptr;
+    }
+
     bool Logger::DefineLogCategory(const std::string &pending, const std::string &name)
     {
         if (categories[name] != nullptr)

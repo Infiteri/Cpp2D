@@ -42,20 +42,28 @@ namespace Core
         auto mat = other->mesh->GetMaterial();
         auto geo = other->mesh->GetGeometry();
 
-        if (mat->GetFileName().empty())
+        if (mat->GetLoadMode() == Material::Default)
         {
-            Material::Configuration config;
-            config.Name = other->mesh->GetMaterial()->GetName();
-            config.Color = *other->mesh->GetMaterial()->GetColor();
-            config.TexturePath = other->mesh->GetMaterial()->GetTexture()->GetImagePath();
-            auto cfg = other->mesh->GetMaterial()->GetTexture()->GetConfig();
-            config.TextureConfiguration.MinFilter = cfg->MinFilter;
-            config.TextureConfiguration.MaxFilter = cfg->MaxFilter;
-            mesh->SetMaterial(&config);
+            mesh->MakeMaterialDefault();
         }
         else
         {
-            mesh->SetMaterial(mat->GetFileName());
+
+            if (mat->GetFileName().empty())
+            {
+                Material::Configuration config;
+                config.Name = other->mesh->GetMaterial()->GetName();
+                config.Color = *other->mesh->GetMaterial()->GetColor();
+                config.TexturePath = other->mesh->GetMaterial()->GetTexture()->GetImagePath();
+                auto cfg = other->mesh->GetMaterial()->GetTexture()->GetConfig();
+                config.TextureConfiguration.MinFilter = cfg->MinFilter;
+                config.TextureConfiguration.MaxFilter = cfg->MaxFilter;
+                mesh->SetMaterial(&config);
+            }
+            else
+            {
+                mesh->SetMaterial(mat->GetFileName());
+            }
         }
 
         switch (geo->GetType())
@@ -161,7 +169,6 @@ namespace Core
 
     ActorScriptComponent::ActorScriptComponent()
     {
-        type = ComponentTypes::ActorScript;
     }
 
     ActorScriptComponent::~ActorScriptComponent()
@@ -173,21 +180,16 @@ namespace Core
         ClassName = o->ClassName;
     }
 
-    PhysicsBodyComponent::PhysicsBodyComponent()
-    {
-        type = ComponentTypes::PhysicsBody;
-        Body = nullptr;
-    }
-
-    PhysicsBodyComponent::~PhysicsBodyComponent()
+    RigidBodyComponent::RigidBodyComponent()
     {
     }
 
-    void PhysicsBodyComponent::From(PhysicsBodyComponent *o)
+    RigidBodyComponent::~RigidBodyComponent()
     {
-        BodyType = o->BodyType;
-        MaterialPhysics.Damping = o->MaterialPhysics.Damping;
-        MaterialPhysics.Mass = o->MaterialPhysics.Mass;
-        MaterialPhysics.AngularDamping = o->MaterialPhysics.AngularDamping;
+    }
+
+    void RigidBodyComponent::From(RigidBodyComponent *o)
+    {
+        Configuration.From(&o->Configuration);
     }
 }

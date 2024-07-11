@@ -174,6 +174,12 @@ namespace Core
         library->Functions.clear();
 
         FreeLibrary((HMODULE)library->Internal);
+
+        // Clear
+        library->Name = "";
+        library->FileName = "";
+        library->Internal = NULL;
+        library->Valid = false;
     }
 }
 

@@ -1,2 +1,4 @@
 Settings: Field
-CameraZoom: 5
+CameraZoom: 1.0
+Colors:
+  []

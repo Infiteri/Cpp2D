@@ -4,8 +4,8 @@
 #include "Renderer/Object/Mesh.h"
 #include "Renderer/Object/Sprite.h"
 #include "Renderer/Camera/CameraSystem.h"
-
-#include "Physics/PhysicsBody.h"
+#include "Physics/Body/BaseBodyConfiguration.h"
+#include "Physics/Body/RigidBody.h"
 
 namespace Core
 {
@@ -15,9 +15,7 @@ namespace Core
     {
         Base,
         Mesh,
-        Camera,
-        ActorScript,
-        PhysicsBody
+        Camera
     };
 
     class CE_API Component
@@ -31,13 +29,13 @@ namespace Core
 
         Actor *Owner;
 
-        virtual void Start(){};
-        virtual void Render(){};
-        virtual void Update(){};
-        virtual void Stop(){};
-        virtual void Destroy(){};
+        virtual void Start() {};
+        virtual void Render() {};
+        virtual void Update() {};
+        virtual void Stop() {};
+        virtual void Destroy() {};
 
-        virtual void From(Component *other){};
+        virtual void From(Component *other) {};
 
         inline ComponentTypes GetType() { return type; };
     };
@@ -101,16 +99,16 @@ namespace Core
         void From(ActorScriptComponent *o);
     };
 
-    class CE_API PhysicsBodyComponent : public Component
+    // WIP: Replace with BODYTYPE-Body components
+    class CE_API RigidBodyComponent : public Component
     {
     public:
-        PhysicsBody *Body;
-        PhysicsBody::BodyType BodyType = PhysicsBody::Static;
-        struct PhysicsMaterial MaterialPhysics;
+        RigidBodyConfiguration Configuration;
+        RigidBody *Body;
 
-        PhysicsBodyComponent();
-        ~PhysicsBodyComponent();
+        RigidBodyComponent();
+        ~RigidBodyComponent();
 
-        void From(PhysicsBodyComponent *o);
+        void From(RigidBodyComponent *o);
     };
 }

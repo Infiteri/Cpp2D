@@ -1,55 +1,35 @@
 #pragma once
 
 #include "Base.h"
-#include "Physics/PhysicsBody.h"
+
+#include "Physics/Body/PhysicsBody.h"
 
 namespace Core
 {
-    struct CE_API ForceGenerator
+    class BodyForceGenerator
     {
-        enum Types
+    public:
+        enum ForceType
         {
-            None,
-            Drag
+            Default,
+            Spring
         };
 
-        Types type = None;
+        ForceType Type = Default;
+        BodyForceGenerator(){};
+        ~BodyForceGenerator(){};
 
-        ForceGenerator(){};
-        virtual ~ForceGenerator(){};
-
-        virtual void Integrate(PhysicsBody *body, float dt){};
-
-        template <typename T>
-        T *As()
-        {
-            return (T *)this;
-        };
+        virtual void Update(PhysicsBody *Body) {};
     };
 
-    struct CE_API DragForceGenerator : ForceGenerator
+    class BodySpringForceGenerator : public BodyForceGenerator
     {
-        float k1;
-        float k2;
+    public:
+        Vector2 Location;
+        float SpringConstant;
+        float RestLength;
+        BodySpringForceGenerator(const Vector2 &Location, float SpringConstant, float RestLength);
 
-        DragForceGenerator(float _k1, float _k2);
-        ~DragForceGenerator();
-
-        void Integrate(PhysicsBody *b, float dt);
-    };
-
-    /// @brief UNSTABLE
-    struct CE_API SpringForceGenerator : ForceGenerator
-    {
-        PhysicsBody *a;
-        PhysicsBody *b;
-
-        float springConstant;
-        float restLength;
-
-        SpringForceGenerator(PhysicsBody *_a, PhysicsBody *_b);
-        ~SpringForceGenerator();
-
-        void Integrate(PhysicsBody *disregard, float dt);
+        void Update(PhysicsBody *Body);
     };
 }
