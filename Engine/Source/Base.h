@@ -24,7 +24,11 @@ typedef unsigned long long CeU64;
 #endif
 
 /// @brief MAJOR.MINOR.ULTRA_MINOR - DD.MM.YYYY
-#pragma CE_VERSION "0.1.1 - 11.07.2024"
+#pragma CE_VERSION "0.1.2 - 12.07.2024"
 
 #define CE_ACTOR_SCRIPT_DEFINE(className) \
     extern "C" __declspec(dllexport) Core::ActorScript *className##Create() { return new className(); }
+
+#define CE_IMPLEMENT_CAST_T_AS() \
+    template <typename T>        \
+    T *As() { return (T *)this; }

@@ -11,5 +11,5 @@ namespace Core
 
             return owner->GetTransform();
         };
-    } 
+    }
 }

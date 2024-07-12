@@ -85,6 +85,16 @@ namespace Core
                               (o.data[11] * data[10]) + data[11];
             return result;
         }
+
+        Vector3 GetAxisVector3(int i) const
+        {
+            return Vector3(data[i], data[i + 4], data[i + 8]);
+        }
+
+        Vector2 GetAxisVector2(int i) const
+        {
+            return Vector2(data[i], data[i + 4]);
+        }
     };
 
     /// @brief A 4x4 matrix used in general math.

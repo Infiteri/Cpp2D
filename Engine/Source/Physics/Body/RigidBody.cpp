@@ -11,7 +11,7 @@
 
 namespace Core
 {
-    static inline void _CalculateTransformMatrix(Matrix4 *transformMatrix,
+    static inline void _CalculateTransformMatrix(Matrix4x3 *transformMatrix,
                                                  const Vector3 &position,
                                                  const Quaternion &orientation)
     {
@@ -42,11 +42,15 @@ namespace Core
 
     void RigidBody::_CalculateData()
     {
+        type = BodyType::Rigid;
+
         if (!GetTransform())
             return;
 
         quaternion.RotateToVector(GetTransform()->Rotation);
         _CalculateTransformMatrix(&transformMatrixInternal, GetTransform()->Position, quaternion);
+
+        collider->transform = &transformMatrixInternal;
     }
 
     RigidBody::RigidBody(RigidBodyConfiguration *Configuration)
@@ -54,10 +58,16 @@ namespace Core
         config.From(Configuration);
 
         owner = config.Owner;
+
+        collider = new AABBCollider();
+        collider->Size.Set(100, 100);
+        collider->ParentBody = this;
     }
 
     RigidBody::~RigidBody()
     {
+        if (collider)
+            delete collider;
     }
 
     void RigidBody::Update()
@@ -84,7 +94,7 @@ namespace Core
         ApplyImpulse({0, -PhysicsEngine::GetValueSet()->Gravity * config.GravityScale});
         ResultAcceleration += totalImpulse;
 
-        float ResultTorque;
+        float ResultTorque = 0; //? LMAOOOOOOOOO THIS CAUSED AN ERROR WITH ROTATIONS HEHEHEH
         ResultTorque += totalTorque;
         ResultTorque += angularAcceleration;
 

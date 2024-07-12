@@ -100,6 +100,43 @@ namespace Core
       return o;
     }
 
+    Vector2 operator+(const Vector2 &other)
+    {
+      Vector2 o;
+      o.x = x + other.x;
+      o.y = y + other.y;
+      return o;
+    }
+
+    Vector2 operator*(const Vector2 &other)
+    {
+      Vector2 o;
+      o.x = x * other.x;
+      o.y = y * other.y;
+      return o;
+    }
+
+    Vector2 operator-(const Vector2 &other)
+    {
+      Vector2 o;
+      o.x = x - other.x;
+      o.y = y - other.y;
+      return o;
+    }
+
+    Vector2 operator/(const Vector2 &other)
+    {
+      Vector2 o;
+      o.x = x / other.x;
+      o.y = y / other.y;
+      return o;
+    }
+
+    float Dot(const Vector2 &other) const
+    {
+      return x * other.x + y * other.y;
+    }
+
     float Magnitude();
     void Normalize();
   };
@@ -119,6 +156,20 @@ namespace Core
     void Set(float x, float y, float z);
     void Set(const Vector3 &o);
     void Set(Vector3 *o);
+
+    Vector3 operator-(const Vector3 &other)
+    {
+      Vector3 o;
+      o.x = x - other.x;
+      o.y = y - other.y;
+      o.z = z - other.z;
+      return o;
+    }
+
+    float Dot(const Vector3 &other) const
+    {
+      return x * other.x + y * other.y + z * other.z;
+    }
   };
 
   class CE_API Vector4

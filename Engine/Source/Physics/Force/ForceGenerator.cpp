@@ -28,7 +28,7 @@ namespace Core
 
         force.Normalize();
         force *= -magnitude;
-        RigidBody *b = (RigidBody *)Body; // Spooky
+        RigidBody *b = Body->As<RigidBody>(); // Spooky
         b->ApplyImpulse(force * CE_PHYSICS_DELTA_TIME);
     }
 }

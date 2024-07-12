@@ -174,3 +174,10 @@
 - Added torque acceleration
 - Fixed transform rotation
 - Started quaternions math
+
+### 0.1.2 - 12.07.2024
+
+- Starting collision related code
+- Rigid Body Components now serialize more data (full serialization when the collision system works)
+- Fixed the bug where an object would rotate even tho it had no impulses  
+- Added collision detection

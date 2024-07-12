@@ -232,6 +232,8 @@ namespace Core
                 out << YAML::Key << "RigidBodyComponent " + std::to_string(index);
                 out << YAML::BeginMap;
                 CE_SERIALIZE_FIELD("Mass", sc->Configuration.Mass);
+                CE_SERIALIZE_FIELD("Damp", sc->Configuration.Damp);
+                CE_SERIALIZE_FIELD("GravityScale", sc->Configuration.GravityScale);
                 out << YAML::EndMap;
             }
         }
@@ -398,6 +400,8 @@ namespace Core
                     if (data)
                     {
                         pc->Configuration.Mass = data["Mass"].as<float>();
+                        pc->Configuration.Damp = data["Damp"].as<float>();
+                        pc->Configuration.GravityScale = data["GravityScale"].as<float>();
                     }
                 }
 

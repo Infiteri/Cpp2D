@@ -66,6 +66,8 @@ namespace Core
     {
         script->Owner = owner;
         scripts[name] = script;
+
+        CE_LOG("CE_SCRIPT", Trace, "Adding script: %s", name.c_str());
     }
 
     void ScriptEngine::RegisterActorScript(const std::string &className, Actor *owner, const std::string &name)
